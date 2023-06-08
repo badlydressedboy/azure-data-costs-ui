@@ -1,0 +1,1111 @@
+﻿<mah:MetroWindow x:Class="DataEstateOverview.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DataEstateOverview"
+        xmlns:converters="clr-namespace:ValueConverters"
+        mc:Ignorable="d"
+        xmlns:busyIndicator="https://github.com/Peoky/BusyIndicator"         
+        xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
+                 xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        Title="Azure DB Status" Height="850" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
+        ResizeMode="CanResizeWithGrip"
+        ShowIconOnTitleBar="True"
+        Loaded="MetroWindow_Loaded"
+        Icon="azure.ico">
+
+    <mah:MetroWindow.Resources>
+
+        <converters:NonZeroNumberToBooleanConverter x:Key="NonZeroNumberToBooleanConverter"></converters:NonZeroNumberToBooleanConverter>
+
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"></converters:InverseBooleanConverter>
+
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
+
+        <CollectionViewSource Source="{Binding RestSqlDbList}" Filter="RestDbDataGridViewSource_Filter"  x:Key="RestDbDataGridViewSource">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <CollectionViewSource Source="{Binding DataFactoryList}" Filter="DataFactoryDataGridViewSource_Filter"  x:Key="DataFactoryDataGridViewSource">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <CollectionViewSource Source="{Binding StorageList}" Filter="StorageDataGridViewSource_Filter"  x:Key="StorageDataGridViewSource">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <CollectionViewSource Source="{Binding VNetList}" Filter="VNetDataGridViewSource_Filter"  x:Key="VNetDataGridViewSource">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <CollectionViewSource Source="{Binding VMList}" Filter="VMDataGridViewSource_Filter"  x:Key="VMDataGridViewSource">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+
+        <Style TargetType="{x:Type DataGridCell}" x:Key="DataGridParentCell">
+            <Setter Property="FontSize" Value="13"></Setter>
+        </Style>
+
+
+        <Style TargetType="DataGrid">
+            <Style.Setters>
+                <Setter Property="CanUserAddRows" Value="False"/>
+                <Setter Property="VerticalGridLinesBrush" Value="LightGray"/>
+                <Setter Property="HorizontalGridLinesBrush" Value="LightGray"/>
+            </Style.Setters>
+        </Style>
+
+        <Style TargetType="DataGridCell" x:Key="NumericGridCellStyle">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="TitleTextStyle">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="DemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </mah:MetroWindow.Resources>
+    <Grid>
+
+        <mah:MetroAnimatedSingleRowTabControl>
+
+            <mah:MetroTabItem Header="DB Summary" Name="TabRest">
+
+
+                <busyIndicator:BusyMask x:Name="BusyIndicator" IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="86*"/>
+                            <ColumnDefinition Width="11*"/>
+                            <ColumnDefinition Width="1104*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Margin="4,4,4,4" Grid.ColumnSpan="3">
+
+                            <TextBlock Margin="6,2,2,2" Text="Filter:" VerticalAlignment="Center"></TextBlock>
+                            <TextBox Margin="4,2,2,2" Width="180" Name="RestDbFilterText" VerticalAlignment="Center" KeyUp="RestDbFilterText_KeyUp" TextChanged="RestDbFilterText_TextChanged"></TextBox>
+
+                            <TextBlock Margin="22,2,2,2" Text="Cost Days:" VerticalAlignment="Center"></TextBlock>
+                            <TextBox Margin="4,2,2,2" Width="40" Name="CostDaysText" VerticalAlignment="Center" PreviewTextInput="CostDaysText_PreviewTextInput" ></TextBox>
+
+                            <Button Margin="22,2,2,2" VerticalAlignment="Center" Name="GroupButton" Click="GroupButton_Click">Group</Button>
+
+                            <!--<Button x:Name="RestConfigButton" Margin="12,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="RestConfigButton_Click">Configure</Button>-->
+
+                            <Button x:Name="RestRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="RestRefreshButton_Click">Refresh</Button>
+
+                        </StackPanel>
+
+                        <TextBlock Margin="2,39,2,0" Padding="4" Background="Orange" Text="{Binding TestLoginErrorMessage}" Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}, FallbackValue=Collapsed}" Grid.ColumnSpan="3"/>
+
+                        <TextBox Padding="6" Grid.Row="2" BorderThickness="0"
+                        IsReadOnly="True" Margin="2,2,2,728" Text="{Binding RestErrorMessage}" MaxHeight="150" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Background="Orange" Grid.ColumnSpan="3" Grid.RowSpan="2"></TextBox>
+
+                        <DataGrid x:Name="RestDbDataGrid"
+                              VirtualizingStackPanel.IsVirtualizing="true" 
+                                EnableRowVirtualization ="True"
+                              ItemsSource="{Binding Source={StaticResource RestDbDataGridViewSource}}" 
+                              AutoGenerateColumns="False"
+                              CanUserResizeRows="False"
+                              FrozenColumnCount ="1"
+                              RowHeight="20"
+                                MouseUp="RestDbDataGrid_MouseUp"
+                                KeyDown="RestDbDataGrid_KeyDown"
+                              IsReadOnly="True" Grid.ColumnSpan="3" Margin="0,39,0,0" Grid.RowSpan="4"
+                            
+                  >
+
+                            <!--<DataGrid.GroupStyle>
+
+                            <GroupStyle>
+                                <GroupStyle.ContainerStyle>
+                                    <Style TargetType="{x:Type GroupItem}">
+                                        <Setter Property="Margin" Value="0,0,0,5"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                    <Expander IsExpanded="True" Background="LightGray" BorderBrush="#FF002255" BorderThickness="0">
+                                                        <Expander.Header>
+                                                            <StackPanel Orientation="Horizontal" >
+                                                                <TextBlock Foreground="White" FontWeight="Bold" Text="{Binding Name}" Margin="5,0,0,0" />
+                                                                -->
+                            <!--<TextBlock FontWeight="Bold" Text="{Binding Path=ItemCount}"/>-->
+                            <!--
+                                                            </StackPanel>
+                                                        </Expander.Header>
+                                                        <Expander.Content>
+                                                            <ItemsPresenter />
+                                                        </Expander.Content>
+                                                    </Expander>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GroupStyle.ContainerStyle>
+                            </GroupStyle>
+
+                        </DataGrid.GroupStyle>-->
+
+                            <DataGrid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="SQL Details" Click="RestGridMenuItemSqlDetails_Click" />
+                                    <MenuItem Header="Refresh DB" Click="RestGridMenuItemRefresh_Click" />
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="DB"  Binding="{Binding name}" >
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="DataGridCell">
+                                            <Setter Property="Foreground" Value="DarkBlue"></Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Cursor" Value="Hand"></Setter>
+                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                    <Setter Property="Background" Value="LightGray"></Setter>
+                                                </Trigger>
+
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Server"  Binding="{Binding serverName}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}" ></DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Service Objective"  Binding="{Binding properties.currentServiceObjectiveName}" ></DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Cost (Bill CCY)"  Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);'?'}}" >
+
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TotalCostBilling, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=20, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+
+                                </DataGridTextColumn>
+
+
+                                <DataGridTextColumn Header="DTU %"  Binding="{Binding dtu_consumption_percent, StringFormat=N0}"   >
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding dtu_consumption_percent, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=75, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="Sessions"  Binding="{Binding sessions_count}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+
+
+                                <DataGridTextColumn Header="Size Limit GB"  Binding="{Binding currentDbSizeLimitGb, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="Allocated GB"  Binding="{Binding currentAllocatedDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+
+                                <DataGridTextColumn Header="Used GB"  Binding="{Binding currentDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+
+                                <DataGridTextColumn Header="Used GB %"  Binding="{Binding currentDbSizeUsedPc, StringFormat=N2}" >
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding currentDbSizeUsedPc, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=75, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+
+
+                                <DataGridTextColumn Header="Location"  Binding="{Binding location}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>
+
+
+                                <DataGridTextColumn Header="Zone Redundant"  Binding="{Binding properties.zoneRedundant}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Backup Storage Redundancy"  Binding="{Binding properties.currentBackupStorageRedundancy}" ></DataGridTextColumn>
+
+
+
+                                <!--<DataGridTextColumn Header="Monthly Cost"  Binding="{Binding MonthlyCost}" ></DataGridTextColumn>
+
+                            <DataGridTextColumn Header="Elastic Pool"  Binding="{Binding ElasticPoolName}" ></DataGridTextColumn>-->
+
+                                <DataGridTextColumn Header="Earliest Restore Date"  Binding="{Binding properties.earliestRestoreDate}" ></DataGridTextColumn>
+
+                                <DataGridTextColumn Header="LTR Monthly Retention"  Binding="{Binding lTRPolicyProperties.monthlyRetention}" CellStyle="{StaticResource NumericGridCellStyle}"  ></DataGridTextColumn>
+                                <DataGridTextColumn Header="LTR Week Of Year"  Binding="{Binding lTRPolicyProperties.weekOfYear}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="LTR Weekly Retention"  Binding="{Binding lTRPolicyProperties.weeklyRetention}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="LTR Yearly Retention"  Binding="{Binding lTRPolicyProperties.yearlyRetention}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Vuln Scan Time"  Binding="{Binding latestVulnerabilityScanProperties.endTime}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Vuln Scan State"  Binding="{Binding latestVulnerabilityScanProperties.state}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Vuln Scan Failed Sec Checks"  Binding="{Binding latestVulnerabilityScanProperties.numberOfFailedSecurityChecks}"  >
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding latestVulnerabilityScanProperties.numberOfFailedSecurityChecks, ConverterParameter=1, Converter={StaticResource NonZeroNumberToBooleanConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="Vuln Scan Error" Width="90" Foreground="OrangeRed"  Binding="{Binding VulnerabilityScanError}" ></DataGridTextColumn>
+
+
+
+                                <DataGridTextColumn Header="Advisor Recomendations"  Binding="{Binding advisorRecomendationCount, StringFormat=N0}" >
+                                   
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                            <Style.Setters>
+                                                <Setter Property="ToolTip" Value="{Binding advisorRecomendationDetails}"/>
+                                                <Setter Property="Cursor" Value="Hand"/>
+                                            </Style.Setters>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding advisorRecomendationCount, ConverterParameter=1, Converter={StaticResource NonZeroNumberToBooleanConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Recommendations Error" Width="140" Foreground="OrangeRed"  Binding="{Binding RecommendationsError}" ></DataGridTextColumn>
+
+
+
+
+
+                                <DataGridTextColumn Header="Physical Read %"  Binding="{Binding physical_data_read_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="Log Write %"  Binding="{Binding log_write_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <!--<DataGridTextColumn Header="Storage %"  Binding="{Binding storage_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />-->
+                                <DataGridTextColumn Header="Workers %"  Binding="{Binding workers_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="Sessions %"  Binding="{Binding sessions_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="SqlServer Proc Core %"  Binding="{Binding sqlserver_process_core_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="SqlServer Proc Mem %"  Binding="{Binding sqlserver_process_memory_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+
+                                <!--<DataGridTextColumn Header="Storage"  Binding="{Binding storage}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                            <DataGridTextColumn Header="DTU Limit"  Binding="{Binding dtu_limit}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                            <DataGridTextColumn Header="DTU Used"  Binding="{Binding dtu_used}" CellStyle="{StaticResource NumericGridCellStyle}"  />-->
+
+                                <!--tempdb metrics seem to be broken even in the portal so removing for now-->
+                                <!--DataGridTextColumn Header="Tempdb Log Used %"  Binding="{Binding tempdb_log_used_percent, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                            <DataGridTextColumn Header="TempDB Data Size"  Binding="{Binding tempdb_data_size, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                            <DataGridTextColumn Header="TempDB Log Size"  Binding="{Binding tempdb_log_size, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}"  /-->
+
+                                <!--<DataGridTextColumn Header="Storage MB"  Binding="{Binding StorageMB}" CellStyle="{StaticResource NumericGridCellStyle}"  ></DataGridTextColumn>
+                        <DataGridTextColumn Header="Avg Cpu %"  Binding="{Binding AvgCpuPc}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
+                        <DataGridTextColumn Header="Avg Data Io %"  Binding="{Binding AvgDataIoPc}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
+                        <DataGridTextColumn Header="Avg LogWrite %"  Binding="{Binding AvgLogWritePc}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
+                        <DataGridTextColumn Header="Max Worker %"  Binding="{Binding MaxWorkerPc}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
+                        <DataGridTextColumn Header="Max Session %"  Binding="{Binding MaxSessionPc}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>-->
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                    </Grid>
+                </busyIndicator:BusyMask>
+
+            </mah:MetroTabItem>
+
+            <mah:MetroTabItem Header="DB Details" Name="TabSql">
+
+
+                <busyIndicator:BusyMask IsBusy="{Binding IsQueryingDatabase, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Margin="6">
+
+                            <Button x:Name="SQLDBBackButton" Margin="2,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBBackButton_Click">Back</Button>
+
+                            <Button x:Name="SQLDBRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBRefreshButton_Click" IsEnabled="{Binding IsQueryingDatabase, Converter={StaticResource InverseBooleanConverter}}">Refresh</Button>
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="2" Background="Orange" Visibility="{Binding SelectedAzServer.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+
+                            <TextBlock Margin="1" Padding="5" Text="{Binding SelectedAzServer.ConnectivityError}"/>
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="2" Background="Orange" Visibility="{Binding SelectedAzDB.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+
+                            <TextBlock Margin="1" Padding="5" Text="{Binding SelectedAzDB.ConnectivityError}"/>
+
+                        </StackPanel>
+
+                        <Grid x:Name="ServerGrid" Grid.Row="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height=".2*"/>
+                                <RowDefinition Height="2"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height=".4*"/>
+                                <RowDefinition Height="2"/>
+                                <RowDefinition Height=".4*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Orientation="Horizontal" Background="LightGray"  VerticalAlignment="Center">
+                                <TextBlock Margin="8,4,4,4" Style="{StaticResource TitleTextStyle}" Text="Server: "></TextBlock>
+                                <TextBlock Margin="2,4,4,4" Style="{StaticResource TitleTextStyle}" Text="{Binding SelectedAzDB.ServerName}"></TextBlock>
+                            </StackPanel>
+
+                            <Grid Grid.Row="1" x:Name="ServerGridx">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width=".5*"></ColumnDefinition>
+                                    <ColumnDefinition Width="4"></ColumnDefinition>
+                                    <ColumnDefinition Width=".5*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Orientation="Horizontal" >
+                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Event Log: "></TextBlock>
+                                    </StackPanel>
+
+                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="ServerEventLogGrid" AutoGenerateColumns="True">
+                                        <!--<DataGrid.Columns>
+                    <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
+                </DataGrid.Columns>-->
+                                    </DataGrid>
+
+                                </Grid>
+
+                                <GridSplitter Grid.Column="1" Width="4" MaxWidth="4" Cursor="SizeWE" VerticalAlignment="Stretch" />
+
+                                <Grid Grid.Column="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Orientation="Horizontal" >
+                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Firewall Rules: "></TextBlock>
+                                    </StackPanel>
+
+                                    <DataGrid Grid.Row="1"  IsReadOnly="True" x:Name="ServerFirewallGrid" AutoGenerateColumns="True">
+                                        <!--<DataGrid.Columns>
+                    <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
+                </DataGrid.Columns>-->
+                                    </DataGrid>
+
+                                </Grid>
+
+                            </Grid>
+
+                            <GridSplitter Grid.Row="2" Height="2" MaxHeight="2" Cursor="SizeNS" HorizontalAlignment="Stretch" />
+
+                            <StackPanel Orientation="Horizontal" Grid.Row="3" MinHeight="16" Background="LightGray" VerticalAlignment="Center">
+                                <TextBlock Margin="8,4,4,4" Style="{StaticResource TitleTextStyle}" Text="Database: "></TextBlock>
+                                <TextBlock Margin="1,4,4,4" Style="{StaticResource TitleTextStyle}" Text="{Binding SelectedAzDB.DatabaseName}"></TextBlock>
+                            </StackPanel>
+
+                            <Grid Grid.Row="4" x:Name="DatabaseGridx">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width=".9*"></ColumnDefinition>
+                                    <ColumnDefinition Width="4" MaxWidth="4"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Orientation="Horizontal" >
+                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Event Log: "></TextBlock>
+                                    </StackPanel>
+
+                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbEventLogGrid" AutoGenerateColumns="True">
+                                        <!--<DataGrid.Columns>
+                    <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
+                </DataGrid.Columns>-->
+                                    </DataGrid>
+
+                                </Grid>
+
+                                <GridSplitter Grid.Column="1" Width="4" MaxWidth="4" Cursor="SizeWE" VerticalAlignment="Stretch" />
+
+                                <Grid Grid.Column="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+
+
+                                    <StackPanel Orientation="Horizontal" >
+                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="SQL Sessions: "></TextBlock>
+
+                                        <!--<CheckBox Margin="22,2,2,2" IsChecked="{Binding ShowRunningSessionsOnly}"></CheckBox>
+                                    <TextBlock Margin="0,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Running Requests Only"></TextBlock>-->
+                                    </StackPanel>
+
+                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbRequestsGrid" AutoGenerateColumns="True" CanUserResizeRows="False" RowHeight="20">
+                                        <!--<DataGrid.Columns>
+                                        <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
+                                    </DataGrid.Columns>-->
+                                    </DataGrid>
+                                </Grid>
+
+                            </Grid>
+
+                            <GridSplitter Grid.Row="5" Height="2" MaxHeight="2" Cursor="SizeNS" HorizontalAlignment="Stretch" />
+
+                            <Grid Grid.Row="6" x:Name="DatabaseGrid2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width=".9*"></ColumnDefinition>
+                                    <ColumnDefinition Width="4" MaxWidth="4"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+
+                                    <StackPanel Orientation="Horizontal" >
+                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Logins: "></TextBlock>
+                                    </StackPanel>
+
+                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbLoginsGrid" AutoGenerateColumns="True">
+                                        <!--<DataGrid.Columns>
+                    <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
+                </DataGrid.Columns>-->
+                                    </DataGrid>
+
+                                </Grid>
+
+                                <GridSplitter Grid.Column="1" Width="4" MaxWidth="4" Cursor="SizeWE" VerticalAlignment="Stretch" />
+
+                                <Grid Grid.Column="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+
+
+                                    <StackPanel Orientation="Horizontal" >
+                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Sync state: "></TextBlock>
+                                    </StackPanel>
+
+                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbSyncStateGrid" AutoGenerateColumns="True">
+                                        <!--<DataGrid.Columns>
+                    <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
+                </DataGrid.Columns>-->
+                                    </DataGrid>
+                                </Grid>
+
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </busyIndicator:BusyMask>
+            </mah:MetroTabItem>
+
+            <mah:MetroTabItem Header="Data Factories" Name="TabDataFactories">
+
+                <busyIndicator:BusyMask IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Margin="4">
+                            <Button x:Name="DataFactoriesRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesRefreshButton_Click">Refresh</Button>
+
+                            <Button x:Name="DataFactoriesCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesCollapseCostsButton_Click">Show/Collapse Costs</Button>
+
+                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total ADF Costs:</TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalADFCostsText}"></TextBlock>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding DataFactoryErrorMessage}" MaxHeight="150" ToolTip="{Binding DataFactoryErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsDataFactoryErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
+
+                        <DataGrid Grid.Row="2" x:Name="DataFactoryDataGrid"
+                              VirtualizingStackPanel.IsVirtualizing="true" 
+                                EnableRowVirtualization ="True"
+                              ItemsSource="{Binding Source={StaticResource DataFactoryDataGridViewSource}}" 
+                              AutoGenerateColumns="False"
+                              CanUserResizeRows="False"
+                              FrozenColumnCount ="1"
+                              RowHeight="20"
+                                MouseUp="DataFactoryDataGrid_MouseUp"
+                                KeyDown="DataFactoryDataGrid_KeyDown"  
+                              RowDetailsVisibilityMode="Visible"
+                                 RowBackground="LightGray"
+                                  IsReadOnly="True"
+                    >
+                            <DataGrid.RowStyle>
+                                <Style TargetType="{x:Type DataGridRow}">
+                                    <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                </Style>
+                            </DataGrid.RowStyle>
+
+                            <!--<DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Refresh DB" Click="RestGridMenuItemRefresh_Click" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>-->
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Resource Group"  Binding="{Binding resourceGroup}"  CellStyle="{StaticResource DataGridParentCell}"></DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Location"  Binding="{Binding location}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Cost (Bill CCY)" Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);}}"  >
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}" >
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TotalCostBilling, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+
+                                            <Setter Property="Background" Value="LightGray"></Setter>
+                                            <Setter Property="FontSize" Value="13"></Setter>
+
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Created"  Binding="{Binding createdTime}" CellStyle="{StaticResource DataGridParentCell}" />
+                                <DataGridTextColumn Header="Changed"  Binding="{Binding changedTime}" CellStyle="{StaticResource DataGridParentCell}" />
+
+                            </DataGrid.Columns>
+
+                            <DataGrid.RowDetailsTemplate>
+                                <DataTemplate>
+                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
+                                            <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
+                                            <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                                <Setter Property="Foreground" Value="OrangeRed" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
+
+                                            <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </DataTemplate>
+                            </DataGrid.RowDetailsTemplate>
+
+                        </DataGrid>
+
+                    </Grid>
+
+                </busyIndicator:BusyMask>
+
+            </mah:MetroTabItem>
+
+            <mah:MetroTabItem Header="Storage" Name="TabStorage">
+
+                <busyIndicator:BusyMask IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Margin="4">
+                            <Button x:Name="StorageRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesRefreshButton_Click">Refresh</Button>
+
+                            <Button x:Name="StorageCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="StorageCollapseCostsButton_Click">Show/Collapse Costs</Button>
+
+                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total Storage Costs:</TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalStorageCostsText}"></TextBlock>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding StorageErrorMessage}" MaxHeight="150" ToolTip="{Binding StorageErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsStorageErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
+
+                        <DataGrid Grid.Row="2" x:Name="StorageDataGrid"
+                              VirtualizingStackPanel.IsVirtualizing="true" 
+                                EnableRowVirtualization ="True"
+                              ItemsSource="{Binding Source={StaticResource StorageDataGridViewSource}}" 
+                              AutoGenerateColumns="False"
+                              CanUserResizeRows="False"
+                              FrozenColumnCount ="1"
+                              RowHeight="20"
+                                MouseUp="StorageDataGrid_MouseUp"
+                                KeyDown="StorageDataGrid_KeyDown"  
+                              RowDetailsVisibilityMode="Visible"
+                                 RowBackground="LightGray"
+                                  IsReadOnly="True"
+                                
+                    >
+                            <DataGrid.RowStyle>
+                                <Style TargetType="{x:Type DataGridRow}">
+                                    <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                </Style>
+                            </DataGrid.RowStyle>
+
+                            <!--<DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Refresh DB" Click="RestGridMenuItemRefresh_Click" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>-->
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Resource Group"  Binding="{Binding resourceGroup}"  CellStyle="{StaticResource DataGridParentCell}"></DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Sku"  Binding="{Binding sku.name}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Tier"  Binding="{Binding sku.tier}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+
+                                <DataGridTextColumn Header="Location"  Binding="{Binding location}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Cost (Bill CCY)" Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);}}"  >
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}" >
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TotalCostBilling, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+
+                                            <Setter Property="Background" Value="LightGray"></Setter>
+                                            <Setter Property="FontSize" Value="13"></Setter>
+
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Created"  Binding="{Binding properties.creationTime}" CellStyle="{StaticResource DataGridParentCell}" />
+
+                            </DataGrid.Columns>
+
+                            <DataGrid.RowDetailsTemplate>
+                                <DataTemplate>
+                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
+                                            <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
+                                            <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
+                                            <!--<DataGridTextColumn Header="ResourceType" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
+
+                                            <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                                <Setter Property="Foreground" Value="OrangeRed" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
+
+                                            <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </DataTemplate>
+                            </DataGrid.RowDetailsTemplate>
+
+                        </DataGrid>
+
+                    </Grid>
+
+                </busyIndicator:BusyMask>
+
+            </mah:MetroTabItem>
+
+            <mah:MetroTabItem Header="VNets" Name="TabVNets">
+
+                <busyIndicator:BusyMask IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Margin="4">
+                            <Button x:Name="VNetRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesRefreshButton_Click">Refresh</Button>
+
+                            <Button x:Name="VNetCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VNetCollapseCostsButton_Click">Show/Collapse Costs</Button>
+
+                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VNet Costs:</TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalVNetCostsText}"></TextBlock>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding VNetErrorMessage}" MaxHeight="150" ToolTip="{Binding VNetErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsVNetErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
+
+                        <DataGrid Grid.Row="2" x:Name="VNetDataGrid"
+                              VirtualizingStackPanel.IsVirtualizing="true" 
+                                EnableRowVirtualization ="True"
+                              ItemsSource="{Binding Source={StaticResource VNetDataGridViewSource}}" 
+                              AutoGenerateColumns="False"
+                              CanUserResizeRows="False"
+                              FrozenColumnCount ="1"
+                              RowHeight="20"
+                                MouseUp="VNetDataGrid_MouseUp"
+                                KeyDown="VNetDataGrid_KeyDown"  
+                              RowDetailsVisibilityMode="Visible"
+                                 RowBackground="LightGray"
+                                  IsReadOnly="True"
+                                
+                    >
+                            <DataGrid.RowStyle>
+                                <Style TargetType="{x:Type DataGridRow}">
+                                    <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                </Style>
+                            </DataGrid.RowStyle>
+
+                            <!--<DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Refresh DB" Click="RestGridMenuItemRefresh_Click" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>-->
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Resource Group"  Binding="{Binding resourceGroup}"  CellStyle="{StaticResource DataGridParentCell}"></DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Location"  Binding="{Binding location}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Cost (Bill CCY)" Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);}}"  >
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}" >
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TotalCostBilling, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+
+                                            <Setter Property="Background" Value="LightGray"></Setter>
+                                            <Setter Property="FontSize" Value="13"></Setter>
+
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Sub Nets"  Binding="{Binding properties.subnets.Count}" CellStyle="{StaticResource DataGridParentCell}" />
+                                <DataGridTextColumn Header="VNet Peerings"  Binding="{Binding properties.virtualNetworkPeerings.Count}" CellStyle="{StaticResource DataGridParentCell}" />
+
+                            </DataGrid.Columns>
+
+                            <DataGrid.RowDetailsTemplate>
+                                <DataTemplate>
+                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
+                                            <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
+                                            <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="ResourceName" Binding="{Binding Path=ResourceName}" IsReadOnly="True"/>
+
+                                            <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                                <Setter Property="Foreground" Value="OrangeRed" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
+
+                                            <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </DataTemplate>
+                            </DataGrid.RowDetailsTemplate>
+
+                        </DataGrid>
+
+                    </Grid>
+
+                </busyIndicator:BusyMask>
+
+            </mah:MetroTabItem>
+
+            <mah:MetroTabItem Header="VMs" Name="TabVMs">
+
+                <busyIndicator:BusyMask IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Margin="4">
+                            <Button x:Name="VMRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesRefreshButton_Click">Refresh</Button>
+
+                            <Button x:Name="VMCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VMCollapseCostsButton_Click">Show/Collapse Costs</Button>
+
+                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VM Costs:</TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalVMCostsText}"></TextBlock>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding VMErrorMessage}" MaxHeight="150" ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
+
+                        <DataGrid Grid.Row="2" x:Name="VMDataGrid"
+                              VirtualizingStackPanel.IsVirtualizing="true" 
+                                EnableRowVirtualization ="True"
+                              ItemsSource="{Binding Source={StaticResource VMDataGridViewSource}}" 
+                              AutoGenerateColumns="False"
+                              CanUserResizeRows="False"
+                              FrozenColumnCount ="1"
+                              RowHeight="20"
+                                MouseUp="VMDataGrid_MouseUp"
+                                KeyDown="VMDataGrid_KeyDown"  
+                              RowDetailsVisibilityMode="Visible"
+                                 RowBackground="LightGray"
+                                  IsReadOnly="True"
+                                
+                    >
+                            <DataGrid.RowStyle>
+                                <Style TargetType="{x:Type DataGridRow}">
+                                    <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                </Style>
+                            </DataGrid.RowStyle>
+
+                            <!--<DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Refresh DB" Click="RestGridMenuItemRefresh_Click" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>-->
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Resource Group"  Binding="{Binding resourceGroup}"  CellStyle="{StaticResource DataGridParentCell}"></DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Size"  Binding="{Binding properties.hardwareProfile.vmSize}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Computer Name"  Binding="{Binding properties.osProfile.computerName}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+
+                                <DataGridTextColumn Header="Location"  Binding="{Binding location}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Cost (Bill CCY)" Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);}}"  >
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}" >
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TotalCostBilling, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+
+                                            <Setter Property="Background" Value="LightGray"></Setter>
+                                            <Setter Property="FontSize" Value="13"></Setter>
+
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
+
+                                <!--<DataGridTextColumn Header="Sub Nets"  Binding="{Binding properties.subnets.Count}" CellStyle="{StaticResource DataGridParentCell}" />
+                                <DataGridTextColumn Header="VNet Peerings"  Binding="{Binding properties.virtualNetworkPeerings.Count}" CellStyle="{StaticResource DataGridParentCell}" />-->
+
+                            </DataGrid.Columns>
+
+                            <DataGrid.RowDetailsTemplate>
+                                <DataTemplate>
+                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
+                                            <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
+                                            <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
+                                            <!--<DataGridTextColumn Header="ResourceType" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
+
+
+                                            <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                                <Setter Property="Foreground" Value="OrangeRed" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
+
+                                            <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </DataTemplate>
+                            </DataGrid.RowDetailsTemplate>
+
+                        </DataGrid>
+
+                    </Grid>
+
+                </busyIndicator:BusyMask>
+
+            </mah:MetroTabItem>
+
+            <mah:MetroTabItem Header="Settings" Name="TabSettings">
+
+                <Grid Margin="4,2,4,2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Margin="2,8,2,8" FontSize="14" Padding="6" Background="LightGray">Test you are logged into Azure via CLI or Visual Studio</TextBlock>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                        <Button Margin="2" VerticalAlignment="Center" Name="TestLoginButton" Click="TestLoginButton_Click">Test Security</Button>
+                    </StackPanel>
+
+                    <TextBlock Margin="2" Padding="6" Grid.Row="2" Background="LightGreen"
+                               Visibility="{Binding TestLoginErrorMessage, Converter={converters:InverseStringNullOrEmptyToVisibilityConverter}}"
+                               >You are logged in OK</TextBlock>
+
+                    <StackPanel Grid.Row="2" Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}}" >
+                        <TextBlock Margin="2,2,2,0" Padding="4" Background="Orange"
+                               
+                        >You are NOT logged in. Either log in via visual studio OR use Azure CLI: az login</TextBlock>
+
+                        <StackPanel Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}}" >
+                            <TextBlock Margin="2,0,2,0" Padding="4" Grid.Row="2" Background="Orange" Text="{Binding TestLoginErrorMessage}"
+                               
+                        ></TextBlock>
+
+                        </StackPanel>
+                    </StackPanel>
+
+
+                    <Grid Grid.Row="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Margin="0,18,2,0" FontSize="13" Padding="6" Background="LightGray">Detected Subscriptions</TextBlock>
+
+                        <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="SubscriptionsGrid" AutoGenerateColumns="False" ItemsSource="{Binding DetectedSubscriptions}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Subscription Name"  Binding="{Binding displayName}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Id"  Binding="{Binding subscriptionId}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="TenantId"  Binding="{Binding tenantId}" ></DataGridTextColumn>
+
+                                <DataGridTemplateColumn Header="Read Costs">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding ReadCosts, UpdateSourceTrigger=PropertyChanged}" Unchecked="IgnoreCheckBox_Checked" Checked="IgnoreCheckBox_Checked" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Read Objects">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding ReadObjects, UpdateSourceTrigger=PropertyChanged}" Unchecked="IgnoreCheckBox_Checked" Checked="IgnoreCheckBox_Checked" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                    </Grid>
+
+                </Grid>
+
+            </mah:MetroTabItem>
+
+        </mah:MetroAnimatedSingleRowTabControl>
+
+        <Grid.Resources>
+
+
+        </Grid.Resources>
+
+
+    </Grid>
+</mah:MetroWindow>

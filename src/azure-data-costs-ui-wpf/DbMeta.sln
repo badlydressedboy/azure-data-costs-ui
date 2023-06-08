@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33502.453
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.Costs.Ui.Wpf", "Azure.Costs.Ui.Wpf.csproj", "{2EC4DEE5-2FA2-443B-9328-B59C8EE82043}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2EC4DEE5-2FA2-443B-9328-B59C8EE82043}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EC4DEE5-2FA2-443B-9328-B59C8EE82043}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EC4DEE5-2FA2-443B-9328-B59C8EE82043}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EC4DEE5-2FA2-443B-9328-B59C8EE82043}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {338EE67B-03C1-4905-8B91-D4932BB66B81}
+	EndGlobalSection
+EndGlobal
