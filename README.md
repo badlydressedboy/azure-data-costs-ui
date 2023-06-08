@@ -10,3 +10,12 @@ This could be extended to more resource types then just data but I care more abo
 Data access is via REST API and models are custom as Azure official helper classes had a bug at time of writing.
 
 You need to be logged into azure either via CLI or Visual Studio in order to access REST API. No login or credential functionality is needed/offered in the app.
+
+SQL Database Summary
+![image](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/51c8a885-56bd-4641-b27c-f4cbd6ceb203)
+
+
+Storage costs drilled into:
+![image](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/b8a51d8f-51c1-4e00-a518-7be9d1d2056c)
+
+
