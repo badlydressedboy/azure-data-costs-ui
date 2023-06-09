@@ -38,6 +38,7 @@ namespace DbMeta.Ui.Wpf.Models.Rest
         public List<StorageAccount> StorageAccounts { get; set; } = new List<StorageAccount>();
         public List<VNet> VNets { get; set; } = new List<VNet>();
         public List<VM> VMs { get; set; } = new List<VM>();
+        public List<Purview> Purviews { get; set; } = new List<Purview>();
 
         public DateTime LastCostGetDate { get; set; }
         public string CostsErrorMessage { get; set; }

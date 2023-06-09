@@ -56,6 +56,11 @@
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
+        <CollectionViewSource Source="{Binding PurviewList}" Filter="PurviewDataGridViewSource_Filter"  x:Key="PurviewDataGridViewSource">
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
 
         <Style TargetType="{x:Type DataGridCell}" x:Key="DataGridParentCell">
             <Setter Property="FontSize" Value="13"></Setter>
@@ -994,6 +999,135 @@
                                             <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
                                             <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
                                             <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
+                                            <!--<DataGridTextColumn Header="ResourceType" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
+
+
+                                            <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                                <Setter Property="Foreground" Value="OrangeRed" />
+                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
+
+                                            <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </DataTemplate>
+                            </DataGrid.RowDetailsTemplate>
+
+                        </DataGrid>
+
+                    </Grid>
+
+                </busyIndicator:BusyMask>
+
+            </mah:MetroTabItem>
+
+            <mah:MetroTabItem Header="Purview" Name="TabPurview">
+
+                <busyIndicator:BusyMask IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Margin="4">
+                            <Button x:Name="PurviewRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesRefreshButton_Click">Refresh</Button>
+
+                            <Button x:Name="PurviewCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="PurviewCollapseCostsButton_Click">Show/Collapse Costs</Button>
+
+                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total Purview Costs:</TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPurviewCostsText}"></TextBlock>
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding VMErrorMessage}" MaxHeight="150" ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
+
+                        <DataGrid Grid.Row="2" x:Name="PurviewDataGrid"
+                              VirtualizingStackPanel.IsVirtualizing="true" 
+                                EnableRowVirtualization ="True"
+                              ItemsSource="{Binding Source={StaticResource PurviewDataGridViewSource}}" 
+                              AutoGenerateColumns="False"
+                              CanUserResizeRows="False"
+                              FrozenColumnCount ="1"
+                              RowHeight="20"
+                                MouseUp="VMDataGrid_MouseUp"
+                                KeyDown="VMDataGrid_KeyDown"  
+                              RowDetailsVisibilityMode="Visible"
+                                 RowBackground="LightGray"
+                                  IsReadOnly="True"
+                                
+                    >
+                            <DataGrid.RowStyle>
+                                <Style TargetType="{x:Type DataGridRow}">
+                                    <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                </Style>
+                            </DataGrid.RowStyle>
+
+                            <!--<DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Refresh DB" Click="RestGridMenuItemRefresh_Click" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>-->
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Resource Group"  Binding="{Binding resourceGroup}"  CellStyle="{StaticResource DataGridParentCell}"></DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Capacity Size"  Binding="{Binding sku.capacity}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Capacity Name"  Binding="{Binding sku.name}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+
+                                <DataGridTextColumn Header="Location"  Binding="{Binding location}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Public Net Access"  Binding="{Binding properties.publicNetworkAccess}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+
+                                <!--<DataGridTextColumn Header="Cost (Bill CCY)" Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);}}"  >
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}" >
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TotalCostBilling, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+
+                                            <Setter Property="Background" Value="LightGray"></Setter>
+                                            <Setter Property="FontSize" Value="13"></Setter>
+
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>-->
+
+                                <!--<DataGridTextColumn Header="Sub Nets"  Binding="{Binding properties.subnets.Count}" CellStyle="{StaticResource DataGridParentCell}" />
+                                <DataGridTextColumn Header="VNet Peerings"  Binding="{Binding properties.virtualNetworkPeerings.Count}" CellStyle="{StaticResource DataGridParentCell}" />-->
+
+                            </DataGrid.Columns>
+
+                            <DataGrid.RowDetailsTemplate>
+                                <DataTemplate>
+                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
+                                            <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
+                                            
                                             <!--<DataGridTextColumn Header="ResourceType" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
 
 

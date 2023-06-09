@@ -25,6 +25,7 @@ using System.Globalization;
 using System.Security.Policy;
 using CsvHelper;
 
+
 namespace DataEstateOverview
 {
     public static class APIAccess
@@ -133,7 +134,7 @@ namespace DataEstateOverview
                        
                 try
                 {
-                    Task[] tasks = new Task[6];
+                    Task[] tasks = new Task[7];
                     tasks[0] = Task.Run(async () =>
                     {
                         await GetSqlServers(subscription);      
@@ -158,7 +159,11 @@ namespace DataEstateOverview
                     {
                         await GetVirtualMachines(subscription);
                     });
-                    
+                    tasks[6] = Task.Run(async () =>
+                    {
+                        await GetPurviews(subscription);
+                    });
+
 
 
                     await Task.WhenAll(tasks);
@@ -701,9 +706,11 @@ namespace DataEstateOverview
                                             ,""SQL Server""
                                             ,""Storage""
                                             ,""Virtual machines""
-                                           , ""Bandwidth""
+                                            ,""Bandwidth""
                                             ,""Virtual Network""
                                             ,""Advanced Threat Protection""
+                                            ,""Purview""
+                                            ,""Azure Purview""
                                         ]
                                     }
                                 }
@@ -950,6 +957,35 @@ namespace DataEstateOverview
                     vm.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
                 }
                 subscription.VMs = root.value.ToList();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+        }
+
+        private static async Task GetPurviews(Subscription subscription)
+        {
+            try
+            {
+                string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Purview/accounts?api-version=2021-07-01";
+
+                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                var json = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine("got purv acc");
+
+                RootPurview root = await response.Content.ReadFromJsonAsync<RootPurview>();
+                if (root?.value == null) return;
+
+                foreach (var purv in root.value)
+                {
+                    Debug.WriteLine($"Got purv acc {purv.name}");
+                    purv.Subscription = subscription;
+
+                    string rg = purv.id.Substring(purv.id.IndexOf("resourceGroup") + 15);
+                    purv.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
+                }
+                subscription.Purviews = root.value.ToList();
             }
             catch (Exception ex)
             {

@@ -24,6 +24,7 @@ namespace DataEstateOverview
         public ObservableCollection<DataFactory> DataFactoryList { get; private set; } = new ObservableCollection<DataFactory>();
         public ObservableCollection<StorageAccount> StorageList { get; private set; } = new ObservableCollection<StorageAccount>();
         public ObservableCollection<VNet> VNetList { get; private set; } = new ObservableCollection<VNet>();
+        public ObservableCollection<Purview> PurviewList { get; private set; } = new ObservableCollection<Purview>();
         public ObservableCollection<VM> VMList { get; private set; } = new ObservableCollection<VM>();
 
         private string? testLoginErrorMessage;
@@ -57,8 +58,13 @@ namespace DataEstateOverview
             get => totalVMCostsText;
             set => SetProperty(ref totalVMCostsText, value);
         }
+        private string totalPurviewCostsText;
+        public string TotalPurviewCostsText
+        {
+            get => totalPurviewCostsText;
+            set => SetProperty(ref totalPurviewCostsText, value);
+        }
 
-        
         private string dataFactoryErrorMessage;
         public string DataFactoryErrorMessage
         {
@@ -197,6 +203,11 @@ namespace DataEstateOverview
 
             var subsList = await APIAccess.GetSubscriptions();
 
+            if(subsList == null)
+            {
+                Debug.WriteLine("No subscriptions! Are you logged into Azure?");
+            }
+
             foreach (Subscription sub in subsList)
             {
                 DetectedSubscriptions.Add(sub);
@@ -219,18 +230,22 @@ namespace DataEstateOverview
         public async Task RefreshRest()
         {
             if (IsRestQueryBusy) return;
+
             IsRestQueryBusy = true;
             RestSqlDbList.Clear();
             DataFactoryList.Clear();
             StorageList.Clear();
             VNetList.Clear();
+            PurviewList.Clear();
             RestErrorMessage = "";
             DataFactoryErrorMessage = "";
             TotalADFCostsText = "";
+
             decimal totalADFCosts = 0;
             decimal totalStorageCosts = 0;
             decimal totalVNetCosts = 0;
             decimal totalVMCosts = 0;
+            decimal totalPurviewCosts = 0;
 
             try
             {            
@@ -299,6 +314,17 @@ namespace DataEstateOverview
                         }
                     }
 
+                    foreach (var purv in sub.Purviews)
+                    {
+                        MapCostToVM(purv, sub.ResourceCosts);
+                        PurviewList.Add(purv);
+
+                        foreach (var c in purv.Costs)
+                        {
+                            totalPurviewCosts += c.Cost;
+                        }
+                    }
+
                     if (!string.IsNullOrEmpty(sub.CostsErrorMessage))
                     {
                         if(!string.IsNullOrEmpty(RestErrorMessage)) RestErrorMessage += "\n";
@@ -309,6 +335,8 @@ namespace DataEstateOverview
                 TotalStorageCostsText = totalStorageCosts.ToString("N2");
                 TotalVNetCostsText = totalVNetCosts.ToString("N2");
                 TotalVMCostsText = totalVMCosts.ToString("N2");
+                TotalPurviewCostsText = totalPurviewCosts.ToString("N2");
+                
             }
             catch (Exception ex)
             {
@@ -451,6 +479,41 @@ namespace DataEstateOverview
             }
         }
 
+        private static void MapCostToVM(Purview purv, List<ResourceCost> costs)
+        {
+            bool found = false;
+            purv.Costs.Clear();
+            purv.TotalCostBilling = 0;
+
+            foreach (ResourceCost cost in costs)
+            {                
+                if ((!cost.ResourceId.Contains(purv.properties.managedResourceGroupName))
+                    && (!cost.ResourceId.Contains(@"purview/accounts/"))
+                    && (!cost.ServiceName.Contains("purview")))
+                {
+                    Debug.WriteLine(cost.ResourceId);
+                    continue;
+                }
+
+                string costPurvName = cost.ResourceId.Substring(cost.ResourceId.IndexOf("purview/accounts/") + 17);
+
+                if (costPurvName == purv.name || cost.ResourceId.Contains(purv.properties.managedResourceGroupName))
+                {
+                    //if (cost.ServiceName == "Azure Purview" || cost.ServiceName == "Bandwidth" || cost.ServiceName == "Virtual Network")
+                    //{
+                        // "ResourceType
+                        purv.TotalCostBilling += cost.Cost;
+
+                        purv.Costs.Add(cost);
+                        found = true;
+                    //}
+                }
+            }
+            if (!found)
+            {
+                Debug.WriteLine($"why no cost for df {purv.name}?");
+            }
+        }
 
         public async Task RefreshSqlDb()
         {

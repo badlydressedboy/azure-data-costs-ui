@@ -397,6 +397,16 @@ namespace DataEstateOverview
 
         }
 
+        private void PurviewCollapseCostsButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void PurviewDataGridViewSource_Filter(object sender, FilterEventArgs e)
+        {
+
+        }
+
         //private void IgnoreCheckBox_UnChecked(object sender, RoutedEventArgs e)
         //{
 
