@@ -502,7 +502,7 @@ namespace DataEstateOverview
                  * timespan: 2022-11-15T14:42:53Z/2022-11-15T15:42:53Z
                  */
 
-                string timeFrom = DateTime.UtcNow.AddMinutes(-2).ToString("s") + "Z";
+                string timeFrom = DateTime.UtcNow.AddMinutes(-120).ToString("s") + "Z";
                 string timeTo = DateTime.UtcNow.ToString("s") + "Z";
 
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum&timespan={timeFrom}/{timeTo}&metricnames=physical_data_read_percent,log_write_percent,dtu_consumption_percent,sessions_count,storage,storage_percent,workers_percent,sessions_percent,dtu_limit,dtu_used,sqlserver_process_core_percent,sqlserver_process_memory_percent,tempdb_data_size,tempdb_log_size,tempdb_log_used_percent,allocated_data_storage&api-version=2021-05-01";
@@ -539,6 +539,7 @@ namespace DataEstateOverview
                         {
                             case "dtu_consumption_percent":
                                 sqlDb.dtu_consumption_percent = latestAvg;
+                                sqlDb.DtuConsumptionMetricSeries = metric.timeseries[0].data;
                                 break;
                             case "physical_data_read_percent":
                                 sqlDb.physical_data_read_percent = latestAvg;

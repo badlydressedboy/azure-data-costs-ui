@@ -123,6 +123,7 @@ namespace DataEstateOverview.Models.Rest
 
         public decimal TotalCostBilling { get; set; }
 
+        public MetricTimeSeriesData[] DtuConsumptionMetricSeries { get; set; }
     }
     public class RestSqlDbProps
     {

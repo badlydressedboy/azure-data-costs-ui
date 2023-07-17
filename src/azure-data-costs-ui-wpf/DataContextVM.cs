@@ -486,7 +486,8 @@ namespace DataEstateOverview
             purv.TotalCostBilling = 0;
 
             foreach (ResourceCost cost in costs)
-            {                
+            {
+                // either its a purview acc object or it is something in the managed resource group (which doesnt have 'purview/accounts' in its ResourceId)
                 if ((!cost.ResourceId.Contains(purv.properties.managedResourceGroupName))
                     && (!cost.ResourceId.Contains(@"purview/accounts/"))
                     && (!cost.ServiceName.Contains("purview")))
@@ -499,14 +500,10 @@ namespace DataEstateOverview
 
                 if (costPurvName == purv.name || cost.ResourceId.Contains(purv.properties.managedResourceGroupName))
                 {
-                    //if (cost.ServiceName == "Azure Purview" || cost.ServiceName == "Bandwidth" || cost.ServiceName == "Virtual Network")
-                    //{
-                        // "ResourceType
-                        purv.TotalCostBilling += cost.Cost;
+                    purv.TotalCostBilling += cost.Cost;
 
-                        purv.Costs.Add(cost);
-                        found = true;
-                    //}
+                    purv.Costs.Add(cost);
+                    found = true;
                 }
             }
             if (!found)

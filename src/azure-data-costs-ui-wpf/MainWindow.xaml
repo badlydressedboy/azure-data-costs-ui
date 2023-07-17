@@ -128,6 +128,7 @@
                         IsReadOnly="True" Margin="2,2,2,728" Text="{Binding RestErrorMessage}" MaxHeight="150" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Background="Orange" Grid.ColumnSpan="3" Grid.RowSpan="2"></TextBox>
 
                         <DataGrid x:Name="RestDbDataGrid"
+                                  RowDetailsVisibilityMode="Visible"
                               VirtualizingStackPanel.IsVirtualizing="true" 
                                 EnableRowVirtualization ="True"
                               ItemsSource="{Binding Source={StaticResource RestDbDataGridViewSource}}" 
@@ -290,7 +291,7 @@
 
 
                                 <DataGridTextColumn Header="Advisor Recomendations"  Binding="{Binding advisorRecomendationCount, StringFormat=N0}" >
-                                   
+
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
                                             <Style.Setters>
@@ -337,6 +338,22 @@
                         <DataGridTextColumn Header="Max Worker %"  Binding="{Binding MaxWorkerPc}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
                         <DataGridTextColumn Header="Max Session %"  Binding="{Binding MaxSessionPc}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>-->
                             </DataGrid.Columns>
+
+                            <DataGrid.RowDetailsTemplate>
+                                <DataTemplate>
+                                    <DataGrid MaxHeight="400" ItemsSource="{Binding Path=DtuConsumptionMetricSeries}" AutoGenerateColumns="True" CanUserAddRows="False">
+                                        <!--<DataGrid.Columns>
+                                            <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
+                                            
+                                            <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
+                   
+                                            <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                            <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                        </DataGrid.Columns>-->
+                                    </DataGrid>
+                                </DataTemplate>
+                            </DataGrid.RowDetailsTemplate>
+                            
                         </DataGrid>
 
                     </Grid>
@@ -555,13 +572,18 @@
                 <busyIndicator:BusyMask IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
                     <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="41*"/>
+                            <ColumnDefinition Width="42*"/>
+                            <ColumnDefinition Width="1118*"/>
+                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <StackPanel Orientation="Horizontal" Margin="4">
+                        <StackPanel Orientation="Horizontal" Margin="4,4,4,4" Grid.ColumnSpan="3">
                             <Button x:Name="DataFactoriesRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesRefreshButton_Click">Refresh</Button>
 
                             <Button x:Name="DataFactoriesCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesCollapseCostsButton_Click">Show/Collapse Costs</Button>
@@ -570,7 +592,7 @@
                             <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalADFCostsText}"></TextBlock>
                         </StackPanel>
 
-                        <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding DataFactoryErrorMessage}" MaxHeight="150" ToolTip="{Binding DataFactoryErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsDataFactoryErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
+                        <TextBlock Grid.Row="1" Padding="6" Margin="2,2,2,2" Text="{Binding DataFactoryErrorMessage}" MaxHeight="150" ToolTip="{Binding DataFactoryErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsDataFactoryErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange" Grid.ColumnSpan="3"></TextBlock>
 
                         <DataGrid Grid.Row="2" x:Name="DataFactoryDataGrid"
                               VirtualizingStackPanel.IsVirtualizing="true" 
@@ -584,7 +606,7 @@
                                 KeyDown="DataFactoryDataGrid_KeyDown"  
                               RowDetailsVisibilityMode="Visible"
                                  RowBackground="LightGray"
-                                  IsReadOnly="True"
+                                  IsReadOnly="True" Grid.ColumnSpan="3"
                     >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
@@ -1127,7 +1149,7 @@
                                             <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
                                             <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
                                             <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
-                                            
+
                                             <!--<DataGridTextColumn Header="ResourceType" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
 
 
