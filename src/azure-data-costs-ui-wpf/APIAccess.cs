@@ -252,7 +252,7 @@ namespace DataEstateOverview
                     Task[] tasks = new Task[6];
                     tasks[0] = Task.Run(async () =>
                     {
-                        await Task.WhenAll(sqlServer.Dbs.Select(i => GetDbMetrics(i)));
+                        await Task.WhenAll(sqlServer.Dbs.Select(i => GetDbMetrics(i, 2)));
                     });
                     tasks[1] = Task.Run(async () =>
                     {
@@ -474,7 +474,7 @@ namespace DataEstateOverview
             }
 
         }
-        public static async Task GetDbMetrics(RestSqlDb sqlDb, int minutes = 5)
+        public static async Task GetDbMetrics(RestSqlDb sqlDb, int? minutes = null)
         {
 
             try
@@ -503,14 +503,23 @@ namespace DataEstateOverview
                  */
 
                 string timeGrainParam = "&interval=PT1M"; // PT1H, PT30M, PT1M, P1D
-                if(minutes > 120) timeGrainParam = "&interval=PT5M";
-                if (minutes > 360) timeGrainParam = "&interval=PT15M";
-                if (minutes > 720) timeGrainParam = "&interval=PT30M";
-                if (minutes > 1440) timeGrainParam = "&interval=PT1H";
-                if (minutes > 4320) timeGrainParam = "&interval=PT3H";
-                if (minutes > 8640) timeGrainParam = "&interval=PT6H";
 
-                string timeFrom = DateTime.UtcNow.AddMinutes(-1* minutes).ToString("s") + "Z";
+                if(minutes == null) // use sqlDb.MetricsHistoryDays
+                {
+                    minutes = sqlDb.MetricsHistoryDays * 1440;
+                }
+                int mins = (int)minutes;
+
+                if(mins > 120) timeGrainParam = "&interval=PT5M";
+                if (mins > 360) timeGrainParam = "&interval=PT15M";
+                if (mins > 720) timeGrainParam = "&interval=PT30M";
+                if (mins > 1440) timeGrainParam = "&interval=PT1H";
+                if (mins > 4320) timeGrainParam = "&interval=PT3H";
+                if (mins > 8640) timeGrainParam = "&interval=PT6H";
+
+                sqlDb.MetricsHistoryMinutes = mins;
+
+                string timeFrom = DateTime.UtcNow.AddMinutes(-1* mins).ToString("s") + "Z";
                 string timeTo = DateTime.UtcNow.ToString("s") + "Z";
                 
 
@@ -520,12 +529,15 @@ namespace DataEstateOverview
                 //string url = $"https://management.azure.com/subscriptions/{sqlDb.subscriptionid}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metricDefinitions?api-version=2021-05-01";
 
                 sqlDb.IsRestQueryBusy = true;
+                sqlDb.MetricsErrorMessage = "";
 
                 var httpClient = GetHttpClient("https://management.azure.com/subscriptions/", 30);
                 HttpResponseMessage response = await httpClient.GetAsync(url);
                 if (!response.IsSuccessStatusCode)
                 {
                     Debug.WriteLine("Failed metrics!");
+                    sqlDb.MetricsErrorMessage = $"Failed metrics!: {response.ReasonPhrase}";
+                    sqlDb.IsRestQueryBusy = false;
                     return;
                 }
                 var json = await response.Content.ReadAsStringAsync();
@@ -553,10 +565,14 @@ namespace DataEstateOverview
                                 sqlDb.dtu_consumption_percent = latestAvg;
 
                                 sqlDb.DtuConsumptionMetricSeries.Clear();
-                                foreach(var d in metric.timeseries[0].data.OrderByDescending(x=>x.timeStamp))
+
+                                sqlDb.MaxDtuUsed = 0;
+                                foreach (var d in metric.timeseries[0].data.OrderByDescending(x=>x.timeStamp))
                                 {
-                                    sqlDb.DtuConsumptionMetricSeries.Add(d);    
+                                    sqlDb.DtuConsumptionMetricSeries.Add(d);
+                                    if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
                                 }
+                                
                                 break;
                             case "physical_data_read_percent":
                                 sqlDb.physical_data_read_percent = latestAvg;

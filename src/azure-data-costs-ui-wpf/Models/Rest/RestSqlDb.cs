@@ -1,9 +1,13 @@
-﻿using DataEstateOverview.Models.SQL;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DataEstateOverview.Models.SQL;
 using DbMeta.Ui.Wpf.Models.Rest;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +18,7 @@ namespace DataEstateOverview.Models.Rest
         public RestSqlDb[] value { get; set; }
     }
 
-    public class RestSqlDb
+    public class RestSqlDb : INotifyPropertyChanged
     {
         // rest is king and sql is its child that uses queries to get low level meta data
         public AzDB AzDB { get; set; } = new AzDB();
@@ -106,6 +110,18 @@ namespace DataEstateOverview.Models.Rest
         public decimal sessions_percent { get; set; }
         public long dtu_limit { get; set; }
         public long dtu_used { get; set; }
+        public decimal _maxDtuUsed { get; set; }
+        public decimal MaxDtuUsed
+        {
+            get { return _maxDtuUsed; }
+            set
+            {
+                _maxDtuUsed = value;
+                OnPropertyChanged("MaxDtuUsed");
+               
+            }
+        }
+
         public decimal sqlserver_process_core_percent { get; set; }
         public decimal sqlserver_process_memory_percent { get; set; }
         public decimal tempdb_data_size { get; set; }
@@ -128,14 +144,73 @@ namespace DataEstateOverview.Models.Rest
         public DateTime MetricsToTime { get; set; }
 
 
-        public bool IsRestQueryBusy { get; set; }
+        public bool _isRestQueryBusy { get; set; }
+        public bool IsRestQueryBusy
+        {
+            get { return _isRestQueryBusy; }
+            set
+            {
+                _isRestQueryBusy = value;
+                OnPropertyChanged("IsRestQueryBusy");
+            }
+        }
+
         public bool RequestMetricsHistory { get; set; } = false;
 
         public bool GotMetricsHistory { get; set; } = false;
 
-        //public MetricTimeSeriesData[] DtuConsumptionMetricSeries { get; set; }
+        protected int _metricsHistoryMinutes;
+
+        public int MetricsHistoryMinutes
+        {
+            get { return _metricsHistoryMinutes; }
+            set
+            {
+                _metricsHistoryMinutes = value;
+                OnPropertyChanged("MetricsHistoryMinutes");
+                OnPropertyChanged("MetricsHistoryTimeString");
+            }
+        }
+
+        protected int _metricsHistoryDays = 14;
+
+        public int MetricsHistoryDays
+        {
+            get { return _metricsHistoryDays; }
+            set
+            {
+                _metricsHistoryDays = value;
+                OnPropertyChanged("MetricsHistoryDays");                
+            }
+        }
+        protected string _metricsErrorMessage;
+
+        public string MetricsErrorMessage
+        {
+            get { return _metricsErrorMessage; }
+            set
+            {
+                _metricsErrorMessage = value;
+                OnPropertyChanged("MetricsErrorMessage");                
+            }
+        }
+
+        public string MetricsHistoryTimeString { 
+            get
+            {
+                TimeSpan ts = TimeSpan.FromMinutes(MetricsHistoryMinutes);
+                return string.Format($"{ts.Days}days {ts.Hours}hrs {ts.Minutes}mins");
+            }
+        }
 
         public ObservableCollection<MetricTimeSeriesData> DtuConsumptionMetricSeries { get; set; } = new ObservableCollection<MetricTimeSeriesData>(); 
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
     }
     public class RestSqlDbProps
     {

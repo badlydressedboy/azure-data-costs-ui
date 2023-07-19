@@ -348,18 +348,35 @@
 
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
-                                    <Grid Margin="8,0,0,0">
+                                    <Grid Margin="8,6,0,0">
 
                                         <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock Margin="2">DTU History</TextBlock>
-                                        
-                                        <busyIndicator:BusyMask Grid.Row="1"
+                                        <StackPanel Orientation="Horizontal" Margin="2">
+                                            <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">DTU History</TextBlock>
+                                            <!--<TextBlock Margin="12, 2, 2, 2" Text="{Binding MetricsHistoryTimeString}" VerticalAlignment="Bottom"></TextBlock>-->
+
+                                            <TextBox Height="22" Width="30" VerticalContentAlignment="Center" Padding="0" VerticalAlignment="Center" Margin="10,2,2,2" Text="{Binding MetricsHistoryDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                            <TextBlock Margin="4,2,2,2" Text="Days" VerticalAlignment="Center"></TextBlock>
+
+                                            <Button x:Name="RefreshDbStatsButton" Margin="8,2,2,2" Click="RefreshDbStatsButton_Click">Refresh</Button>
+                                        </StackPanel>
+
+
+                                        <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="1">
+                                            <TextBlock Margin="2">Max DTU found: </TextBlock>
+                                            <TextBlock Margin="2" Text="{Binding MaxDtuUsed}"></TextBlock>
+
+                                            <TextBlock Margin="30,2,2,2" Text="{Binding MetricsErrorMessage}"></TextBlock>
+                                        </StackPanel>
+
+                                        <busyIndicator:BusyMask Grid.Row="2"
                                             IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" 
-                                            IndicatorType="Grid"  
+                                            IndicatorType="Cogs"
                                             BusyContent="Please wait..." >
 
 
@@ -373,7 +390,7 @@
                                             <DataGrid.Columns>
                                                 
                                                 <DataGridTextColumn Header="Time" Binding="{Binding Path=timeStamp}" IsReadOnly="True"/>
-                                                    <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True"/>
                                                 <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True"/>
                                                 
                                             </DataGrid.Columns>

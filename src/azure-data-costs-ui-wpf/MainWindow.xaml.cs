@@ -420,13 +420,25 @@ namespace DataEstateOverview
         private async void RestDbDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
         {
             if (RestDbDataGrid.CurrentItem == null) return;
-            
             var db = (RestSqlDb)RestDbDataGrid.CurrentItem;
+
             if (!db.GotMetricsHistory)
             {
-                await APIAccess.GetDbMetrics(db, 10080);// 10080: week
-            } 
+                GetDbMetrics();
+            }
+        }
+
+        private void RefreshDbStatsButton_Click(object sender, RoutedEventArgs e)
+        {
+            GetDbMetrics();
+        }
+
+        private async void GetDbMetrics()
+        {
+            if (RestDbDataGrid.CurrentItem == null) return;            
+            var db = (RestSqlDb)RestDbDataGrid.CurrentItem;
             
+            await APIAccess.GetDbMetrics(db); // no minutes param passed so sqlDb.MetricsHistoryDays is used            
         }
 
         //private void IgnoreCheckBox_UnChecked(object sender, RoutedEventArgs e)
