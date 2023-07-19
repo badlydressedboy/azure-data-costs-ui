@@ -2,6 +2,7 @@
 using DbMeta.Ui.Wpf.Models.Rest;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -123,7 +124,18 @@ namespace DataEstateOverview.Models.Rest
 
         public decimal TotalCostBilling { get; set; }
 
-        public MetricTimeSeriesData[] DtuConsumptionMetricSeries { get; set; }
+        public DateTime MetricsFromTime { get; set; }
+        public DateTime MetricsToTime { get; set; }
+
+
+        public bool IsRestQueryBusy { get; set; }
+        public bool RequestMetricsHistory { get; set; } = false;
+
+        public bool GotMetricsHistory { get; set; } = false;
+
+        //public MetricTimeSeriesData[] DtuConsumptionMetricSeries { get; set; }
+
+        public ObservableCollection<MetricTimeSeriesData> DtuConsumptionMetricSeries { get; set; } = new ObservableCollection<MetricTimeSeriesData>(); 
     }
     public class RestSqlDbProps
     {

@@ -474,7 +474,7 @@ namespace DataEstateOverview
             }
 
         }
-        private static async Task GetDbMetrics(RestSqlDb sqlDb)
+        public static async Task GetDbMetrics(RestSqlDb sqlDb, int minutes = 5)
         {
 
             try
@@ -502,12 +502,24 @@ namespace DataEstateOverview
                  * timespan: 2022-11-15T14:42:53Z/2022-11-15T15:42:53Z
                  */
 
-                string timeFrom = DateTime.UtcNow.AddMinutes(-120).ToString("s") + "Z";
-                string timeTo = DateTime.UtcNow.ToString("s") + "Z";
+                string timeGrainParam = "&interval=PT1M"; // PT1H, PT30M, PT1M, P1D
+                if(minutes > 120) timeGrainParam = "&interval=PT5M";
+                if (minutes > 360) timeGrainParam = "&interval=PT15M";
+                if (minutes > 720) timeGrainParam = "&interval=PT30M";
+                if (minutes > 1440) timeGrainParam = "&interval=PT1H";
+                if (minutes > 4320) timeGrainParam = "&interval=PT3H";
+                if (minutes > 8640) timeGrainParam = "&interval=PT6H";
 
-                string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum&timespan={timeFrom}/{timeTo}&metricnames=physical_data_read_percent,log_write_percent,dtu_consumption_percent,sessions_count,storage,storage_percent,workers_percent,sessions_percent,dtu_limit,dtu_used,sqlserver_process_core_percent,sqlserver_process_memory_percent,tempdb_data_size,tempdb_log_size,tempdb_log_used_percent,allocated_data_storage&api-version=2021-05-01";
+                string timeFrom = DateTime.UtcNow.AddMinutes(-1* minutes).ToString("s") + "Z";
+                string timeTo = DateTime.UtcNow.ToString("s") + "Z";
+                
+
+                // 12,000 reads per hour
+                string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?{timeGrainParam}&aggregation=average,maximum&timespan={timeFrom}/{timeTo}&metricnames=physical_data_read_percent,log_write_percent,dtu_consumption_percent,sessions_count,storage,storage_percent,workers_percent,sessions_percent,dtu_limit,dtu_used,sqlserver_process_core_percent,sqlserver_process_memory_percent,tempdb_data_size,tempdb_log_size,tempdb_log_used_percent,allocated_data_storage&api-version=2021-05-01";
 
                 //string url = $"https://management.azure.com/subscriptions/{sqlDb.subscriptionid}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metricDefinitions?api-version=2021-05-01";
+
+                sqlDb.IsRestQueryBusy = true;
 
                 var httpClient = GetHttpClient("https://management.azure.com/subscriptions/", 30);
                 HttpResponseMessage response = await httpClient.GetAsync(url);
@@ -539,7 +551,12 @@ namespace DataEstateOverview
                         {
                             case "dtu_consumption_percent":
                                 sqlDb.dtu_consumption_percent = latestAvg;
-                                sqlDb.DtuConsumptionMetricSeries = metric.timeseries[0].data;
+
+                                sqlDb.DtuConsumptionMetricSeries.Clear();
+                                foreach(var d in metric.timeseries[0].data.OrderByDescending(x=>x.timeStamp))
+                                {
+                                    sqlDb.DtuConsumptionMetricSeries.Add(d);    
+                                }
                                 break;
                             case "physical_data_read_percent":
                                 sqlDb.physical_data_read_percent = latestAvg;
@@ -622,7 +639,7 @@ namespace DataEstateOverview
             {
                 Debug.WriteLine(ex);
             }
-
+            sqlDb.IsRestQueryBusy = false;
         }
         private static async Task GetDbServiceTierAdvisors(RestSqlDb sqlDb)
         {

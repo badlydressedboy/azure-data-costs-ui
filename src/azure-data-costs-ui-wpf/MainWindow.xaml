@@ -128,7 +128,9 @@
                         IsReadOnly="True" Margin="2,2,2,728" Text="{Binding RestErrorMessage}" MaxHeight="150" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Background="Orange" Grid.ColumnSpan="3" Grid.RowSpan="2"></TextBox>
 
                         <DataGrid x:Name="RestDbDataGrid"
-                                  RowDetailsVisibilityMode="Visible"
+                                  Margin="0,39,0,0"
+                                  RowDetailsVisibilityMode="VisibleWhenSelected"
+                                  LoadingRowDetails="RestDbDataGrid_LoadingRowDetails"
                               VirtualizingStackPanel.IsVirtualizing="true" 
                                 EnableRowVirtualization ="True"
                               ItemsSource="{Binding Source={StaticResource RestDbDataGridViewSource}}" 
@@ -138,10 +140,15 @@
                               RowHeight="20"
                                 MouseUp="RestDbDataGrid_MouseUp"
                                 KeyDown="RestDbDataGrid_KeyDown"
-                              IsReadOnly="True" Grid.ColumnSpan="3" Margin="0,39,0,0" Grid.RowSpan="4"
+                              IsReadOnly="True" Grid.ColumnSpan="3"  Grid.RowSpan="4"
                             
                   >
-
+                            <DataGrid.RowStyle>
+                                <Style TargetType="{x:Type DataGridRow}">
+                                    <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                </Style>
+                            </DataGrid.RowStyle>
+                            
                             <!--<DataGrid.GroupStyle>
 
                             <GroupStyle>
@@ -341,16 +348,39 @@
 
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
-                                    <DataGrid MaxHeight="400" ItemsSource="{Binding Path=DtuConsumptionMetricSeries}" AutoGenerateColumns="True" CanUserAddRows="False">
-                                        <!--<DataGrid.Columns>
-                                            <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-                                            
-                                            <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
-                   
-                                            <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
-                                            <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
-                                        </DataGrid.Columns>-->
-                                    </DataGrid>
+                                    <Grid Margin="8,0,0,0">
+
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Margin="2">DTU History</TextBlock>
+                                        
+                                        <busyIndicator:BusyMask Grid.Row="1"
+                                            IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" 
+                                            IndicatorType="Grid"  
+                                            BusyContent="Please wait..." >
+
+
+                                            <DataGrid MaxHeight="400" 
+                                                      MaxWidth="320" 
+                                                      HorizontalAlignment="Left" 
+                                                      ItemsSource="{Binding Path=DtuConsumptionMetricSeries}"                                                   
+                                                      AutoGenerateColumns="False" 
+                                                      CanUserAddRows="False"
+                                                 >
+                                            <DataGrid.Columns>
+                                                
+                                                <DataGridTextColumn Header="Time" Binding="{Binding Path=timeStamp}" IsReadOnly="True"/>
+                                                    <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True"/>
+                                                
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+
+                                        </busyIndicator:BusyMask>
+                                    </Grid>
                                 </DataTemplate>
                             </DataGrid.RowDetailsTemplate>
                             

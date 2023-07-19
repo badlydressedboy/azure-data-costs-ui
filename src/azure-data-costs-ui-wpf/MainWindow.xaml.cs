@@ -407,6 +407,28 @@ namespace DataEstateOverview
 
         }
 
+        private void DataGrid_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void DataGrid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Cursor = Cursors.Arrow;
+        }
+
+        private async void RestDbDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
+        {
+            if (RestDbDataGrid.CurrentItem == null) return;
+            
+            var db = (RestSqlDb)RestDbDataGrid.CurrentItem;
+            if (!db.GotMetricsHistory)
+            {
+                await APIAccess.GetDbMetrics(db, 10080);// 10080: week
+            } 
+            
+        }
+
         //private void IgnoreCheckBox_UnChecked(object sender, RoutedEventArgs e)
         //{
 
