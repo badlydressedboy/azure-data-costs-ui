@@ -222,6 +222,45 @@ namespace DataEstateOverview
             Debug.WriteLine("fin get servers");
         }
 
+        private static async Task GetSqlElasticPools(RestSqlServer sqlServer)
+        {
+            try
+            {
+                string url = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resources?$filter=resourceType eq 'Microsoft.sql/servers/{sqlServer.name}/elasticpools'&$expand=resourceGroup,createdTime,changedTime&$top=1000&api-version=2021-04-01";
+                StringContent queryString = new StringContent("api-version=2021-04-01");
+                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                var json = await response.Content.ReadAsStringAsync();
+                // get location and name properties from list of servers
+                RootRestSqlServer servers = await response.Content.ReadFromJsonAsync<RootRestSqlServer>();
+                if (servers.value == null) return;
+
+                foreach (var restSql in servers.value)
+                {
+                    string rg = restSql.id.Substring(restSql.id.IndexOf("resourceGroup") + 15);
+                    restSql.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
+
+                    string sub = restSql.id.Substring(restSql.id.IndexOf("subscription") + 14);
+                    restSql.Subscription = subscription;// = sub.Substring(0, sub.IndexOf("/"));
+
+                    restSql.AzServer = new Models.SQL.AzServer(restSql.name);
+                }
+                subscription.SqlServers = servers.value.ToList();
+
+                await Parallel.ForEachAsync(subscription.SqlServers
+                    , new ParallelOptions() { MaxDegreeOfParallelism = 50 }
+                    , async (server, y) =>
+                    {
+                        await GetSqlServerDatabases(server);
+                    });
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            Debug.WriteLine("fin get servers");
+        }
+
         private static async Task GetSqlServerDatabases(RestSqlServer sqlServer)
         {
             List<RestSqlDb> returnList = new List<RestSqlDb>();
@@ -527,6 +566,12 @@ namespace DataEstateOverview
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?{timeGrainParam}&aggregation=average,maximum&timespan={timeFrom}/{timeTo}&metricnames=physical_data_read_percent,log_write_percent,dtu_consumption_percent,sessions_count,storage,storage_percent,workers_percent,sessions_percent,dtu_limit,dtu_used,sqlserver_process_core_percent,sqlserver_process_memory_percent,tempdb_data_size,tempdb_log_size,tempdb_log_used_percent,allocated_data_storage&api-version=2021-05-01";
 
                 //string url = $"https://management.azure.com/subscriptions/{sqlDb.subscriptionid}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metricDefinitions?api-version=2021-05-01";
+
+
+                if(sqlDb.properties.currentServiceObjectiveName == "ElasticPool")
+                {
+                    url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/elasticPools/{sqlDb.AzDB.ElasticPoolName}/providers/Microsoft.Insights/metrics?{timeGrainParam}&aggregation=average,maximum&timespan={timeFrom}/{timeTo}&metricnames=physical_data_read_percent,log_write_percent,dtu_consumption_percent,sessions_count,storage,storage_percent,workers_percent,sessions_percent,dtu_limit,dtu_used,sqlserver_process_core_percent,sqlserver_process_memory_percent,tempdb_data_size,tempdb_log_size,tempdb_log_used_percent,allocated_data_storage&api-version=2021-05-01";
+                }
 
                 sqlDb.IsRestQueryBusy = true;
                 sqlDb.MetricsErrorMessage = "";

@@ -410,7 +410,7 @@ namespace DataEstateOverview
             }
             if (!found)
             {
-                Debug.WriteLine($"why no cost for df {sa.name}?");
+                Debug.WriteLine($"why no cost for storage {sa.name}?");
             }
         }
 
@@ -446,7 +446,7 @@ namespace DataEstateOverview
             }
             if (!found)
             {
-                Debug.WriteLine($"why no cost for df {vnet.name}?");
+                Debug.WriteLine($"why no cost for vnet {vnet.name}?");
             }
         }
 
@@ -475,7 +475,7 @@ namespace DataEstateOverview
             }
             if (!found)
             {
-                Debug.WriteLine($"why no cost for df {vm.name}?");
+                Debug.WriteLine($"why no cost for VM {vm.name}?");
             }
         }
 
@@ -508,7 +508,7 @@ namespace DataEstateOverview
             }
             if (!found)
             {
-                Debug.WriteLine($"why no cost for df {purv.name}?");
+                Debug.WriteLine($"why no cost for Purview {purv.name}?");
             }
         }
 
