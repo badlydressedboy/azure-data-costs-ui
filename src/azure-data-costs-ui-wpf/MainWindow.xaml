@@ -199,7 +199,7 @@
                                                     <Setter Property="Background" Value="LightGray"></Setter>
                                                 </Trigger>
 
-                                            </Style.Triggers>
+                                            </Style.Triggers> 
                                         </Style>
                                     </DataGridTextColumn.CellStyle>
                                 </DataGridTextColumn>
@@ -224,7 +224,6 @@
 
                                 </DataGridTextColumn>
 
-
                                 <DataGridTextColumn Header="DTU %"  Binding="{Binding dtu_consumption_percent, StringFormat=N0}"   >
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
@@ -237,10 +236,11 @@
                                         </Style>
                                     </DataGridTextColumn.CellStyle>
                                 </DataGridTextColumn>
+                                
                                 <DataGridTextColumn Header="Sessions"  Binding="{Binding sessions_count}" CellStyle="{StaticResource NumericGridCellStyle}"  />
 
-
                                 <DataGridTextColumn Header="Size Limit GB"  Binding="{Binding currentDbSizeLimitGb, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                
                                 <DataGridTextColumn Header="Allocated GB"  Binding="{Binding currentAllocatedDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}"  />
 
                                 <DataGridTextColumn Header="Used GB"  Binding="{Binding currentDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}"  />
@@ -258,6 +258,8 @@
                                     </DataGridTextColumn.CellStyle>
                                 </DataGridTextColumn>
 
+                                <DataGridTextColumn Header="Elastic Pool"  Binding="{Binding properties.elasticPoolName}" ></DataGridTextColumn>
+                                
 
                                 <DataGridTextColumn Header="Location"  Binding="{Binding location}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>

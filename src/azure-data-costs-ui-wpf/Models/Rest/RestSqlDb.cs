@@ -222,7 +222,8 @@ namespace DataEstateOverview.Models.Rest
 
         public string currentServiceObjectiveName { get; set; }
         public string defaultSecondaryLocation { get; set; }
-
+        public string elasticPoolId { get; set; }
+        public string elasticPoolName { get; set; }
         public bool zoneRedundant { get; set; }
         public string currentBackupStorageRedundancy { get; set; }
 

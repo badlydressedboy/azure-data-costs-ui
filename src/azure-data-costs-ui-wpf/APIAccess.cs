@@ -24,7 +24,7 @@ using DbMeta.Ui.Wpf.Models.Rest;
 using System.Globalization;
 using System.Security.Policy;
 using CsvHelper;
-
+using Azure.Costs.Ui.Wpf.Models.Rest;
 
 namespace DataEstateOverview
 {
@@ -212,6 +212,7 @@ namespace DataEstateOverview
                     , new ParallelOptions() { MaxDegreeOfParallelism = 50 }
                     , async (server, y) =>
                 {
+                    await GetSqlElasticPools(server);
                     await GetSqlServerDatabases(server);
                 });
             }catch(Exception ex)
@@ -226,36 +227,39 @@ namespace DataEstateOverview
         {
             try
             {
-                string url = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resources?$filter=resourceType eq 'Microsoft.sql/servers/{sqlServer.name}/elasticpools'&$expand=resourceGroup,createdTime,changedTime&$top=1000&api-version=2021-04-01";
+                string url = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resourceGroups/{sqlServer.resourceGroup}/providers/Microsoft.Sql/servers/{sqlServer.name}/elasticpools?api-version=2021-02-01-preview";
                 StringContent queryString = new StringContent("api-version=2021-04-01");
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
                 // get location and name properties from list of servers
-                RootRestSqlServer servers = await response.Content.ReadFromJsonAsync<RootRestSqlServer>();
-                if (servers.value == null) return;
 
-                foreach (var restSql in servers.value)
+                
+
+
+                RootElasticPool pools = await response.Content.ReadFromJsonAsync<RootElasticPool>();
+                if (pools.value == null) return;
+
+                //if(json.Length > 14 || sqlServer.name =="octopus-sql-server-staging")
+                //{
+                //    Debug.WriteLine("got elastic");
+                //}
+                sqlServer.ElasticPools.Clear(); 
+                foreach (var restPool in pools.value)
                 {
-                    string rg = restSql.id.Substring(restSql.id.IndexOf("resourceGroup") + 15);
-                    restSql.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
+                    sqlServer.ElasticPools.Add(restPool);
+                    //string rg = restSql.id.Substring(restSql.id.IndexOf("resourceGroup") + 15);
+                    //restSql.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
 
-                    string sub = restSql.id.Substring(restSql.id.IndexOf("subscription") + 14);
-                    restSql.Subscription = subscription;// = sub.Substring(0, sub.IndexOf("/"));
+                    //string sub = restSql.id.Substring(restSql.id.IndexOf("subscription") + 14);
+                    //restSql.Subscription = subscription;// = sub.Substring(0, sub.IndexOf("/"));
 
-                    restSql.AzServer = new Models.SQL.AzServer(restSql.name);
+                    //restSql.AzServer = new Models.SQL.AzServer(restSql.name);
                 }
-                subscription.SqlServers = servers.value.ToList();
-
-                await Parallel.ForEachAsync(subscription.SqlServers
-                    , new ParallelOptions() { MaxDegreeOfParallelism = 50 }
-                    , async (server, y) =>
-                    {
-                        await GetSqlServerDatabases(server);
-                    });
+                //subscription.SqlServers = servers.value.ToList();
             }
             catch (Exception ex)
             {
-
+                Debug.WriteLine(ex);
             }
 
             Debug.WriteLine("fin get servers");
@@ -273,6 +277,10 @@ namespace DataEstateOverview
                 HttpResponseMessage response = await httpClient.GetAsync(dbUrl);
                 var json = await response.Content.ReadAsStringAsync();
                 RootRestSqlDb databases = await response?.Content?.ReadFromJsonAsync<RootRestSqlDb>();
+                if (sqlServer.name == "octopus-sql-server-staging")
+                {
+                    Debug.WriteLine("got elastic");
+                }
 
                 foreach (var db in databases.value.Where(x => x.name != "master"))
                 {
@@ -282,6 +290,21 @@ namespace DataEstateOverview
 
                     db.AzDB.DatabaseName = db.name;
                     db.AzDB.SetParent(sqlServer.AzServer);
+
+                    if (db.properties.elasticPoolId != null)
+                    {
+                        Debug.WriteLine($"Elastic pool Id = {db.properties.elasticPoolId}");
+                        foreach(var ep in sqlServer.ElasticPools)
+                        {                            
+                            if (db.properties.elasticPoolId.Contains(ep.name))
+                            {
+                                Debug.WriteLine(ep.name);
+                                db.properties.elasticPoolName = ep.name;
+                            }
+                        }
+
+                    }
+
                     sqlServer.Dbs.Add(db);
                 }
 

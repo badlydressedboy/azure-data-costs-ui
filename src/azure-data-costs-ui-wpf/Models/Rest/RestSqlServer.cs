@@ -1,4 +1,5 @@
-﻿using DataEstateOverview.Models.SQL;
+﻿using Azure.Costs.Ui.Wpf.Models.Rest;
+using DataEstateOverview.Models.SQL;
 using DbMeta.Ui.Wpf.Models.Rest;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace DataEstateOverview.Models.Rest
         public AzServer AzServer { get; set; }
 
         public List<RestSqlDb> Dbs { get; set; } = new List<RestSqlDb>();
+        public List<ElasticPool> ElasticPools { get; set; } = new List<ElasticPool>();
+        
     }
 
     public class RootRestSqlServer
