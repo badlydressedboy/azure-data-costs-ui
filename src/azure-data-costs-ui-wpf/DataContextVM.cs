@@ -33,7 +33,12 @@ namespace DataEstateOverview
             get => testLoginErrorMessage;
             set => SetProperty(ref testLoginErrorMessage, value);
         }
-
+        private string totalSqlDbCostsText;
+        public string TotalSqlDbCostsText
+        {
+            get => totalSqlDbCostsText;
+            set => SetProperty(ref totalSqlDbCostsText, value);
+        }
         private string totalADFCostsText;
         public string TotalADFCostsText
         {
@@ -241,6 +246,7 @@ namespace DataEstateOverview
             DataFactoryErrorMessage = "";
             TotalADFCostsText = "";
 
+            decimal totalSqlDbCosts = 0;
             decimal totalADFCosts = 0;
             decimal totalStorageCosts = 0;
             decimal totalVNetCosts = 0;
@@ -267,6 +273,8 @@ namespace DataEstateOverview
                         {
                             MapCostToDb(db, sub.ResourceCosts);
                             RestSqlDbList.Add(db);
+
+                            totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool
                         }
                     }
 
@@ -331,6 +339,7 @@ namespace DataEstateOverview
                         RestErrorMessage += sub.CostsErrorMessage;
                     }
                 }
+                TotalSqlDbCostsText = totalSqlDbCosts.ToString("N2");
                 TotalADFCostsText = totalADFCosts.ToString("N2");
                 TotalStorageCostsText = totalStorageCosts.ToString("N2");
                 TotalVNetCostsText = totalVNetCosts.ToString("N2");
@@ -348,6 +357,11 @@ namespace DataEstateOverview
         private static void MapCostToDb(RestSqlDb db, List<ResourceCost> costs)
         {
             bool found = false;
+            //if(db.ElasticPool != null)
+            //{
+            //    Debug.WriteLine("elastic db!");
+            //}
+            List<ResourceCost> elasticCosts = new List<ResourceCost>();
             foreach(ResourceCost cost in costs)
             {
                 if (cost.ResourceId.Contains(db.name) && cost.ResourceId.Contains(db.resourceGroup))
@@ -357,9 +371,23 @@ namespace DataEstateOverview
                     found = true;
                     if(db.name == "ot-prd-pay-sqldb-we-02")
                     {
-                        Debug.WriteLine("test db"); ;
+                        Debug.WriteLine("test db"); 
                     }
-                }                
+                }
+                if (db.ElasticPool != null && cost.ResourceId.Contains(db.ElasticPool.name))
+                {                                                           
+                    db.Costs.Add(cost);
+                    db.TotalCostBilling += cost.Cost/db.ElasticPool.dbList.Count;
+                    found = true;
+                }
+                if (cost.Meter.Contains("Elastic") || cost.MeterSubCategory.Contains("Elastic") || cost.Product.Contains("Elastic") || cost.ServiceName.Contains("Elastic"))
+                {
+                    elasticCosts.Add(cost);
+                }
+            }
+            if(elasticCosts.Count > 0)
+            {
+                Debug.WriteLine($"elastic costs");
             }
             if (!found)
             {

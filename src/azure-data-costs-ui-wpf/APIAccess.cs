@@ -300,12 +300,26 @@ namespace DataEstateOverview
                             {
                                 Debug.WriteLine(ep.name);
                                 db.properties.elasticPoolName = ep.name;
+                                db.ElasticPool = ep;
                             }
                         }
 
                     }
 
                     sqlServer.Dbs.Add(db);
+                }
+
+                // add dbs to elastic pools
+                foreach (var pool in sqlServer.ElasticPools)
+                {
+                    foreach (var db in sqlServer.Dbs)
+                    {
+                        if(db.ElasticPool != null && db.ElasticPool.name == pool.name)
+                        {
+                            pool.dbList.Add(db);
+                            db.properties.currentServiceObjectiveName += $" {pool.sku.name} {pool.sku.capacity}";
+                        }
+                    }
                 }
 
                 try
@@ -622,7 +636,7 @@ namespace DataEstateOverview
 
                         if(latestMax > 0)
                         {
-                            Debug.WriteLine("Got max for " + metric.name.value);
+                            //Debug.WriteLine("Got max for " + metric.name.value);
                         }
 
                         string metricName = metric.name.value;
@@ -925,10 +939,10 @@ namespace DataEstateOverview
                         rc.Currency = obj[12].ToString();
                         subscription.ResourceCosts.Add(rc);
 
-                        //if (rc.ResourceId.Contains("ot-dev-ref-sqldb-we-02"))
-                        //{
-                        //    Debug.WriteLine("hello");
-                        //}
+                        if (rc.ResourceId.Contains("elastic"))
+                        {
+                            Debug.WriteLine($"elastic: {rc.ResourceId}");
+                        }
                         //if (rc.ServiceName.Contains("Factory"))
                         //{
                         //    Debug.WriteLine("factory");

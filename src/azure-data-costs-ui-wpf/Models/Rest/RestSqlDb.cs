@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Azure.Costs.Ui.Wpf.Models.Rest;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DataEstateOverview.Models.SQL;
 using DbMeta.Ui.Wpf.Models.Rest;
 using System;
@@ -29,7 +30,7 @@ namespace DataEstateOverview.Models.Rest
 
         //public string subscriptionid { get; set; }
         public Subscription Subscription { get; set; }
-
+        public ElasticPool ElasticPool { get; set; }    
         public string resourceGroup { get; set; }
         public RestSqlDbProps properties { get; set; }
         public ServiceTierAdvisor serviceTierAdvisor { get; set; }

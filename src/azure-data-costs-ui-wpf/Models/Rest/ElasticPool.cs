@@ -18,6 +18,9 @@ namespace Azure.Costs.Ui.Wpf.Models.Rest
     {
         public string name { get; set; }
         public string kind { get; set; }
+
+        public List<RestSqlDb> dbList { get; set; } = new List<RestSqlDb>();    
+
         public ElasticPoolProps properties { get; set; }
         public ElasticPoolSku sku { get; set; }
 

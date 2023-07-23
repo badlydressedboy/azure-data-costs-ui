@@ -120,6 +120,9 @@
 
                             <Button x:Name="RestRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="RestRefreshButton_Click">Refresh</Button>
 
+                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total SQL DB Costs:</TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalSqlDbCostsText}"></TextBlock>
+                            
                         </StackPanel>
 
                         <TextBlock Margin="2,39,2,0" Padding="4" Background="Orange" Text="{Binding TestLoginErrorMessage}" Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}, FallbackValue=Collapsed}" Grid.ColumnSpan="3"/>
@@ -352,53 +355,98 @@
                                 <DataTemplate>
                                     <Grid Margin="8,6,0,0">
 
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
 
-                                        <StackPanel Orientation="Horizontal" Margin="2">
-                                            <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">DTU History</TextBlock>
-                                            <!--<TextBlock Margin="12, 2, 2, 2" Text="{Binding MetricsHistoryTimeString}" VerticalAlignment="Bottom"></TextBlock>-->
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
 
-                                            <TextBox Height="22" Width="30" VerticalContentAlignment="Center" Padding="0" VerticalAlignment="Center" Margin="10,2,2,2" Text="{Binding MetricsHistoryDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                                            <TextBlock Margin="4,2,2,2" Text="Days" VerticalAlignment="Center"></TextBlock>
+                                            <StackPanel Orientation="Horizontal" Margin="2">
+                                                <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">DTU History</TextBlock>
+                                                <!--<TextBlock Margin="12, 2, 2, 2" Text="{Binding MetricsHistoryTimeString}" VerticalAlignment="Bottom"></TextBlock>-->
 
-                                            <Button x:Name="RefreshDbStatsButton" Margin="8,2,2,2" Click="RefreshDbStatsButton_Click">Refresh</Button>
-                                        </StackPanel>
+                                                <TextBox Height="22" Width="30" VerticalContentAlignment="Center" Padding="0" VerticalAlignment="Center" Margin="10,2,2,2" Text="{Binding MetricsHistoryDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                                <TextBlock Margin="4,2,2,2" Text="Days" VerticalAlignment="Center"></TextBlock>
+
+                                                <Button x:Name="RefreshDbStatsButton" Margin="8,2,2,2" Click="RefreshDbStatsButton_Click">Refresh</Button>
+                                            </StackPanel>
 
 
-                                        <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="1">
-                                            <TextBlock Margin="2">Max DTU found: </TextBlock>
-                                            <TextBlock Margin="2" Text="{Binding MaxDtuUsed}"></TextBlock>
+                                            <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="1">
+                                                <TextBlock Margin="2">Max DTU found:</TextBlock>
+                                                <TextBlock Margin="2" Text="{Binding MaxDtuUsed}"></TextBlock>
 
-                                            <TextBlock Margin="30,2,2,2" Text="{Binding MetricsErrorMessage}"></TextBlock>
-                                        </StackPanel>
+                                                <TextBlock Margin="30,2,2,2" Text="{Binding MetricsErrorMessage}"></TextBlock>
+                                            </StackPanel>
 
-                                        <busyIndicator:BusyMask Grid.Row="2"
+                                            <busyIndicator:BusyMask Grid.Row="2"
                                             IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" 
                                             IndicatorType="Cogs"
                                             BusyContent="Please wait..." >
 
 
-                                            <DataGrid MaxHeight="400" 
+                                                <DataGrid MaxHeight="400" 
                                                       MaxWidth="320" 
                                                       HorizontalAlignment="Left" 
                                                       ItemsSource="{Binding Path=DtuConsumptionMetricSeries}"                                                   
                                                       AutoGenerateColumns="False" 
                                                       CanUserAddRows="False"
                                                  >
-                                            <DataGrid.Columns>
-                                                
-                                                <DataGridTextColumn Header="Time" Binding="{Binding Path=timeStamp}" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True"/>
-                                                
-                                            </DataGrid.Columns>
-                                        </DataGrid>
+                                                    <DataGrid.Columns>
 
-                                        </busyIndicator:BusyMask>
+                                                        <DataGridTextColumn Header="Time" Binding="{Binding Path=timeStamp}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True"/>
+
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+
+                                            </busyIndicator:BusyMask>
+                                        </Grid>
+
+                                        <Grid Grid.Column="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+
+
+                                            <StackPanel Orientation="Horizontal" Margin="2">
+                                                <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">Costs</TextBlock>
+
+                                            </StackPanel>
+
+                                            <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
+                                                    <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
+                                                    <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
+                                                    <DataGridTextColumn Header="ResourceName" Binding="{Binding Path=ResourceName}" IsReadOnly="True"/>
+
+                                                    <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
+                                                        <DataGridTextColumn.CellStyle>
+                                                            <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                                        <Setter Property="Foreground" Value="OrangeRed" />
+                                                                        <Setter Property="FontWeight" Value="Bold" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </DataGridTextColumn.CellStyle>
+                                                    </DataGridTextColumn>
+
+                                                    <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                                    <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </Grid>
                                     </Grid>
                                 </DataTemplate>
                             </DataGrid.RowDetailsTemplate>
