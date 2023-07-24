@@ -108,6 +108,51 @@ namespace DataEstateOverview
                 SetProperty(ref isRestQueryBusy, value);
             }
         }
+        private bool isStorageQueryBusy;
+        public bool IsStorageQueryBusy
+        {
+            get => isStorageQueryBusy;
+            set
+            {
+                SetProperty(ref isStorageQueryBusy, value);
+            }
+        }
+        private bool isADFQueryBusy;
+        public bool IsADFQueryBusy
+        {
+            get => isADFQueryBusy;
+            set
+            {
+                SetProperty(ref isADFQueryBusy, value);
+            }
+        }
+        private bool isVNetQueryBusy;
+        public bool IsVNetQueryBusy
+        {
+            get => isVNetQueryBusy;
+            set
+            {
+                SetProperty(ref isVNetQueryBusy, value);
+            }
+        }
+        private bool isVMQueryBusy;
+        public bool IsVMQueryBusy
+        {
+            get => isVMQueryBusy;
+            set
+            {
+                SetProperty(ref isVMQueryBusy, value);
+            }
+        }
+        private bool isPurviewQueryBusy;
+        public bool IsPurviewQueryBusy
+        {
+            get => isPurviewQueryBusy;
+            set
+            {
+                SetProperty(ref isPurviewQueryBusy, value);
+            }
+        }
         private bool isTestLoginBusy;
         public bool IsTestLoginBusy
         {
@@ -352,6 +397,211 @@ namespace DataEstateOverview
                 Debug.WriteLine(ex);
             }
             IsRestQueryBusy = false;
+        }
+
+        public async Task RefreshStorage()
+        {
+            if (IsStorageQueryBusy) return;
+            IsStorageQueryBusy = true;
+
+            try
+            {
+                StorageList.Clear();
+
+                decimal totalStorageCosts = 0;
+
+                await Parallel.ForEachAsync(Subscriptions
+                        , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                        , async (sub, y) =>
+                        {
+                            await APIAccess.GetStorageAccounts(sub);
+                        });
+
+                foreach (var sub in Subscriptions)
+                {
+                    if (!sub.ReadObjects) continue; // ignore this subscription
+                    foreach (var sa in sub.StorageAccounts)
+                    {
+                        MapCostToStorage(sa, sub.ResourceCosts);
+                        StorageList.Add(sa);
+
+                        foreach (var c in sa.Costs)
+                        {
+                            totalStorageCosts += c.Cost;
+                        }
+                    }
+                }
+                TotalStorageCostsText = totalStorageCosts.ToString("N2");
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine($"{ex}");   
+            }
+            IsStorageQueryBusy = false;
+        }
+
+        public async Task RefreshDataFactories()
+        {
+            if (IsADFQueryBusy) return;
+            IsADFQueryBusy = true;
+
+            try
+            {
+
+                DataFactoryList.Clear();
+
+            decimal totalADFCosts = 0;
+
+            await Parallel.ForEachAsync(Subscriptions
+                    , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                    , async (sub, y) =>
+                    {
+                        await APIAccess.GetDataFactories(sub);
+                    });
+
+                foreach (var sub in Subscriptions)
+                {
+                    if (!sub.ReadObjects) continue; // ignore this subscription
+                    foreach (var df in sub.DataFactories)
+                    {
+                        MapCostToDF(df, sub.ResourceCosts);
+                        DataFactoryList.Add(df);
+
+                        foreach (var c in df.Costs)
+                        {
+                            totalADFCosts += c.Cost;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"{ex}");
+            }
+            IsADFQueryBusy = false;
+        }
+
+        public async Task RefreshVNets()
+        {
+            if (IsVNetQueryBusy) return;
+            IsVNetQueryBusy = true;
+
+            try
+            {
+                StorageList.Clear();
+
+                decimal totalVNetCosts = 0;
+
+                await Parallel.ForEachAsync(Subscriptions
+                        , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                        , async (sub, y) =>
+                        {
+                            await APIAccess.GetVirtualNetworks(sub);
+                        });
+
+                foreach (var sub in Subscriptions)
+                {
+                    if (!sub.ReadObjects) continue; // ignore this subscription
+                    foreach (var vnet in sub.VNets)
+                    {
+                        MapCostToVNet(vnet, sub.ResourceCosts);
+                        VNetList.Add(vnet);
+
+                        foreach (var c in vnet.Costs)
+                        {
+                            totalVNetCosts += c.Cost;
+                        }
+                    }
+                }
+                TotalVNetCostsText = totalVNetCosts.ToString("N2");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"{ex}");
+            }
+            IsVNetQueryBusy = false;
+        }
+
+        public async Task RefreshVMs()
+        {
+            if (IsVMQueryBusy) return;
+            IsVMQueryBusy = true;
+
+            try
+            {
+                VMList.Clear();
+
+                decimal totalVMCosts = 0;
+
+                await Parallel.ForEachAsync(Subscriptions
+                        , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                        , async (sub, y) =>
+                        {
+                            await APIAccess.GetVirtualMachines(sub);
+                        });
+
+                foreach (var sub in Subscriptions)
+                {
+                    if (!sub.ReadObjects) continue; // ignore this subscription
+                    foreach (var vm in sub.VMs)
+                    {
+                        MapCostToVM(vm, sub.ResourceCosts);
+                        VMList.Add(vm);
+
+                        foreach (var c in vm.Costs)
+                        {
+                            totalVMCosts += c.Cost;
+                        }
+                    }
+                }
+                TotalVMCostsText = totalVMCosts.ToString("N2");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"{ex}");
+            }
+            IsVMQueryBusy = false;
+        }
+
+        public async Task RefreshPurview()
+        {
+            if (IsPurviewQueryBusy) return;
+            IsPurviewQueryBusy = true;
+
+            try
+            {
+                PurviewList.Clear();
+
+                decimal totalPurviewCosts = 0;
+
+                await Parallel.ForEachAsync(Subscriptions
+                        , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                        , async (sub, y) =>
+                        {
+                            await APIAccess.GetPurviews(sub);
+                        });
+
+                foreach (var sub in Subscriptions)
+                {
+                    if (!sub.ReadObjects) continue; // ignore this subscription
+                    foreach (var purv in sub.Purviews)
+                    {
+                        MapCostToVM(purv, sub.ResourceCosts);
+                        PurviewList.Add(purv);
+
+                        foreach (var c in purv.Costs)
+                        {
+                            totalPurviewCosts += c.Cost;
+                        }
+                    }
+                }
+                TotalPurviewCostsText = totalPurviewCosts.ToString("N2");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"{ex}");
+            }
+            IsPurviewQueryBusy = false;
         }
 
         private static void MapCostToDb(RestSqlDb db, List<ResourceCost> costs)

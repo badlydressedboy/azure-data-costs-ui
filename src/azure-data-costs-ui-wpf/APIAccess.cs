@@ -1030,7 +1030,7 @@ namespace DataEstateOverview
             }            
         }
 
-        private static async Task GetDataFactories(Subscription subscription)
+        public static async Task GetDataFactories(Subscription subscription)
         {
             try
             {
@@ -1057,7 +1057,7 @@ namespace DataEstateOverview
                 Debug.WriteLine(ex);
             }            
         }
-        private static async Task GetStorageAccounts(Subscription subscription)
+        public static async Task GetStorageAccounts(Subscription subscription)
         {
             try
             {
@@ -1086,7 +1086,7 @@ namespace DataEstateOverview
             }
         }
 
-        private static async Task GetVirtualNetworks(Subscription subscription)
+        public static async Task GetVirtualNetworks(Subscription subscription)
         {
             try
             {
@@ -1116,7 +1116,7 @@ namespace DataEstateOverview
             }
         }
 
-        private static async Task GetVirtualMachines(Subscription subscription)
+        public static async Task GetVirtualMachines(Subscription subscription)
         {
             try
             {
@@ -1145,7 +1145,7 @@ namespace DataEstateOverview
             }
         }
 
-        private static async Task GetPurviews(Subscription subscription)
+        public static async Task GetPurviews(Subscription subscription)
         {
             try
             {

@@ -246,7 +246,7 @@ namespace DataEstateOverview
 
         private async void DataFactoriesRefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            await vm.RefreshRest();
+            await vm.RefreshDataFactories();
         }
 
         private void DataFactoryDataGrid_KeyDown(object sender, KeyEventArgs e)
@@ -439,6 +439,26 @@ namespace DataEstateOverview
             var db = (RestSqlDb)RestDbDataGrid.CurrentItem;
             
             await APIAccess.GetDbMetrics(db); // no minutes param passed so sqlDb.MetricsHistoryDays is used            
+        }
+
+        private async void StorageRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await vm.RefreshStorage();
+        }
+
+        private async void VNetsRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await vm.RefreshVNets();
+        }
+
+        private async void VMsRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await vm.RefreshVMs();
+        }
+
+        private async void PurviewRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await vm.RefreshPurview();
         }
 
         //private void IgnoreCheckBox_UnChecked(object sender, RoutedEventArgs e)
