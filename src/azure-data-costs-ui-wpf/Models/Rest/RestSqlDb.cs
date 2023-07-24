@@ -136,23 +136,25 @@ namespace DataEstateOverview.Models.Rest
             } 
         }
 
-        private long _overprovisionFromMaxPc;
-        public long OverprovisionFromMaxPc // 100 - max(dtu/cpu use)
+        private decimal _overSpendFromMaxPc;
+        public decimal OverSpendFromMaxPc // 100 - max(dtu/cpu use)
         {
-            get { return _overprovisionFromMaxPc; }
+            get { return _overSpendFromMaxPc; }
             set
             {
-                _overprovisionFromMaxPc = value;
-                _overprovisionFromMaxPcString = value.ToString();
+                _overSpendFromMaxPc = value;
+                OverSpendFromMaxPcString = value.ToString();
+                OnPropertyChanged("OverSpendFromMaxPc");
             }
         }
-        private string _overprovisionFromMaxPcString = "?";
-        public string OverprovisionFromMaxPcString // 100 - max(dtu/cpu use)
+        private string _overSpendFromMaxPcString = "?";
+        public string OverSpendFromMaxPcString // 100 - max(dtu/cpu use)
         {
-            get { return _overprovisionFromMaxPcString; }
+            get { return _overSpendFromMaxPcString; }
             set
             {
-                _overprovisionFromMaxPcString = value;
+                _overSpendFromMaxPcString = value;
+                OnPropertyChanged("OverSpendFromMaxPcString");
             }
         }
 
@@ -259,7 +261,7 @@ namespace DataEstateOverview.Models.Rest
 
         public RestSqlDb()
         {
-            OverprovisionFromMaxPcString = "?";
+            OverSpendFromMaxPcString = "?";
         }
 
     }

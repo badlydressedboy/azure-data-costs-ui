@@ -733,43 +733,45 @@ namespace DataEstateOverview
             if (IsDbSpendAnalysisBusy) return;
             IsDbSpendAnalysisBusy = true;
 
-            RestSqlDbList.Clear();
             RestErrorMessage = "";
-            decimal totalSqlDbCosts = 0;
+            decimal totalPotentialSaving = 0;
 
             try
             {
-                await Parallel.ForEachAsync(Subscriptions
+                await Parallel.ForEachAsync(RestSqlDbList.OrderByDescending(x=>x.TotalCostBilling)
                     , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
-                    , async (sub, y) =>
+                    , async (db, y) =>
                     {
-                        await APIAccess.GetSubscriptionCosts(sub);
-                        await APIAccess.GetSqlServers(sub);
+                        db.SpendAnalysisStatus = "Analysing...";
+                        await APIAccess.GetDbMetrics(db);
+
+                        db.SpendAnalysisStatus = "Complete";
+                        //await APIAccess.GetSqlServers(sub);
                     });
 
                 // on ui thread
-                foreach (var sub in Subscriptions)
-                {
-                    if (!sub.ReadObjects) continue; // ignore this subscription
+                //foreach (var sub in Subscriptions)
+                //{
+                //    if (!sub.ReadObjects) continue; // ignore this subscription
 
-                    foreach (var s in sub.SqlServers)
-                    {
-                        foreach (var db in s.Dbs)
-                        {
-                            MapCostToDb(db, sub.ResourceCosts);
-                            RestSqlDbList.Add(db);
+                //    foreach (var s in sub.SqlServers)
+                //    {
+                //        foreach (var db in s.Dbs)
+                //        {
+                //            MapCostToDb(db, sub.ResourceCosts);
+                //            RestSqlDbList.Add(db);
 
-                            totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool
-                        }
-                    }
+                //            totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool
+                //        }
+                //    }
 
-                    if (!string.IsNullOrEmpty(sub.CostsErrorMessage))
-                    {
-                        if (!string.IsNullOrEmpty(RestErrorMessage)) RestErrorMessage += "\n";
-                        RestErrorMessage += sub.CostsErrorMessage;
-                    }
-                }
-                TotalSqlDbCostsText = totalSqlDbCosts.ToString("N2");
+                //    if (!string.IsNullOrEmpty(sub.CostsErrorMessage))
+                //    {
+                //        if (!string.IsNullOrEmpty(RestErrorMessage)) RestErrorMessage += "\n";
+                //        RestErrorMessage += sub.CostsErrorMessage;
+                //    }
+                //}
+                //TotalSqlDbCostsText = totalSqlDbCosts.ToString("N2");
             }
             catch (Exception ex)
             {

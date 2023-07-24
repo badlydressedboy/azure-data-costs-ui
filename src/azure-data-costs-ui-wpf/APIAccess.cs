@@ -794,15 +794,14 @@ namespace DataEstateOverview
                                 break;
                         }
                     }
+
+                    // spend analysis
+                    if (minutes > 2)
+                    {
+                        sqlDb.GotMetricsHistory = true;
+                        sqlDb.OverSpendFromMaxPc = 100 - sqlDb.MaxDtuUsed;
+                    }
                 }
-                //if (advisors?.value?.Count() > 0)
-                //{
-                //    sqlDb.serviceTierAdvisor = advisors.value[0];
-                //    if (advisors.value.Count() > 1)
-                //    {
-                //        Debug.WriteLine($"multi advisors! {sqlDb.name} {advisors.value.Count()}");
-                //    }
-                //}
 
                 Debug.WriteLine($"finished getting {sqlDb.name} metrics");
             }
@@ -810,6 +809,7 @@ namespace DataEstateOverview
             {
                 Debug.WriteLine(ex);
             }
+            
             sqlDb.IsRestQueryBusy = false;
         }
         private static async Task GetDbServiceTierAdvisors(RestSqlDb sqlDb)

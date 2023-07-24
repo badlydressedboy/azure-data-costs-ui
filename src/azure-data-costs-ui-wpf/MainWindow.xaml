@@ -281,12 +281,10 @@
 
                                 <DataGridTextColumn Header="Elastic Pool"  Binding="{Binding properties.elasticPoolName}" ></DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Spend Analysis Status"  Binding="{Binding SpendAnalysisStatus}"  />
+                                <DataGridTextColumn Header="Spend Analysis Status"  Binding="{Binding SpendAnalysisStatus}" Visibility="{Binding IsDbSpendAnalysisBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
 
+                                <DataGridTextColumn Header="Over Provision%"  Binding="{Binding OverSpendFromMaxPcString, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
 
-                                <DataGridTextColumn Header="Over Spend Pc"  Binding="{Binding OverprovisionFromMaxPcString, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
-
-                                
                                 <DataGridTextColumn Header="Location"  Binding="{Binding location}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>
 
