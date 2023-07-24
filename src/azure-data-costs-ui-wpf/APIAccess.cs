@@ -275,7 +275,7 @@ namespace DataEstateOverview
 
         private static async Task GetSqlServerDatabases(RestSqlServer sqlServer)
         {
-            if (sqlServer.name != "octopus-sql-server-staging") return;
+            //if (sqlServer.name != "octopus-sql-server-staging") return;
 
             List<RestSqlDb> returnList = new List<RestSqlDb>();
             sqlServer.Dbs.Clear();

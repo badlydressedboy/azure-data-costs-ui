@@ -281,7 +281,7 @@
 
                                 <DataGridTextColumn Header="Elastic Pool"  Binding="{Binding properties.elasticPoolName}" ></DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Spend Analysis Status"  Binding="{Binding SpendAnalysisStatus}" Visibility="{Binding IsDbSpendAnalysisBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+                                <!--<DataGridTextColumn Header="Spend Analysis Status"  Binding="{Binding SpendAnalysisStatus}" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=DataContext.IsDbSpendAnalysisBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />-->
 
                                 <DataGridTextColumn Header="Over Provision%"  Binding="{Binding OverSpendFromMaxPcString, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
 
