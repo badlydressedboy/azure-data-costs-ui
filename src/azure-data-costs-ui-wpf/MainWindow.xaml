@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:DataEstateOverview"
         xmlns:converters="clr-namespace:ValueConverters"
         mc:Ignorable="d"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:busyIndicator="https://github.com/Peoky/BusyIndicator"         
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
                  xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
@@ -20,6 +21,11 @@
 
     <mah:MetroWindow.Resources>
 
+        <Style TargetType="{x:Type Image}" x:Key="LoadingGifStyle">
+            <Setter Property="Height" Value="24"></Setter>
+            <Setter Property="Width" Value="24"></Setter>
+        </Style>
+        
         <converters:NonZeroNumberToBooleanConverter x:Key="NonZeroNumberToBooleanConverter"></converters:NonZeroNumberToBooleanConverter>
 
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"></converters:InverseBooleanConverter>
@@ -123,6 +129,18 @@
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total SQL DB Costs:</TextBlock>
                             <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalSqlDbCostsText}"></TextBlock>
                             
+                            <Button x:Name="DBAnalyseSpendButton" Margin="28,2,2,2" Padding="8,1,8,1" Click="DBAnalyseSpendButton_Click" Content="Analyse Spend"/>
+
+
+                            <Image gif:ImageBehavior.AnimatedSource="/Images/loading.gif" 
+                               Margin="8,0,0,0" 
+                               Style="{StaticResource LoadingGifStyle}"
+                               Visibility="{Binding IsDbSpendAnalysisBusy,Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Image.LayoutTransform>
+                                    <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
+                                </Image.LayoutTransform>
+                            </Image>
+
                         </StackPanel>
 
                         <TextBlock Margin="2,39,2,0" Padding="4" Background="Orange" Text="{Binding TestLoginErrorMessage}" Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}, FallbackValue=Collapsed}" Grid.ColumnSpan="3"/>
@@ -262,8 +280,13 @@
                                 </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Elastic Pool"  Binding="{Binding properties.elasticPoolName}" ></DataGridTextColumn>
-                                
 
+                                <DataGridTextColumn Header="Spend Analysis Status"  Binding="{Binding SpendAnalysisStatus}"  />
+
+
+                                <DataGridTextColumn Header="Over Spend Pc"  Binding="{Binding OverprovisionFromMaxPcString, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+
+                                
                                 <DataGridTextColumn Header="Location"  Binding="{Binding location}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>
 

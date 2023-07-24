@@ -515,6 +515,11 @@ namespace DataEstateOverview
             }
         }
 
+        private async void DBAnalyseSpendButton_Click(object sender, RoutedEventArgs e)
+        {
+            await vm.AnalyseDbSpend();
+        }
+
         //private void IgnoreCheckBox_UnChecked(object sender, RoutedEventArgs e)
         //{
 

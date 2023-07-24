@@ -162,6 +162,15 @@ namespace DataEstateOverview
                 SetProperty(ref isTestLoginBusy, value);
             }
         }
+        private bool isDbSpendAnalysisBusy;
+        public bool IsDbSpendAnalysisBusy
+        {
+            get => isDbSpendAnalysisBusy;
+            set
+            {
+                SetProperty(ref isDbSpendAnalysisBusy, value);
+            }
+        }
         private string restErrorMessage;
         public string RestErrorMessage
         {
@@ -717,6 +726,56 @@ namespace DataEstateOverview
             {
                 Debug.WriteLine($"why no cost for Purview {purv.name}?");
             }
+        }
+
+        public async Task AnalyseDbSpend()
+        {
+            if (IsDbSpendAnalysisBusy) return;
+            IsDbSpendAnalysisBusy = true;
+
+            RestSqlDbList.Clear();
+            RestErrorMessage = "";
+            decimal totalSqlDbCosts = 0;
+
+            try
+            {
+                await Parallel.ForEachAsync(Subscriptions
+                    , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                    , async (sub, y) =>
+                    {
+                        await APIAccess.GetSubscriptionCosts(sub);
+                        await APIAccess.GetSqlServers(sub);
+                    });
+
+                // on ui thread
+                foreach (var sub in Subscriptions)
+                {
+                    if (!sub.ReadObjects) continue; // ignore this subscription
+
+                    foreach (var s in sub.SqlServers)
+                    {
+                        foreach (var db in s.Dbs)
+                        {
+                            MapCostToDb(db, sub.ResourceCosts);
+                            RestSqlDbList.Add(db);
+
+                            totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(sub.CostsErrorMessage))
+                    {
+                        if (!string.IsNullOrEmpty(RestErrorMessage)) RestErrorMessage += "\n";
+                        RestErrorMessage += sub.CostsErrorMessage;
+                    }
+                }
+                TotalSqlDbCostsText = totalSqlDbCosts.ToString("N2");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            IsDbSpendAnalysisBusy = false;
         }
 
         public async Task RefreshSqlDb()

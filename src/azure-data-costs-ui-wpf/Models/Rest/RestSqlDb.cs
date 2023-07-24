@@ -135,6 +135,27 @@ namespace DataEstateOverview.Models.Rest
                 allocated_data_storage_gb = (double)_allocated_data_storage / 1024.0 / 1024.0 / 1024.0;
             } 
         }
+
+        private long _overprovisionFromMaxPc;
+        public long OverprovisionFromMaxPc // 100 - max(dtu/cpu use)
+        {
+            get { return _overprovisionFromMaxPc; }
+            set
+            {
+                _overprovisionFromMaxPc = value;
+                _overprovisionFromMaxPcString = value.ToString();
+            }
+        }
+        private string _overprovisionFromMaxPcString = "?";
+        public string OverprovisionFromMaxPcString // 100 - max(dtu/cpu use)
+        {
+            get { return _overprovisionFromMaxPcString; }
+            set
+            {
+                _overprovisionFromMaxPcString = value;
+            }
+        }
+
         public double allocated_data_storage_gb { get; set; }
 
         public List<ResourceCost> Costs { get; set; } = new List<ResourceCost>();
@@ -195,7 +216,17 @@ namespace DataEstateOverview.Models.Rest
                 OnPropertyChanged("MetricsErrorMessage");                
             }
         }
+        protected string _spendAnalysisStatus;
 
+        public string SpendAnalysisStatus
+        {
+            get { return _spendAnalysisStatus; }
+            set
+            {
+                _spendAnalysisStatus = value;
+                OnPropertyChanged("SpendAnalysisStatus");
+            }
+        }
         
 
         public bool IsElaticPoolMember
@@ -224,6 +255,11 @@ namespace DataEstateOverview.Models.Rest
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        public RestSqlDb()
+        {
+            OverprovisionFromMaxPcString = "?";
         }
 
     }
