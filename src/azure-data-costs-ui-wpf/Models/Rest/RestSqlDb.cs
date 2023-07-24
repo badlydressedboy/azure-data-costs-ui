@@ -218,7 +218,7 @@ namespace DataEstateOverview.Models.Rest
             }
         }
 
-        public ObservableCollection<MetricTimeSeriesData> DtuConsumptionMetricSeries { get; set; } = new ObservableCollection<MetricTimeSeriesData>(); 
+        public ObservableCollection<MetricTimeSeriesData> PerformanceMetricSeries { get; set; } = new ObservableCollection<MetricTimeSeriesData>(); 
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)

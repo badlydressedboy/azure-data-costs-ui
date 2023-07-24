@@ -600,20 +600,66 @@ namespace DataEstateOverview
                 string timeFrom = DateTime.UtcNow.AddMinutes(-1* mins).ToString("s") + "Z";
                 string timeTo = DateTime.UtcNow.ToString("s") + "Z";
                 
-
-                // 12,000 reads per hour
-                string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?{timeGrainParam}&aggregation=average,maximum&timespan={timeFrom}/{timeTo}&metricnames=physical_data_read_percent,log_write_percent,dtu_consumption_percent,sessions_count,storage,storage_percent,workers_percent,sessions_percent,dtu_limit,dtu_used,sqlserver_process_core_percent,sqlserver_process_memory_percent,tempdb_data_size,tempdb_log_size,tempdb_log_used_percent,allocated_data_storage&api-version=2021-05-01";
-
-                //string url = $"https://management.azure.com/subscriptions/{sqlDb.subscriptionid}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metricDefinitions?api-version=2021-05-01";
-
-
-                if(sqlDb.properties.currentServiceObjectiveName.Contains("GP_")) 
+                if (sqlDb.IsElaticPoolMember)
                 {
-                    //url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/elasticPools/{sqlDb.ElasticPool.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum{timeGrainParam}&timespan={timeFrom}/{timeTo}&metricnames=sessions_count,cpu_percent&api-version=2021-05-01";
+                    // get elastic pool costs if required
+                    if (sqlDb.ElasticPool.PerformanceMetricSeries.Count > -1)
+                    {
+                        string poolUrl = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/elasticPools/{sqlDb.ElasticPool.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum{timeGrainParam}&timespan={timeFrom}/{timeTo}&metricnames=sessions_count,cpu_percent&api-version=2021-05-01";
 
+                        var poolHttpClient = GetHttpClient("https://management.azure.com/subscriptions/", 30);
+                        HttpResponseMessage res = await poolHttpClient.GetAsync(poolUrl);
+                        if (!res.IsSuccessStatusCode)
+                        {
+                            Debug.WriteLine($"Failed pool metrics!: {res.ReasonPhrase}");
+                            sqlDb.MetricsErrorMessage = $"Failed pool metrics!: {res.ReasonPhrase}";
+                        }
+                        var poolJson = await res.Content.ReadAsStringAsync();
+                        var poolMetrics = await res?.Content?.ReadFromJsonAsync<RootMetric>();
+
+                        if (poolMetrics?.value != null)
+                        {
+                            foreach (var metric in poolMetrics.value)
+                            {
+                                if (metric.timeseries.Count() == 0) continue;
+                                string metricName = metric.name.value;
+                                var pool = sqlDb.ElasticPool;
+
+                                switch (metricName)
+                                {
+                                    case "dtu_consumption_percent":
+                                        pool.PerformanceMetricSeries.Clear();
+
+                                        //sqlDb.MaxDtuUsed = 0;
+                                        foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                        {
+                                            pool.PerformanceMetricSeries.Add(d);
+                                            if (d.maximum > pool.MaxDtuUsed) pool.MaxDtuUsed = d.maximum;
+                                        }
+
+                                        break;
+                                    case "cpu_percent":
+                                        pool.PerformanceMetricSeries.Clear();
+
+                                        //sqlDb.MaxDtuUsed = 0;
+                                        foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                        {
+                                            pool.PerformanceMetricSeries.Add(d);
+                                            if (d.maximum > pool.MaxDtuUsed) pool.MaxDtuUsed = d.maximum;
+                                        }
+
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
+               
+                string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?{timeGrainParam}&aggregation=average,maximum&timespan={timeFrom}/{timeTo}&metricnames=physical_data_read_percent,log_write_percent,dtu_consumption_percent,sessions_count,storage,storage_percent,workers_percent,sessions_percent,dtu_limit,dtu_used,sqlserver_process_core_percent,sqlserver_process_memory_percent,tempdb_data_size,tempdb_log_size,tempdb_log_used_percent,allocated_data_storage&api-version=2021-05-01";
+                if (sqlDb.properties.currentServiceObjectiveName.Contains("GP_")) 
+                {
                     // dont get elastic pool metrics - we are still at db level
                     url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum{timeGrainParam}&timespan={timeFrom}/{timeTo}&metricnames=cpu_percent&api-version=2021-05-01";
-
                 }
 
                 sqlDb.IsRestQueryBusy = true;
@@ -652,12 +698,12 @@ namespace DataEstateOverview
                             case "dtu_consumption_percent":
                                 sqlDb.dtu_consumption_percent = latestAvg;
 
-                                sqlDb.DtuConsumptionMetricSeries.Clear();
+                                sqlDb.PerformanceMetricSeries.Clear();
 
                                 sqlDb.MaxDtuUsed = 0;
                                 foreach (var d in metric.timeseries[0].data.OrderByDescending(x=>x.timeStamp))
                                 {
-                                    sqlDb.DtuConsumptionMetricSeries.Add(d);
+                                    sqlDb.PerformanceMetricSeries.Add(d);
                                     if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
                                 }
                                 
@@ -665,12 +711,12 @@ namespace DataEstateOverview
                             case "cpu_percent":
                                 sqlDb.dtu_consumption_percent = latestAvg;
 
-                                sqlDb.DtuConsumptionMetricSeries.Clear();
+                                sqlDb.PerformanceMetricSeries.Clear();
 
                                 sqlDb.MaxDtuUsed = 0;
                                 foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
                                 {
-                                    sqlDb.DtuConsumptionMetricSeries.Add(d);
+                                    sqlDb.PerformanceMetricSeries.Add(d);
                                     if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
                                 }
 

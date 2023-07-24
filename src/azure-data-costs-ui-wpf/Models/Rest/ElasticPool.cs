@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -23,6 +24,19 @@ namespace Azure.Costs.Ui.Wpf.Models.Rest
 
         public ElasticPoolProps properties { get; set; }
         public ElasticPoolSku sku { get; set; }
+
+        public decimal _maxDtuUsed { get; set; }
+        public decimal MaxDtuUsed
+        {
+            get { return _maxDtuUsed; }
+            set
+            {
+                _maxDtuUsed = value;
+                OnPropertyChanged("MaxDtuUsed");
+
+            }
+        }
+        public ObservableCollection<MetricTimeSeriesData> PerformanceMetricSeries { get; set; } = new ObservableCollection<MetricTimeSeriesData>();
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)
