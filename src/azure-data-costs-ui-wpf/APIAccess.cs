@@ -145,23 +145,23 @@ namespace DataEstateOverview
                     });
                     tasks[2] = Task.Run(async () =>
                     {
-                        await GetDataFactories(subscription);
+                        //await GetDataFactories(subscription);
                     });
                     tasks[3] = Task.Run(async () =>
                     {
-                        await GetStorageAccounts(subscription);
+                        //await GetStorageAccounts(subscription);
                     });
                     tasks[4] = Task.Run(async () =>
                     {
-                        await GetVirtualNetworks(subscription);
+                        //await GetVirtualNetworks(subscription);
                     });
                     tasks[5] = Task.Run(async () =>
                     {
-                        await GetVirtualMachines(subscription);
+                        //await GetVirtualMachines(subscription);
                     });
                     tasks[6] = Task.Run(async () =>
                     {
-                        await GetPurviews(subscription);
+                        //await GetPurviews(subscription);
                     });
 
 
@@ -267,6 +267,8 @@ namespace DataEstateOverview
 
         private static async Task GetSqlServerDatabases(RestSqlServer sqlServer)
         {
+            if (sqlServer.name != "octopus-sql-server-staging") return;
+
             List<RestSqlDb> returnList = new List<RestSqlDb>();
             sqlServer.Dbs.Clear();
 
@@ -605,9 +607,13 @@ namespace DataEstateOverview
                 //string url = $"https://management.azure.com/subscriptions/{sqlDb.subscriptionid}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metricDefinitions?api-version=2021-05-01";
 
 
-                if(sqlDb.properties.currentServiceObjectiveName == "ElasticPool")
+                if(sqlDb.properties.currentServiceObjectiveName.Contains("GP_")) 
                 {
-                    url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/elasticPools/{sqlDb.AzDB.ElasticPoolName}/providers/Microsoft.Insights/metrics?{timeGrainParam}&aggregation=average,maximum&timespan={timeFrom}/{timeTo}&metricnames=physical_data_read_percent,log_write_percent,dtu_consumption_percent,sessions_count,storage,storage_percent,workers_percent,sessions_percent,dtu_limit,dtu_used,sqlserver_process_core_percent,sqlserver_process_memory_percent,tempdb_data_size,tempdb_log_size,tempdb_log_used_percent,allocated_data_storage&api-version=2021-05-01";
+                    //url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/elasticPools/{sqlDb.ElasticPool.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum{timeGrainParam}&timespan={timeFrom}/{timeTo}&metricnames=sessions_count,cpu_percent&api-version=2021-05-01";
+
+                    // dont get elastic pool metrics - we are still at db level
+                    url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum{timeGrainParam}&timespan={timeFrom}/{timeTo}&metricnames=cpu_percent&api-version=2021-05-01";
+
                 }
 
                 sqlDb.IsRestQueryBusy = true;
@@ -655,6 +661,19 @@ namespace DataEstateOverview
                                     if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
                                 }
                                 
+                                break;
+                            case "cpu_percent":
+                                sqlDb.dtu_consumption_percent = latestAvg;
+
+                                sqlDb.DtuConsumptionMetricSeries.Clear();
+
+                                sqlDb.MaxDtuUsed = 0;
+                                foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                {
+                                    sqlDb.DtuConsumptionMetricSeries.Add(d);
+                                    if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
+                                }
+
                                 break;
                             case "physical_data_read_percent":
                                 sqlDb.physical_data_read_percent = latestAvg;

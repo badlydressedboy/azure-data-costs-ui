@@ -196,6 +196,20 @@ namespace DataEstateOverview.Models.Rest
             }
         }
 
+        
+
+        public bool IsElaticPoolMember
+        {
+            get { 
+                if(ElasticPool == null)
+                {
+                    return false;
+                }
+                return true;
+            }
+          
+        }
+
         public string MetricsHistoryTimeString { 
             get
             {
