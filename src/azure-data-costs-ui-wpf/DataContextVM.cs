@@ -277,34 +277,24 @@ namespace DataEstateOverview
             }
             App.SaveConfig();
         }
-        public async Task RefreshRest()
+        // db/sql server data plus costs
+        public async Task RefreshDatabases()
         {
             if (IsRestQueryBusy) return;
 
             IsRestQueryBusy = true;
             RestSqlDbList.Clear();
-            DataFactoryList.Clear();
-            StorageList.Clear();
-            VNetList.Clear();
-            PurviewList.Clear();
             RestErrorMessage = "";
-            DataFactoryErrorMessage = "";
-            TotalADFCostsText = "";
-
             decimal totalSqlDbCosts = 0;
-            decimal totalADFCosts = 0;
-            decimal totalStorageCosts = 0;
-            decimal totalVNetCosts = 0;
-            decimal totalVMCosts = 0;
-            decimal totalPurviewCosts = 0;
-
+           
             try
             {            
                 await Parallel.ForEachAsync(Subscriptions
                     , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                     , async (sub, y) =>
                 {
-                    await APIAccess.RefreshSubscription(sub);                   
+                    await APIAccess.GetSubscriptionCosts(sub);
+                    await APIAccess.GetSqlServers(sub);
                 });
 
                 // on ui thread
@@ -323,61 +313,6 @@ namespace DataEstateOverview
                         }
                     }
 
-                    foreach (var df in sub.DataFactories)
-                    {
-                        MapCostToDF(df, sub.ResourceCosts);
-                        DataFactoryList.Add(df);
-
-                        foreach(var c in df.Costs)
-                        {
-                            totalADFCosts += c.Cost;
-                        }
-                    }
-                    
-                    foreach (var sa in sub.StorageAccounts)
-                    {
-                        MapCostToStorage(sa, sub.ResourceCosts);
-                        StorageList.Add(sa);
-
-                        foreach (var c in sa.Costs)
-                        {
-                            totalStorageCosts += c.Cost;
-                        }
-                    }
-                   
-                    foreach (var vnet in sub.VNets)
-                    {
-                        MapCostToVNet(vnet, sub.ResourceCosts);
-                        VNetList.Add(vnet);
-
-                        foreach (var c in vnet.Costs)
-                        {
-                            totalVNetCosts += c.Cost;
-                        }
-                    }
-
-                    foreach (var vm in sub.VMs)
-                    {
-                        MapCostToVM(vm, sub.ResourceCosts);
-                        VMList.Add(vm);
-
-                        foreach (var c in vm.Costs)
-                        {
-                            totalVMCosts += c.Cost;
-                        }
-                    }
-
-                    foreach (var purv in sub.Purviews)
-                    {
-                        MapCostToVM(purv, sub.ResourceCosts);
-                        PurviewList.Add(purv);
-
-                        foreach (var c in purv.Costs)
-                        {
-                            totalPurviewCosts += c.Cost;
-                        }
-                    }
-
                     if (!string.IsNullOrEmpty(sub.CostsErrorMessage))
                     {
                         if(!string.IsNullOrEmpty(RestErrorMessage)) RestErrorMessage += "\n";
@@ -385,12 +320,6 @@ namespace DataEstateOverview
                     }
                 }
                 TotalSqlDbCostsText = totalSqlDbCosts.ToString("N2");
-                TotalADFCostsText = totalADFCosts.ToString("N2");
-                TotalStorageCostsText = totalStorageCosts.ToString("N2");
-                TotalVNetCostsText = totalVNetCosts.ToString("N2");
-                TotalVMCostsText = totalVMCosts.ToString("N2");
-                TotalPurviewCostsText = totalPurviewCosts.ToString("N2");
-                
             }
             catch (Exception ex)
             {

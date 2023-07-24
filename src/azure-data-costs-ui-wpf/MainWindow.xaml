@@ -87,7 +87,7 @@
     </mah:MetroWindow.Resources>
     <Grid>
 
-        <mah:MetroAnimatedSingleRowTabControl>
+        <mah:MetroAnimatedSingleRowTabControl Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged">
 
             <mah:MetroTabItem Header="DB Summary" Name="TabRest">
 
@@ -118,7 +118,7 @@
 
                             <!--<Button x:Name="RestConfigButton" Margin="12,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="RestConfigButton_Click">Configure</Button>-->
 
-                            <Button x:Name="RestRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="RestRefreshButton_Click">Refresh</Button>
+                            <Button x:Name="RestRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DBRefreshButton_Click">Refresh</Button>
 
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total SQL DB Costs:</TextBlock>
                             <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalSqlDbCostsText}"></TextBlock>

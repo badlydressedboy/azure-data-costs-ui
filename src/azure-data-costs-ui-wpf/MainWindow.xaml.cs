@@ -147,18 +147,17 @@ namespace DataEstateOverview
         {
             // testing api access            
             await vm.TestLogin();
-            await RefreshRest();
+            await RefreshDBs();
         }
 
-        private async Task RefreshRest()
-        {
-            
+        private async Task RefreshDBs()
+        {            
             Cursor = Cursors.Wait;
 
             try
             {
                 await vm.GetSubscriptions();
-                await vm.RefreshRest(); 
+                await vm.RefreshDatabases(); 
             }catch(Exception ex)
             {
                 Debug.WriteLine(ex);
@@ -166,9 +165,9 @@ namespace DataEstateOverview
             Cursor = Cursors.Arrow;
         }
 
-        private async void RestRefreshButton_Click(object sender, RoutedEventArgs e)
+        private async void DBRefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            await RefreshRest();
+            await RefreshDBs();
         }
 
         private void RestConfigButton_Click(object sender, RoutedEventArgs e)
@@ -459,6 +458,61 @@ namespace DataEstateOverview
         private async void PurviewRefreshButton_Click(object sender, RoutedEventArgs e)
         {
             await vm.RefreshPurview();
+        }
+
+        private void MetroAnimatedSingleRowTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private async void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch (MainTabControl.SelectedIndex)
+            {
+                case(0):
+                    // db summary
+                    break;
+                    case(1):
+                    // db details
+                    break;
+
+                    case(2):
+                    // adf
+                    if(vm.DataFactoryList.Count == 0)
+                    {
+                        await vm.RefreshDataFactories();
+                    }
+                    break;
+;
+                case (3):
+                    // storage
+                    if (vm.StorageList.Count == 0)
+                    {
+                        await vm.RefreshStorage();
+                    }
+                    break;
+                case (4):
+                    // vnets
+                    if (vm.VNetList.Count == 0)
+                    {
+                        await vm.RefreshVNets();
+                    }
+                    break;
+                case (5):
+                    // vms
+                    if (vm.VMList.Count == 0)
+                    {
+                        await vm.RefreshVMs();
+                    }
+                    break;
+                case (6):
+                    // purview
+                    if (vm.PurviewList.Count == 0)
+                    {
+                        await vm.RefreshPurview();
+                    }
+                    break;
+            }
         }
 
         //private void IgnoreCheckBox_UnChecked(object sender, RoutedEventArgs e)

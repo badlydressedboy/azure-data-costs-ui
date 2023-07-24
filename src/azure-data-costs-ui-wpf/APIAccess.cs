@@ -31,8 +31,7 @@ namespace DataEstateOverview
     public static class APIAccess
     {
 
-        private static HttpClient _httpClient;
-        private static List<RestSqlDb> _restSqlDbList;
+        private static HttpClient _httpClient;        
         private static string _accessToken;
         public static int CostDays { get; set; } = 30;
 
@@ -78,9 +77,19 @@ namespace DataEstateOverview
             {
                 AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
                 _accessToken = azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/").Result;
+                Debug.WriteLine(_accessToken);
 
-                var httpClient = GetHttpClient("https://management.azure.com/subscriptions/", 20);
-                HttpResponseMessage response = await httpClient.GetAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
+                _httpClient = new HttpClient
+                {
+                    BaseAddress = new Uri("https://management.azure.com/subscriptions/")
+                    ,
+                    Timeout = TimeSpan.FromSeconds(30)
+                };
+
+                _httpClient.DefaultRequestHeaders.Remove("Authorization");
+                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _accessToken);
+
+                HttpResponseMessage response = await _httpClient.GetAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
                 var json = await response.Content.ReadAsStringAsync();
                 RootSubscription subscriptions = await response?.Content?.ReadFromJsonAsync<RootSubscription>();
                 return subscriptions.value;
@@ -93,7 +102,7 @@ namespace DataEstateOverview
             }
             return null;
         }
-        public static async Task RefreshSubscription(Subscription subscription)
+        public static async Task RefreshSubscriptionCosts(Subscription subscription)
         {
             /* rest api and also sdk
              * sdk currently (october 2022) has bug which stops consumption requests
@@ -101,7 +110,6 @@ namespace DataEstateOverview
              * 
              */
 
-            _restSqlDbList = new List<RestSqlDb>();
             var sw = Stopwatch.StartNew();    
 
             try
@@ -184,7 +192,7 @@ namespace DataEstateOverview
             }
             Debug.WriteLine($"Finished subscription in {sw.Elapsed.TotalSeconds} seconds");
         }
-        private static async Task GetSqlServers(Subscription subscription)
+        public static async Task GetSqlServers(Subscription subscription)
         {
             try
             {
@@ -833,8 +841,21 @@ namespace DataEstateOverview
 
         }
 
-        private static async Task GetSubscriptionCosts(Subscription subscription)
+        public static async Task GetSubscriptionCosts(Subscription subscription)
         {
+            /* How this authentication works:
+             * https://learn.microsoft.com/en-gb/dotnet/api/overview/azure/service-to-service-authentication?view=azure-dotnet
+             * 
+             * For local development, AzureServiceTokenProvider fetches tokens using Visual Studio, Azure command-line interface (CLI), or Azure AD Integrated Authentication. 
+             * Each option is tried sequentially and the library uses the first option that succeeds. 
+             * If no option works, an AzureServiceTokenProviderException exception is thrown with detailed information.
+             * 
+             * If you have cloned the repo to run this code you have visual studio so likely to work for you
+             * If deploying/running on non visual studio computers then suing Azure CLI:
+             *  - az login
+             *  - az account get-access-token --resource https://vault.azure.net
+             */
+
             if (!subscription.ReadCosts) return;
             if (!subscription.NeedsNewCosts()) return;
 
