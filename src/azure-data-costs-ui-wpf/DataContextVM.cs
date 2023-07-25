@@ -576,14 +576,14 @@ namespace DataEstateOverview
             List<ResourceCost> elasticCosts = new List<ResourceCost>();
             foreach(ResourceCost cost in costs)
             {
-                if (cost.ResourceId.Contains(db.name) && cost.ResourceId.Contains(db.resourceGroup))
+                if (cost.ResourceId.Contains(db.name.ToLower()) && cost.ResourceId.Contains(db.resourceGroup.ToLower()))
                 {
                     db.Costs.Add(cost);
                     db.TotalCostBilling += cost.Cost;
                     found = true;
-                    if(db.name == "ot-prd-pay-sqldb-we-02")
+                    if(db.name == "oct-dwh")
                     {
-                        Debug.WriteLine("test db"); 
+                        Debug.WriteLine("oct-dwh cost"); 
                     }
                 }
                 if (db.ElasticPool != null && cost.ResourceId.Contains(db.ElasticPool.name))

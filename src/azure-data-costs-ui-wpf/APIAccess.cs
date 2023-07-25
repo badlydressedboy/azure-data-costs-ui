@@ -870,23 +870,10 @@ namespace DataEstateOverview
 
                 // TheLastMonth, MonthToDate
                 // filter: https://learn.microsoft.com/en-us/rest/api/cost-management/query/usage?tabs=HTTP#queryfilter
-                // // //,""timeframe"": ""TheLastMonth""
-                /*
-                 * 
-                 
-                ,""filter"": { 
-                                    ""dimensions"": {
-                                        ""name"": ""serviceName""
-                                        ,""operator"": ""In""
-                                        ,""values"": [     
-                      
-                                          
-                                            ""Virtual machine""
-                                        ]
-                                    }
-                                }
+                
+                // *** for available service names look at the costs analysis page in the portal and group by service name ***
 
-                */
+                
                 payload = @"{""type"":""ActualCost""
                    
                             ,""timeframe"": ""Custom""
@@ -910,6 +897,9 @@ namespace DataEstateOverview
                                             ,""Advanced Threat Protection""
                                             ,""Purview""
                                             ,""Azure Purview""
+                                            ,""Power BI Embedded""
+                                            ,""Azure Synapse Analytics""
+                                            ,""Synapse SQL Pool""
                                         ]
                                     }
                                 }
@@ -1022,9 +1012,9 @@ namespace DataEstateOverview
                         rc.Currency = obj[12].ToString();
                         subscription.ResourceCosts.Add(rc);
 
-                        if (rc.ResourceId.Contains("oct-sql-dwh"))
+                        if (rc.ResourceId.EndsWith("/oct-dwh"))
                         {
-                            Debug.WriteLine($"oct-sql-dwh: {rc.ResourceId}");
+                            Debug.WriteLine($"oct-dwh: {rc.ResourceId}");
                         }
                         //if (rc.ServiceName.Contains("Factory"))
                         //{
