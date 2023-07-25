@@ -662,10 +662,15 @@ namespace DataEstateOverview
                 }
                
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?{timeGrainParam}&aggregation=average,maximum&timespan={timeFrom}/{timeTo}&metricnames=physical_data_read_percent,log_write_percent,dtu_consumption_percent,sessions_count,storage,storage_percent,workers_percent,sessions_percent,dtu_limit,dtu_used,sqlserver_process_core_percent,sqlserver_process_memory_percent,tempdb_data_size,tempdb_log_size,tempdb_log_used_percent,allocated_data_storage&api-version=2021-05-01";
-                if (sqlDb.properties.currentServiceObjectiveName.Contains("GP_")) 
+                if (sqlDb.IsVCore) 
                 {
                     // dont get elastic pool metrics - we are still at db level
                     url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum{timeGrainParam}&timespan={timeFrom}/{timeTo}&metricnames=cpu_percent&api-version=2021-05-01";
+                }
+                if (sqlDb.IsSynapse)
+                {
+                    // DWU used
+                    url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum{timeGrainParam}&timespan={timeFrom}/{timeTo}&metricnames=dwu_consumption_percent&api-version=2021-05-01";
                 }
 
                 sqlDb.IsRestQueryBusy = true;
@@ -726,6 +731,21 @@ namespace DataEstateOverview
                                 }
 
                                 break;
+                            case "dwu_consumption_percent": // DWH
+                                sqlDb.dtu_consumption_percent = latestAvg;
+
+                                sqlDb.PerformanceMetricSeries.Clear();
+
+                                sqlDb.MaxDtuUsed = 0;
+                                foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                {
+                                    sqlDb.PerformanceMetricSeries.Add(d);
+                                    if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
+                                }
+
+                                break;
+
+                                
                             case "physical_data_read_percent":
                                 sqlDb.physical_data_read_percent = latestAvg;
                                 break;

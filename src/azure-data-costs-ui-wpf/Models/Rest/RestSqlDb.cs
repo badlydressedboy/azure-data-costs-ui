@@ -243,6 +243,30 @@ namespace DataEstateOverview.Models.Rest
           
         }
 
+        public bool IsSynapse
+        {
+            get
+            {
+                if (properties.currentServiceObjectiveName.Contains("DW"))
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public bool IsVCore
+        {
+            get
+            {
+                if (properties.currentServiceObjectiveName.Contains("GP_"))
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
         public string MetricsHistoryTimeString { 
             get
             {

@@ -576,12 +576,12 @@ namespace DataEstateOverview
             List<ResourceCost> elasticCosts = new List<ResourceCost>();
             foreach(ResourceCost cost in costs)
             {
-                if (cost.ResourceId.Contains(db.name.ToLower()) && cost.ResourceId.Contains(db.resourceGroup.ToLower()))
+                if (cost.ResourceId.EndsWith(db.name.ToLower()) && cost.ResourceId.Contains(db.resourceGroup.ToLower()))
                 {
                     db.Costs.Add(cost);
                     db.TotalCostBilling += cost.Cost;
                     found = true;
-                    if(db.name == "oct-dwh")
+                    if(db.name == "OCT-DWH")
                     {
                         Debug.WriteLine("oct-dwh cost"); 
                     }
