@@ -368,7 +368,7 @@ namespace DataEstateOverview
                 }
 
 
-                Debug.WriteLine($"finished getting {sqlServer.name} dbs ({sqlServer.Dbs.Count})");
+                //Debug.WriteLine($"finished getting {sqlServer.name} dbs ({sqlServer.Dbs.Count})");
             }
             catch(Exception ex)
             {
@@ -503,7 +503,7 @@ namespace DataEstateOverview
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Debug.WriteLine($"Vuln Assessment Error for {sqlDb.serverName}.{sqlDb.name}");
+                    Debug.WriteLine($"Vuln Assessment Error for {sqlDb.serverName}.{sqlDb.name}: {response.StatusCode}, {response.ReasonPhrase}");
                     sqlDb.VulnerabilityScanError = json;
                     return;
                 }
@@ -515,12 +515,12 @@ namespace DataEstateOverview
                     if (latestScan == null) return;
                     sqlDb.latestVulnerabilityScanProperties = latestScan.properties;
                    
-                    Debug.WriteLine("ltr null");
+                    //Debug.WriteLine("ltr null");
                     //sqlDb.lTRPolicyProperties = ltr?.properties;
                 }
                 else
                 {
-                    Debug.WriteLine("ltr null");
+                    //Debug.WriteLine("ltr null");
                 }
 
             }
@@ -548,7 +548,7 @@ namespace DataEstateOverview
                 }
                 else
                 {
-                    Debug.WriteLine("ltr null");
+                    //Debug.WriteLine("ltr null");
                 }
 
             }
@@ -800,7 +800,7 @@ namespace DataEstateOverview
                     }
                 }
 
-                Debug.WriteLine($"finished getting {sqlDb.name} metrics");
+                //Debug.WriteLine($"finished getting {sqlDb.name} metrics");
             }
             catch (Exception ex)
             {
@@ -829,7 +829,7 @@ namespace DataEstateOverview
                     }
                 }
                 
-                Debug.WriteLine($"finished getting {sqlDb.name} advisors");
+                //Debug.WriteLine($"finished getting {sqlDb.name} advisors");
             }
             catch (Exception ex)
             {
@@ -1022,9 +1022,9 @@ namespace DataEstateOverview
                         rc.Currency = obj[12].ToString();
                         subscription.ResourceCosts.Add(rc);
 
-                        if (rc.ResourceId.Contains("elastic"))
+                        if (rc.ResourceId.Contains("oct-sql-dwh"))
                         {
-                            Debug.WriteLine($"elastic: {rc.ResourceId}");
+                            Debug.WriteLine($"oct-sql-dwh: {rc.ResourceId}");
                         }
                         //if (rc.ServiceName.Contains("Factory"))
                         //{

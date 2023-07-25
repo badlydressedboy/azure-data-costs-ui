@@ -17,16 +17,7 @@ namespace DataEstateOverview
 {
     public class DataContextVM : ObservableObject
     {
-        public void UpdateHttpAccessCountMessage()
-        {
-            HttpAccessCountMessage = $"Total Rest Calls: {APIAccess.HttpClient.HttpCallCount}";
-        }
-        private string? httpAccessCountMessage;
-        public string? HttpAccessCountMessage
-        {
-            get => httpAccessCountMessage;
-            set => SetProperty(ref httpAccessCountMessage, value);
-        }
+       
 
         public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
         public ObservableCollection<Subscription> DetectedSubscriptions { get; set; } = new ObservableCollection<Subscription>();
@@ -249,6 +240,16 @@ namespace DataEstateOverview
             set => SetProperty(ref showRunningSessionsOnly, value);            
         }
 
+        public void UpdateHttpAccessCountMessage()
+        {
+            HttpAccessCountMessage = $"Total Rest Calls: {APIAccess.HttpClient.HttpCallCount}";
+        }
+        private string? httpAccessCountMessage;
+        public string? HttpAccessCountMessage
+        {
+            get => httpAccessCountMessage;
+            set => SetProperty(ref httpAccessCountMessage, value);
+        }
 
         public DataContextVM(){
 
@@ -323,7 +324,11 @@ namespace DataEstateOverview
                 foreach (var sub in Subscriptions)
                 {
                     if(!sub.ReadObjects) continue; // ignore this subscription
-
+                    if(sub.ResourceCosts.Count == 0)
+                    {
+                        Debug.WriteLine($"No costs for sub: {sub.displayName}");
+                        continue;
+                    }
                     foreach (var s in sub.SqlServers)
                     {
                         foreach (var db in s.Dbs)
@@ -564,10 +569,10 @@ namespace DataEstateOverview
         private static void MapCostToDb(RestSqlDb db, List<ResourceCost> costs)
         {
             bool found = false;
-            //if(db.ElasticPool != null)
-            //{
-            //    Debug.WriteLine("elastic db!");
-            //}
+            if (costs.Count == 0)
+            {
+                Debug.WriteLine("elastic db!");
+            }
             List<ResourceCost> elasticCosts = new List<ResourceCost>();
             foreach(ResourceCost cost in costs)
             {
@@ -592,13 +597,13 @@ namespace DataEstateOverview
                     elasticCosts.Add(cost);
                 }
             }
-            if(elasticCosts.Count > 0)
-            {
-                Debug.WriteLine($"elastic costs");
-            }
+            //if(elasticCosts.Count > 0)
+            //{
+            //    //Debug.WriteLine($"elastic costs");
+            //}
             if (!found)
             {
-                Debug.WriteLine($"why no cost for {db.name}?");
+                Debug.WriteLine($"why no cost for DB {db.name}? Costs.count: {costs.Count}");
             }
         }
         private static void MapCostToDF(DataFactory df, List<ResourceCost> costs)

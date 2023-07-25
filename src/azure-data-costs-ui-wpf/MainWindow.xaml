@@ -1433,7 +1433,7 @@
         </mah:MetroAnimatedSingleRowTabControl>
 
        
-            <StatusBar Grid.Row="1">
+            <StatusBar Grid.Row="1" Background="LightGray" Foreground="Gray">
                 <StatusBarItem>
                     <TextBlock Margin="2" Text="{Binding HttpAccessCountMessage}"></TextBlock>
                 </StatusBarItem>

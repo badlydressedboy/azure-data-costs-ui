@@ -31,7 +31,7 @@ namespace Azure.Costs.Ui.Wpf
 
             if (HttpCallCount % 10 == 0)
             {
-                Debug.WriteLine($"Http # {HttpCallCount}");
+                //Debug.WriteLine($"Http # {HttpCallCount}");
             }
             return await _httpClient.GetAsync(url);  
         }
