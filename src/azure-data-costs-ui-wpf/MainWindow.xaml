@@ -93,6 +93,11 @@
     </mah:MetroWindow.Resources>
     <Grid>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
         <mah:MetroAnimatedSingleRowTabControl Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged">
 
             <mah:MetroTabItem Header="DB Summary" Name="TabRest">
@@ -1427,6 +1432,14 @@
 
         </mah:MetroAnimatedSingleRowTabControl>
 
+       
+            <StatusBar Grid.Row="1">
+                <StatusBarItem>
+                    <TextBlock Margin="2" Text="{Binding HttpAccessCountMessage}"></TextBlock>
+                </StatusBarItem>
+            </StatusBar>
+        
+        
         <Grid.Resources>
 
 

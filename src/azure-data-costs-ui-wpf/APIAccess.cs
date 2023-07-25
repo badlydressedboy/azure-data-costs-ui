@@ -25,13 +25,13 @@ using System.Globalization;
 using System.Security.Policy;
 using CsvHelper;
 using Azure.Costs.Ui.Wpf.Models.Rest;
+using Azure.Costs.Ui.Wpf;
 
 namespace DataEstateOverview
 {
     public static class APIAccess
     {
-
-        private static HttpClient _httpClient;        
+        public static MyHttpClient HttpClient;        
         private static string _accessToken;
         public static int CostDays { get; set; } = 30;
 
@@ -49,16 +49,24 @@ namespace DataEstateOverview
 
             return httpClient;
         }
-
+        private static async Task<HttpResponseMessage> GetHttpClientAsync(string url)
+        {
+            if (HttpClient == null)
+            {
+                AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
+                _accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/");
+                HttpClient = new MyHttpClient("https://management.azure.com/", 30, _accessToken);
+            }
+            HttpResponseMessage r = await HttpClient.GetAsync(url);
+            return r;
+        }
         public static async Task<string?> TestLogin()
         {
             try
             {
-                AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
-                _accessToken = azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/").Result;
-
-                var httpClient = GetHttpClient("https://management.azure.com/subscriptions/", 5);
-                HttpResponseMessage response = await httpClient.GetAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
+                
+                //var httpClient = GetHttpClient("https://management.azure.com/subscriptions/", 5);
+                HttpResponseMessage response = await GetHttpClientAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");// httpClient.GetAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
                 if (!response.IsSuccessStatusCode)
                 {
                     return response.ReasonPhrase;
@@ -75,21 +83,24 @@ namespace DataEstateOverview
         {
             try
             {
-                AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
-                _accessToken = azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/").Result;
-                Debug.WriteLine(_accessToken);
+                //AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
+                //_accessToken = azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/").Result;
+                //Debug.WriteLine(_accessToken);
 
-                _httpClient = new HttpClient
-                {
-                    BaseAddress = new Uri("https://management.azure.com/subscriptions/")
-                    ,
-                    Timeout = TimeSpan.FromSeconds(30)
-                };
+                //_httpClient = new HttpClient
+                //{
+                //    BaseAddress = new Uri("https://management.azure.com/subscriptions/")
+                //    ,
+                //    Timeout = TimeSpan.FromSeconds(30)
+                //};
 
-                _httpClient.DefaultRequestHeaders.Remove("Authorization");
-                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _accessToken);
+                //_httpClient.DefaultRequestHeaders.Remove("Authorization");
+                //_httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _accessToken);
 
-                HttpResponseMessage response = await _httpClient.GetAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
+                //HttpResponseMessage response = await GetHttpClientAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
+
+                HttpResponseMessage response = await GetHttpClientAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");// httpClient.GetAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
+
                 var json = await response.Content.ReadAsStringAsync();
                 RootSubscription subscriptions = await response?.Content?.ReadFromJsonAsync<RootSubscription>();
                 return subscriptions.value;
@@ -127,19 +138,7 @@ namespace DataEstateOverview
                  *  - az account get-access-token --resource https://vault.azure.net
                  */
 
-                AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
-                _accessToken = azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/").Result;
-                Debug.WriteLine(_accessToken);
-
-                _httpClient = new HttpClient
-                {
-                    BaseAddress = new Uri("https://management.azure.com/subscriptions/")
-                    , Timeout = TimeSpan.FromSeconds(30)
-                };
-               
-                _httpClient.DefaultRequestHeaders.Remove("Authorization");
-                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _accessToken);
-                       
+            
                 try
                 {
                     Task[] tasks = new Task[7];
@@ -198,7 +197,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/resources?$filter=resourceType eq 'Microsoft.sql/servers'&$expand=resourceGroup,createdTime,changedTime&$top=1000&api-version=2021-04-01";
                 StringContent queryString = new StringContent("api-version=2021-04-01");
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
                 // get location and name properties from list of servers
                 RootRestSqlServer servers = await response.Content.ReadFromJsonAsync<RootRestSqlServer>();
@@ -237,7 +236,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resourceGroups/{sqlServer.resourceGroup}/providers/Microsoft.Sql/servers/{sqlServer.name}/elasticpools?api-version=2021-02-01-preview";
                 StringContent queryString = new StringContent("api-version=2021-04-01");
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
                 // get location and name properties from list of servers
 
@@ -282,9 +281,8 @@ namespace DataEstateOverview
 
             try
             {
-                string dbUrl = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resourceGroups/{sqlServer.resourceGroup}/providers/Microsoft.Sql/servers/{sqlServer.name}/databases?api-version=2021-02-01-preview";
-                var httpClient = GetHttpClient("https://management.azure.com/subscriptions/", 30);
-                HttpResponseMessage response = await httpClient.GetAsync(dbUrl);
+                string dbUrl = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resourceGroups/{sqlServer.resourceGroup}/providers/Microsoft.Sql/servers/{sqlServer.name}/databases?api-version=2021-02-01-preview";              
+                var response = await GetHttpClientAsync(dbUrl);
                 var json = await response.Content.ReadAsStringAsync();
                 RootRestSqlDb databases = await response?.Content?.ReadFromJsonAsync<RootRestSqlDb>();
                 if (sqlServer.name == "octopus-sql-server-staging")
@@ -429,7 +427,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/usages?api-version=2021-11-01";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
                 var usages = await response?.Content?.ReadFromJsonAsync<DBUsageRoot>();
                 //Debug.WriteLine("usage 2");
@@ -464,7 +462,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/advisors?$expand=recommendedActions&api-version=2021-11-01";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -500,7 +498,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/vulnerabilityAssessments/default/scans?api-version=2020-11-01-preview";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -540,7 +538,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/backupLongTermRetentionPolicies/default?api-version=2020-11-01-preview";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
                 var ltr = await response?.Content?.ReadFromJsonAsync<LTRPolicy>();
 
@@ -615,8 +613,8 @@ namespace DataEstateOverview
                     {
                         string poolUrl = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/elasticPools/{sqlDb.ElasticPool.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum{timeGrainParam}&timespan={timeFrom}/{timeTo}&metricnames=sessions_count,cpu_percent&api-version=2021-05-01";
 
-                        var poolHttpClient = GetHttpClient("https://management.azure.com/subscriptions/", 30);
-                        HttpResponseMessage res = await poolHttpClient.GetAsync(poolUrl);
+                        var res = await GetHttpClientAsync(poolUrl);
+
                         if (!res.IsSuccessStatusCode)
                         {
                             Debug.WriteLine($"Failed pool metrics!: {res.ReasonPhrase}");
@@ -673,8 +671,7 @@ namespace DataEstateOverview
                 sqlDb.IsRestQueryBusy = true;
                 sqlDb.MetricsErrorMessage = "";
 
-                var httpClient = GetHttpClient("https://management.azure.com/subscriptions/", 30);
-                HttpResponseMessage response = await httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 if (!response.IsSuccessStatusCode)
                 {
                     Debug.WriteLine("Failed metrics!");
@@ -819,7 +816,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/serviceTierAdvisors/?api-version=2022-09-01";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
                 RootServiceTierAdvisor advisors = await response?.Content?.ReadFromJsonAsync<RootServiceTierAdvisor>();
 
@@ -1057,7 +1054,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/resources?$filter=resourceType eq 'Microsoft.DataFactory/factories' &$expand=resourceGroup,createdTime,changedTime&$top=1000&api-version=2021-04-01";
                 StringContent queryString = new StringContent("api-version=2021-04-01");
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
                 // get location and name properties from list of servers
                 DataFactoryRoot factories = await response.Content.ReadFromJsonAsync<DataFactoryRoot>();
@@ -1084,7 +1081,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-05-01";
                 
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
                 Debug.WriteLine("got storage acc");
 
@@ -1113,7 +1110,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2022-05-01";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
                 Debug.WriteLine("got vnet");
 
@@ -1143,7 +1140,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2022-08-01";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
                 Debug.WriteLine("got vnet");
 
@@ -1172,7 +1169,7 @@ namespace DataEstateOverview
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Purview/accounts?api-version=2021-07-01";
 
-                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
                 Debug.WriteLine("got purv acc");
 

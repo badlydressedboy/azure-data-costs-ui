@@ -16,7 +16,18 @@ using System.Windows.Input;
 namespace DataEstateOverview
 {
     public class DataContextVM : ObservableObject
-    {        
+    {
+        public void UpdateHttpAccessCountMessage()
+        {
+            HttpAccessCountMessage = $"Total Rest Calls: {APIAccess.HttpClient.HttpCallCount}";
+        }
+        private string? httpAccessCountMessage;
+        public string? HttpAccessCountMessage
+        {
+            get => httpAccessCountMessage;
+            set => SetProperty(ref httpAccessCountMessage, value);
+        }
+
         public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
         public ObservableCollection<Subscription> DetectedSubscriptions { get; set; } = new ObservableCollection<Subscription>();
 
@@ -254,6 +265,7 @@ namespace DataEstateOverview
             TestLoginErrorMessage = await APIAccess.TestLogin();
 
             IsTestLoginBusy = false;
+            UpdateHttpAccessCountMessage();
         }
         public async Task GetSubscriptions()
         {
@@ -285,6 +297,7 @@ namespace DataEstateOverview
                 if (sub.ReadObjects) Subscriptions.Add(sub);
             }
             App.SaveConfig();
+            UpdateHttpAccessCountMessage();
         }
         // db/sql server data plus costs
         public async Task RefreshDatabases()
@@ -335,6 +348,7 @@ namespace DataEstateOverview
                 Debug.WriteLine(ex);
             }
             IsRestQueryBusy = false;
+            UpdateHttpAccessCountMessage();
         }
 
         public async Task RefreshStorage()
@@ -376,6 +390,7 @@ namespace DataEstateOverview
                 Debug.WriteLine($"{ex}");   
             }
             IsStorageQueryBusy = false;
+            UpdateHttpAccessCountMessage();
         }
 
         public async Task RefreshDataFactories()
@@ -417,6 +432,7 @@ namespace DataEstateOverview
                 Debug.WriteLine($"{ex}");
             }
             IsADFQueryBusy = false;
+            UpdateHttpAccessCountMessage();
         }
 
         public async Task RefreshVNets()
@@ -458,6 +474,7 @@ namespace DataEstateOverview
                 Debug.WriteLine($"{ex}");
             }
             IsVNetQueryBusy = false;
+            UpdateHttpAccessCountMessage();
         }
 
         public async Task RefreshVMs()
@@ -499,6 +516,7 @@ namespace DataEstateOverview
                 Debug.WriteLine($"{ex}");
             }
             IsVMQueryBusy = false;
+            UpdateHttpAccessCountMessage();
         }
 
         public async Task RefreshPurview()
@@ -540,6 +558,7 @@ namespace DataEstateOverview
                 Debug.WriteLine($"{ex}");
             }
             IsPurviewQueryBusy = false;
+            UpdateHttpAccessCountMessage();
         }
 
         private static void MapCostToDb(RestSqlDb db, List<ResourceCost> costs)
@@ -743,6 +762,7 @@ namespace DataEstateOverview
                     , async (db, y) =>
                     {
                         db.SpendAnalysisStatus = "Analysing...";
+                        db.OverSpendFromMaxPcString = "?";
                         await APIAccess.GetDbMetrics(db);
 
                         db.SpendAnalysisStatus = "Complete";
@@ -778,6 +798,7 @@ namespace DataEstateOverview
                 Debug.WriteLine(ex);
             }
             IsDbSpendAnalysisBusy = false;
+            UpdateHttpAccessCountMessage();
         }
 
         public async Task RefreshSqlDb()
@@ -806,6 +827,7 @@ namespace DataEstateOverview
                 Debug.WriteLine(ex);
             }
             IsQueryingDatabase = false;
+            UpdateHttpAccessCountMessage();
         }
 
         public void SaveSubscriptionOptions()

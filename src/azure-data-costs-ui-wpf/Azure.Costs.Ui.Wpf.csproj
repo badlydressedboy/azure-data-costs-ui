@@ -56,6 +56,7 @@
 
   <ItemGroup>
     <Folder Include="CostData\" />
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 
   <ItemGroup>
