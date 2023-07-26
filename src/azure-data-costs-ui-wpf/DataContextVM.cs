@@ -17,8 +17,8 @@ namespace DataEstateOverview
 {
     public class DataContextVM : ObservableObject
     {
-       
 
+        #region vars
         public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
         public ObservableCollection<Subscription> DetectedSubscriptions { get; set; } = new ObservableCollection<Subscription>();
 
@@ -262,6 +262,8 @@ namespace DataEstateOverview
             set => SetProperty(ref httpAccessCountMessage, value);
         }
 
+        #endregion
+
         public DataContextVM(){
 
             Subscriptions.Add(new Subscription("a5be5e3e-da5c-45f5-abe9-9591a51fccfa"));
@@ -272,11 +274,13 @@ namespace DataEstateOverview
         {
             if (IsTestLoginBusy) return;
             IsTestLoginBusy = true;
+            IsRestQueryBusy = true;
             TestLoginErrorMessage = "";
 
             TestLoginErrorMessage = await APIAccess.TestLogin();
 
             IsTestLoginBusy = false;
+            IsRestQueryBusy = false;
             UpdateHttpAccessCountMessage();
         }
         public async Task GetSubscriptions()

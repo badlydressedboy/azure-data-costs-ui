@@ -425,7 +425,7 @@ namespace DataEstateOverview
                 var json = await response.Content.ReadAsStringAsync();
                 var usages = await response?.Content?.ReadFromJsonAsync<DBUsageRoot>();
                 //Debug.WriteLine("usage 2");
-                if (usages != null)
+                if (usages?.value != null)
                 {
                     foreach (var a in usages.value)
                     {

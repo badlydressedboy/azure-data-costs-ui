@@ -390,6 +390,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
@@ -528,6 +529,19 @@
                                                     <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
                                                 </DataGrid.Columns>
                                             </DataGrid>
+                                        </Grid>
+
+                                        <Grid Grid.Column="3" Visibility="{Binding HasAdvisorRecommendations, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+
+                                            <TextBlock Margin="2,4,2,2" FontSize="16" VerticalAlignment="Center" Text="Advisor Recomendations"/>
+                                            
+                                            
+                                            <TextBox Margin="2,8,2,2" Width="450" TextWrapping="Wrap" IsReadOnly="True"  Grid.Row="1" Text="{Binding advisorRecomendationDetails}"/>
                                         </Grid>
                                     </Grid>
                                 </DataTemplate>

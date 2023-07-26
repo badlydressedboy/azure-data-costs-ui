@@ -251,7 +251,17 @@ namespace DataEstateOverview.Models.Rest
                 OnPropertyChanged("SpendAnalysisStatus");
             }
         }
-        
+
+        //protected bool _spendAnalysisStatus;
+
+        public bool HasAdvisorRecommendations
+        {
+            get {
+                if (advisorRecomendationCount > 0) return true;
+                return false; 
+            }            
+        }
+
 
         public bool IsElaticPoolMember
         {
