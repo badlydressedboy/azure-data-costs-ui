@@ -195,6 +195,7 @@ namespace DataEstateOverview
         {
             try
             {
+
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/resources?$filter=resourceType eq 'Microsoft.sql/servers'&$expand=resourceGroup,createdTime,changedTime&$top=1000&api-version=2021-04-01";
                 StringContent queryString = new StringContent("api-version=2021-04-01");
                 HttpResponseMessage response = await GetHttpClientAsync(url);
@@ -227,7 +228,7 @@ namespace DataEstateOverview
 
             }
 
-            Debug.WriteLine("fin get servers");
+            //Debug.WriteLine("fin get sql servers");
         }
 
         private static async Task GetSqlElasticPools(RestSqlServer sqlServer)
@@ -269,7 +270,7 @@ namespace DataEstateOverview
                 Debug.WriteLine(ex);
             }
 
-            Debug.WriteLine("fin get servers");
+            //Debug.WriteLine("fin get elastic pools");
         }
 
         private static async Task GetSqlServerDatabases(RestSqlServer sqlServer)
@@ -817,6 +818,7 @@ namespace DataEstateOverview
                     {
                         sqlDb.GotMetricsHistory = true;
                         sqlDb.OverSpendFromMaxPc = 100 - sqlDb.MaxDtuUsed;
+                        sqlDb.CalcPotentialSaving();
                     }
                 }
 

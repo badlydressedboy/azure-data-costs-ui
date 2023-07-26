@@ -158,6 +158,28 @@ namespace DataEstateOverview.Models.Rest
             }
         }
 
+        private decimal _potentialSavingAmount;
+        public decimal PotentialSavingAmount 
+        {
+            get { return _potentialSavingAmount; }
+            set
+            {
+                _potentialSavingAmount = value;
+                PotentialSavingAmountString = value.ToString();
+                OnPropertyChanged("PotentialSavingAmount");
+            }
+        }
+        private string _potentialSavingAmountString = "?";
+        public string PotentialSavingAmountString 
+        {
+            get { return _potentialSavingAmountString; }
+            set
+            {
+                _potentialSavingAmountString = value;
+                OnPropertyChanged("PotentialSavingAmountString");
+            }
+        }
+
         public double allocated_data_storage_gb { get; set; }
 
         public List<ResourceCost> Costs { get; set; } = new List<ResourceCost>();
@@ -286,6 +308,21 @@ namespace DataEstateOverview.Models.Rest
         public RestSqlDb()
         {
             OverSpendFromMaxPcString = "?";
+            PotentialSavingAmountString = "?";
+        }
+
+        public void CalcPotentialSaving()
+        {
+            if (TotalCostBilling <= 6) return; // too small to decrease
+            if(OverSpendFromMaxPc > 75)
+            {
+                PotentialSavingAmount = TotalCostBilling * (decimal)0.75;
+            }
+            if (OverSpendFromMaxPc > 50 && OverSpendFromMaxPc <= 75)
+            {
+                PotentialSavingAmount = TotalCostBilling * (decimal)0.50;
+            }
+
         }
 
     }

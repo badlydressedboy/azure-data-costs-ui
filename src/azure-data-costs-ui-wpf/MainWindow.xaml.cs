@@ -326,7 +326,7 @@ namespace DataEstateOverview
 
                 App.SaveConfig();
             }
-            Debug.WriteLine("gdg");
+            //Debug.WriteLine("gdg");
         }
 
         private void StorageDataGrid_KeyDown(object sender, KeyEventArgs e)

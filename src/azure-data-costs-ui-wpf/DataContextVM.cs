@@ -173,6 +173,17 @@ namespace DataEstateOverview
                 SetProperty(ref isDbSpendAnalysisBusy, value);
             }
         }
+
+        private decimal _totalPotentialSavingAmount;
+        public decimal TotalPotentialSavingAmount
+        {
+            get { return _totalPotentialSavingAmount; }
+            set
+            {
+                _totalPotentialSavingAmount = value;
+                OnPropertyChanged("TotalPotentialSavingAmount");
+            }
+        }
         private string restErrorMessage;
         public string RestErrorMessage
         {
@@ -581,10 +592,6 @@ namespace DataEstateOverview
                     db.Costs.Add(cost);
                     db.TotalCostBilling += cost.Cost;
                     found = true;
-                    if(db.name == "OCT-DWH")
-                    {
-                        Debug.WriteLine("oct-dwh cost"); 
-                    }
                 }
                 if (db.ElasticPool != null && cost.ResourceId.Contains(db.ElasticPool.name))
                 {                                                           
@@ -758,8 +765,8 @@ namespace DataEstateOverview
             IsDbSpendAnalysisBusy = true;
 
             RestErrorMessage = "";
-            decimal totalPotentialSaving = 0;
-
+            //decimal totalPotentialSaving = 0;
+            TotalPotentialSavingAmount = 0;
             try
             {
                 await Parallel.ForEachAsync(RestSqlDbList.OrderByDescending(x=>x.TotalCostBilling)
@@ -804,6 +811,7 @@ namespace DataEstateOverview
             }
             IsDbSpendAnalysisBusy = false;
             UpdateHttpAccessCountMessage();
+            TotalPotentialSavingAmount = RestSqlDbList.Sum(x => x.PotentialSavingAmount);
         }
 
         public async Task RefreshSqlDb()
