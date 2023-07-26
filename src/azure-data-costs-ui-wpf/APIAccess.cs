@@ -285,11 +285,7 @@ namespace DataEstateOverview
                 string dbUrl = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resourceGroups/{sqlServer.resourceGroup}/providers/Microsoft.Sql/servers/{sqlServer.name}/databases?api-version=2021-02-01-preview";              
                 var response = await GetHttpClientAsync(dbUrl);
                 var json = await response.Content.ReadAsStringAsync();
-                RootRestSqlDb databases = await response?.Content?.ReadFromJsonAsync<RootRestSqlDb>();
-                if (sqlServer.name == "octopus-sql-server-staging")
-                {
-                    Debug.WriteLine("got elastic");
-                }
+                RootRestSqlDb databases = await response?.Content?.ReadFromJsonAsync<RootRestSqlDb>();                
 
                 foreach (var db in databases.value.Where(x => x.name != "master"))
                 {
@@ -301,18 +297,15 @@ namespace DataEstateOverview
                     db.AzDB.SetParent(sqlServer.AzServer);
 
                     if (db.properties.elasticPoolId != null)
-                    {
-                        Debug.WriteLine($"Elastic pool Id = {db.properties.elasticPoolId}");
+                    {                        
                         foreach(var ep in sqlServer.ElasticPools)
                         {                            
                             if (db.properties.elasticPoolId.Contains(ep.name))
-                            {
-                                Debug.WriteLine(ep.name);
+                            {                                
                                 db.properties.elasticPoolName = ep.name;
                                 db.ElasticPool = ep;
                             }
                         }
-
                     }
 
                     sqlServer.Dbs.Add(db);
@@ -461,6 +454,8 @@ namespace DataEstateOverview
         {
             try
             {
+                if (sqlDb.IsSynapse) return; // dwh type db not supported
+
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/advisors?$expand=recommendedActions&api-version=2021-11-01";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
@@ -497,15 +492,25 @@ namespace DataEstateOverview
 
             try
             {
-                string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/vulnerabilityAssessments/default/scans?api-version=2020-11-01-preview";
+                string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name.ToLower()}/vulnerabilityAssessments/default/scans?api-version=2020-11-01-preview";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Debug.WriteLine($"Vuln Assessment Error for {sqlDb.serverName}.{sqlDb.name}: {response.StatusCode}, {response.ReasonPhrase}");
-                    sqlDb.VulnerabilityScanError = json;
+                    if (json.ToLower().Contains("exist"))
+                    {
+                        // is no settings for scans it creates a 'doesnt exist' error we dont really care about
+                        sqlDb.VulnerabilityScanError = ""; // could output something?
+                    }
+                    else
+                    {
+                        // unknown error
+                        sqlDb.VulnerabilityScanError = json;
+                        Debug.WriteLine($"Vuln Assessment Error for {sqlDb.serverName}.{sqlDb.name}: {response.StatusCode}, {response.ReasonPhrase}");
+                    }                    
+                    
                     return;
                 }
                 var scans = await response?.Content?.ReadFromJsonAsync<RootVulnerabilityScans>();
