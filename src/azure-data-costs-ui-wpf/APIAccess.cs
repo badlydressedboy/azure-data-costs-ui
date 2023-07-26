@@ -515,7 +515,7 @@ namespace DataEstateOverview
                 }
                 var scans = await response?.Content?.ReadFromJsonAsync<RootVulnerabilityScans>();
 
-                if (scans != null && scans.value != null)
+                if (scans?.value != null)
                 {
                     var latestScan = scans.value.OrderByDescending(x => x.properties.endTime).First();
                     if (latestScan == null) return;

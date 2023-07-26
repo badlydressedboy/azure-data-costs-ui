@@ -1171,7 +1171,7 @@
 
                             <DataGrid.Columns>
 
-                                <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
+                                <DataGridTextColumn Header="VM Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
 
                                 <DataGridTextColumn Header="Resource Group"  Binding="{Binding resourceGroup}"  CellStyle="{StaticResource DataGridParentCell}"></DataGridTextColumn>
 
@@ -1179,7 +1179,7 @@
 
                                 <DataGridTextColumn Header="Size"  Binding="{Binding properties.hardwareProfile.vmSize}"  CellStyle="{StaticResource DataGridParentCell}" />
 
-                                <DataGridTextColumn Header="Computer Name"  Binding="{Binding properties.osProfile.computerName}"  CellStyle="{StaticResource DataGridParentCell}" />
+                                <!--<DataGridTextColumn Header="Computer Name"  Binding="{Binding properties.osProfile.computerName}"  CellStyle="{StaticResource DataGridParentCell}" />-->
 
 
                                 <DataGridTextColumn Header="Location"  Binding="{Binding location}"  CellStyle="{StaticResource DataGridParentCell}" />

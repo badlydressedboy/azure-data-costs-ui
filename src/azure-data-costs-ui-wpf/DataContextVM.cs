@@ -709,19 +709,25 @@ namespace DataEstateOverview
 
             foreach (ResourceCost cost in costs)
             {
-                if(!cost.ResourceId.Contains(@"virtualmachines/")) continue;
-                string costVmName = cost.ResourceId.Substring(cost.ResourceId.IndexOf("virtualmachines/") + 16);
-            
-                if (costVmName == vm.name)
+                try
                 {
-                    if (cost.ServiceName == "Virtual Machines" || cost.ServiceName == "Bandwidth"|| cost.ServiceName == "Virtual Network")
-                    {
-                        // "ResourceType
-                        vm.TotalCostBilling += cost.Cost;
+                    if (!cost.ResourceId.Contains(@"virtualmachines/")) continue;
+                    string costVmName = cost.ResourceId.Substring(cost.ResourceId.IndexOf("virtualmachines/") + 16);
 
-                        vm.Costs.Add(cost);
-                        found = true;
+                    if (costVmName.ToLower() == vm.name.ToLower())
+                    {
+                        if (cost.ServiceName == "Virtual Machines" || cost.ServiceName == "Bandwidth" || cost.ServiceName == "Virtual Network")
+                        {
+                            // "ResourceType
+                            vm.TotalCostBilling += cost.Cost;
+
+                            vm.Costs.Add(cost);
+                            found = true;
+                        }
                     }
+                }catch(Exception ex)
+                {
+                    Debug.WriteLine($"VM costs error: {ex}");
                 }
             }
             if (!found)
