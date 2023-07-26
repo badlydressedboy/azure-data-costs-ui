@@ -468,7 +468,7 @@ namespace DataEstateOverview
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Debug.WriteLine($"Recommendations error for {sqlDb.serverName}.{sqlDb.name}");
+                    Debug.WriteLine($"Recommendations error for {sqlDb.serverName}.{sqlDb.name}; {response.ReasonPhrase}");
                     sqlDb.RecommendationsError = json;
                     return;
                 }
@@ -1034,10 +1034,6 @@ namespace DataEstateOverview
                         rc.Currency = obj[12].ToString();
                         subscription.ResourceCosts.Add(rc);
 
-                        if (rc.ResourceId.EndsWith("/oct-dwh"))
-                        {
-                            Debug.WriteLine($"oct-dwh: {rc.ResourceId}");
-                        }
                         //if (rc.ServiceName.Contains("Factory"))
                         //{
                         //    Debug.WriteLine("factory");

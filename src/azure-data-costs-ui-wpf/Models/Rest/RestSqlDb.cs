@@ -165,7 +165,7 @@ namespace DataEstateOverview.Models.Rest
             set
             {
                 _potentialSavingAmount = value;
-                PotentialSavingAmountString = value.ToString();
+                PotentialSavingAmountString = value.ToString("N0");
                 OnPropertyChanged("PotentialSavingAmount");
             }
         }
@@ -313,6 +313,7 @@ namespace DataEstateOverview.Models.Rest
 
         public void CalcPotentialSaving()
         {
+            PotentialSavingAmount = 0;
             if (TotalCostBilling <= 6) return; // too small to decrease
             if(OverSpendFromMaxPc > 75)
             {

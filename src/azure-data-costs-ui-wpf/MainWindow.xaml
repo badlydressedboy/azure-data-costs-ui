@@ -147,7 +147,7 @@
                             </Image>
 
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total Potential Saving:</TextBlock>
-                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialSavingAmount}"></TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialSavingAmount, StringFormat=N0}"></TextBlock>
 
 
                         </StackPanel>
@@ -292,8 +292,8 @@
 
                                 <!--<DataGridTextColumn Header="Spend Analysis Status"  Binding="{Binding SpendAnalysisStatus}" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=DataContext.IsDbSpendAnalysisBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />-->
 
-                                <DataGridTextColumn Header="Over Provision%"  Binding="{Binding OverSpendFromMaxPcString, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
-                                <DataGridTextColumn Header="Potential Saving"  Binding="{Binding PotentialSavingAmountString, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="Over Provision%"  Binding="{Binding OverSpendFromMaxPc, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="Potential Saving"  Binding="{Binding PotentialSavingAmount, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
 
                                 <DataGridTextColumn Header="Location"  Binding="{Binding location}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>
