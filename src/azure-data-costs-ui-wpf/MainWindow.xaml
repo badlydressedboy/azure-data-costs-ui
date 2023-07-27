@@ -1247,12 +1247,12 @@
                                             </StackPanel>
 
                                             <busyIndicator:BusyMask Grid.Row="3"
-                                            IsBusy="{Binding IsVmQueryBusy, FallbackValue=False}" 
+                                            IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" 
                                             IndicatorType="Cogs"
                                             BusyContent="Please wait..." >
 
 
-                                                <DataGrid MaxHeight="400" 
+                                                <DataGrid MaxHeight="300" 
                                                       MaxWidth="320" 
                                                       HorizontalAlignment="Left" 
                                                       ItemsSource="{Binding Path=PerformanceMetricSeries}"                                                   
@@ -1271,32 +1271,47 @@
                                             </busyIndicator:BusyMask>
                                         </Grid>
 
-                                        <DataGrid Grid.Column="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
-                                            <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-                                            <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
-                                            <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
-                                            <!--<DataGridTextColumn Header="ResourceType" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
+
+                                        <Grid Grid.Column="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
 
 
-                                            <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
-                                                <DataGridTextColumn.CellStyle>
-                                                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                                <Setter Property="Foreground" Value="OrangeRed" />
-                                                                <Setter Property="FontWeight" Value="Bold" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </DataGridTextColumn.CellStyle>
-                                            </DataGridTextColumn>
+                                            <StackPanel Orientation="Horizontal" Margin="2,4,2,6">
+                                                <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">Costs</TextBlock>
 
-                                            <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
-                                            <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                            </StackPanel>
+
+                                            <DataGrid ItemsSource="{Binding Path=Costs}" Grid.Row="1" AutoGenerateColumns="false" CanUserAddRows="False">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
+                                                    <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
+                                                    <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
+                                                    <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
+                                                    <!--<DataGridTextColumn Header="ResourceType" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
+
+
+                                                    <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
+                                                        <DataGridTextColumn.CellStyle>
+                                                            <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                                        <Setter Property="Foreground" Value="OrangeRed" />
+                                                                        <Setter Property="FontWeight" Value="Bold" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </DataGridTextColumn.CellStyle>
+                                                    </DataGridTextColumn>
+
+                                                    <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                                    <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+
+                                        </Grid>
 
                                     </Grid>
 

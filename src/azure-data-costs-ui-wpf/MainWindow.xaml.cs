@@ -502,6 +502,7 @@ namespace DataEstateOverview
                     // vms
                     if (vm.VMList.Count == 0)
                     {
+                        
                         await vm.RefreshVMs();
                     }
                     break;

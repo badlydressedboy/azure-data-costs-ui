@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace DataEstateOverview
 {
@@ -500,7 +501,13 @@ namespace DataEstateOverview
         public async Task RefreshVMs()
         {
             if (IsVMQueryBusy) return;
-            IsVMQueryBusy = true;
+
+            App.Current.Dispatcher.Invoke(()=>
+            {
+                IsVMQueryBusy = true;
+            }
+            );
+           
 
             try
             {
