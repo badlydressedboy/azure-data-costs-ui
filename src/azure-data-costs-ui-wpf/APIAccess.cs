@@ -836,6 +836,105 @@ namespace DataEstateOverview
             
             sqlDb.IsRestQueryBusy = false;
         }
+
+        public static async Task GetVmMetrics(VM vm, int? minutes = null)
+        {
+
+            try
+            {
+             
+                string timeGrainParam = "&interval=PT1M"; // PT1H, PT30M, PT1M, P1D
+
+                if (minutes == null) // use sqlDb.MetricsHistoryDays
+                {
+                    minutes = vm.MetricsHistoryDays * 1440;
+                }
+                int mins = (int)minutes;
+
+                if (mins > 120) timeGrainParam = "&interval=PT5M";
+                if (mins > 360) timeGrainParam = "&interval=PT15M";
+                if (mins > 720) timeGrainParam = "&interval=PT30M";
+                if (mins > 1440) timeGrainParam = "&interval=PT1H";
+                if (mins > 4320) timeGrainParam = "&interval=PT3H";
+                if (mins > 8640) timeGrainParam = "&interval=PT6H";
+
+                vm.MetricsHistoryMinutes = mins;
+
+                string timeFrom = DateTime.UtcNow.AddMinutes(-1 * mins).ToString("s") + "Z";
+                string timeTo = DateTime.UtcNow.ToString("s") + "Z";
+
+                string url = $"https://management.azure.com/subscriptions/{vm.Subscription.subscriptionId}/resourceGroups/{vm.resourceGroup}/providers/Microsoft.Compute/virtualMachines/{vm.name}/providers/Microsoft.Insights/metrics?{timeGrainParam}&aggregation=average,maximum&timespan={timeFrom}/{timeTo}&metricnames=Percentage%20CPU&api-version=2021-05-01";
+                // string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2022-08-01";
+
+                vm.IsRestQueryBusy = true;
+                vm.MetricsErrorMessage = "";
+
+                HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (!response.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine("Failed vm metrics!");
+                    vm.MetricsErrorMessage = $"Failed metrics!: {response.ReasonPhrase}";
+                    vm.IsRestQueryBusy = false;
+                    return;
+                }
+                var json = await response.Content.ReadAsStringAsync();
+                var metrics = await response?.Content?.ReadFromJsonAsync<RootMetric>();
+
+                if (metrics?.value != null)
+                {
+                    foreach (var metric in metrics.value)
+                    {
+                        if (metric.timeseries.Count() == 0) continue;
+
+                        var latestAvg = metric.timeseries[0].data[0].average;
+                        var latestMax = metric.timeseries[0].data[0].maximum;
+
+                        if (latestMax > 0)
+                        {
+                            //Debug.WriteLine("Got max for " + metric.name.value);
+                        }
+
+                        string metricName = metric.name.value;
+                        long outLong;
+                        switch (metricName)
+                        {
+                          
+                            case "Percentage CPU":
+                                //vm.dtu_consumption_percent = latestAvg;
+
+                                vm.PerformanceMetricSeries.Clear();
+
+                                vm.MaxCpuUsed = 0;
+                                foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                {
+                                    vm.PerformanceMetricSeries.Add(d);
+                                    if (d.maximum > vm.MaxCpuUsed) vm.MaxCpuUsed = d.maximum;
+                                }
+
+                                break;
+                          
+                          
+                        }
+                    }
+
+                    // spend analysis
+                    if (minutes > 2)
+                    {
+                        vm.GotMetricsHistory = true;
+                        //vm.OverSpendFromMaxPc = 100 - vm.MaxDtuUsed;
+                        //vm.CalcPotentialSaving();
+                    }
+                }
+
+                //Debug.WriteLine($"finished getting {sqlDb.name} metrics");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+
+            vm.IsRestQueryBusy = false;
+        }
         private static async Task GetDbServiceTierAdvisors(RestSqlDb sqlDb)
         {
             

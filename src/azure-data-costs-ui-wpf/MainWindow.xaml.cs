@@ -520,6 +520,27 @@ namespace DataEstateOverview
             await vm.AnalyseDbSpend();
         }
 
+        private async void VMDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
+        {
+
+            GetVmMetrics();
+            
+        }
+
+        private void RefreshVmStatsButton_Click(object sender, RoutedEventArgs e)
+        {
+            GetVmMetrics();
+        }
+        private async void GetVmMetrics()
+        {
+            if (VMDataGrid.CurrentItem == null) return;
+            var vm = (VM)VMDataGrid.CurrentItem;
+
+            if (vm != null && (!vm.GotMetricsHistory))
+            {
+                await APIAccess.GetVmMetrics(vm);
+            } // no minutes param passed so sqlDb.MetricsHistoryDays is used            
+        }
         //private void IgnoreCheckBox_UnChecked(object sender, RoutedEventArgs e)
         //{
 

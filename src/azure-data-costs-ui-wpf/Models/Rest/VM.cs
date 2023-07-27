@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using DataEstateOverview.Models.Rest;
 
 namespace DbMeta.Ui.Wpf.Models.Rest
 {
@@ -10,7 +14,7 @@ namespace DbMeta.Ui.Wpf.Models.Rest
     {
         public List<VM> value { get; set; } 
     }
-    public class VM
+    public class VM : INotifyPropertyChanged
     {
         public VMProperties properties { get; set; }
         public string kind { get; set; }
@@ -21,6 +25,74 @@ namespace DbMeta.Ui.Wpf.Models.Rest
         public Subscription Subscription { get; set; }
         public decimal TotalCostBilling { get; set; }
         public List<ResourceCost> Costs { get; set; } = new List<ResourceCost>();
+
+        public bool _isRestQueryBusy { get; set; }
+        public bool IsRestQueryBusy
+        {
+            get { return _isRestQueryBusy; }
+            set
+            {
+                _isRestQueryBusy = value;
+                OnPropertyChanged("IsRestQueryBusy");
+            }
+        }
+
+        public bool RequestMetricsHistory { get; set; } = false;
+
+        public bool GotMetricsHistory { get; set; } = false;
+
+        protected int _metricsHistoryMinutes;
+
+        public int MetricsHistoryMinutes
+        {
+            get { return _metricsHistoryMinutes; }
+            set
+            {
+                _metricsHistoryMinutes = value;
+                OnPropertyChanged("MetricsHistoryMinutes");
+                OnPropertyChanged("MetricsHistoryTimeString");
+            }
+        }
+
+        protected int _metricsHistoryDays = 14;
+
+        public int MetricsHistoryDays
+        {
+            get { return _metricsHistoryDays; }
+            set
+            {
+                _metricsHistoryDays = value;
+                OnPropertyChanged("MetricsHistoryDays");
+            }
+        }
+        protected string _metricsErrorMessage;
+
+        public string MetricsErrorMessage
+        {
+            get { return _metricsErrorMessage; }
+            set
+            {
+                _metricsErrorMessage = value;
+                OnPropertyChanged("MetricsErrorMessage");
+            }
+        }
+        public decimal _maxCpuUsed { get; set; }
+        public decimal MaxCpuUsed
+        {
+            get { return _maxCpuUsed; }
+            set
+            {
+                _maxCpuUsed = value;
+                OnPropertyChanged("MaxCpuUsed");
+            }
+        }
+        public ObservableCollection<MetricTimeSeriesData> PerformanceMetricSeries { get; set; } = new ObservableCollection<MetricTimeSeriesData>();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
     public class VMProperties
     {
