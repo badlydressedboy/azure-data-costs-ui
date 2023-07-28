@@ -294,6 +294,8 @@ namespace DataEstateOverview
             if(subsList == null)
             {
                 Debug.WriteLine("No subscriptions! Are you logged into Azure?");
+                RestErrorMessage = "No subscriptions! Are you logged into Azure?";
+                return;
             }
 
             foreach (Subscription sub in subsList)

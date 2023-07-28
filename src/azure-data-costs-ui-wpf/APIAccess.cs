@@ -693,139 +693,144 @@ namespace DataEstateOverview
                 var json = await response.Content.ReadAsStringAsync();
                 var metrics = await response?.Content?.ReadFromJsonAsync<RootMetric>();
 
-                if(metrics?.value != null)
+                App.Current.Dispatcher.Invoke(new Action(() =>
                 {
-                    foreach(var metric in metrics.value)
+
+                    if (metrics?.value != null)
                     {
-                        if (metric.timeseries.Count() == 0) continue;
-
-                        var latestAvg = metric.timeseries[0].data[0].average;
-                        var latestMax = metric.timeseries[0].data[0].maximum;
-
-                        if(latestMax > 0)
+                        foreach (var metric in metrics.value)
                         {
-                            //Debug.WriteLine("Got max for " + metric.name.value);
+                            if (metric.timeseries.Count() == 0) continue;
+
+                            var latestAvg = metric.timeseries[0].data[0].average;
+                            var latestMax = metric.timeseries[0].data[0].maximum;
+
+                            if (latestMax > 0)
+                            {
+                                //Debug.WriteLine("Got max for " + metric.name.value);
+                            }
+
+                            string metricName = metric.name.value;
+                            long outLong;
+                            switch (metricName)
+                            {
+                                case "dtu_consumption_percent":
+                                    sqlDb.dtu_consumption_percent = latestAvg;
+
+                                    sqlDb.PerformanceMetricSeries.Clear();
+
+                                    sqlDb.MaxDtuUsed = 0;
+                                    foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                    {
+                                        sqlDb.PerformanceMetricSeries.Add(d);
+                                        if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
+                                    }
+
+                                    break;
+                                case "cpu_percent":
+                                    sqlDb.dtu_consumption_percent = latestAvg;
+
+                                    sqlDb.PerformanceMetricSeries.Clear();
+
+                                    sqlDb.MaxDtuUsed = 0;
+                                    foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                    {
+                                        sqlDb.PerformanceMetricSeries.Add(d);
+                                        if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
+                                    }
+
+                                    break;
+                                case "dwu_consumption_percent": // DWH
+                                    sqlDb.dtu_consumption_percent = latestAvg;
+
+                                    sqlDb.PerformanceMetricSeries.Clear();
+
+                                    sqlDb.MaxDtuUsed = 0;
+                                    foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                    {
+                                        sqlDb.PerformanceMetricSeries.Add(d);
+                                        if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
+                                    }
+
+                                    break;
+
+
+                                case "physical_data_read_percent":
+                                    sqlDb.physical_data_read_percent = latestAvg;
+                                    break;
+                                case "log_write_percent":
+                                    sqlDb.log_write_percent = latestAvg;
+                                    break;
+                                case "storage_percent":
+                                    sqlDb.storage_percent = latestAvg;
+                                    break;
+                                case "workers_percent":
+                                    sqlDb.workers_percent = latestAvg;
+                                    break;
+                                case "sessions_percent":
+                                    sqlDb.sessions_percent = latestAvg;
+                                    break;
+                                case "sqlserver_process_core_percent":
+                                    sqlDb.sqlserver_process_core_percent = latestAvg;
+                                    break;
+                                case "sqlserver_process_memory_percent":
+                                    sqlDb.sqlserver_process_memory_percent = latestAvg;
+                                    break;
+
+                                case "sessions_count":
+                                    if (Int64.TryParse(latestAvg.ToString(), out outLong))
+                                    {
+                                        sqlDb.sessions_count = outLong;
+                                    }
+                                    break;
+                                case "storage":
+                                    if (Int64.TryParse(latestAvg.ToString(), out outLong))
+                                    {
+                                        sqlDb.storage = outLong;
+                                    }
+                                    break;
+                                case "dtu_limit":
+                                    if (Int64.TryParse(latestAvg.ToString(), out outLong))
+                                    {
+                                        sqlDb.dtu_limit = outLong;
+                                    }
+                                    break;
+                                case "dtu_used":
+                                    if (Int64.TryParse(latestAvg.ToString(), out outLong))
+                                    {
+                                        sqlDb.dtu_used = outLong;
+                                    }
+                                    break;
+                                case "tempdb_data_size":
+                                    sqlDb.tempdb_data_size = latestMax;
+                                    // always 0
+                                    break;
+                                case "tempdb_log_size":
+                                    sqlDb.tempdb_log_size = latestMax;
+                                    // always 0
+                                    break;
+                                case "tempdb_log_used_percent":
+                                    sqlDb.tempdb_log_used_percent = latestMax;
+                                    // always 0
+                                    break;
+                                case "allocated_data_storage":
+                                    if (Int64.TryParse(latestAvg.ToString(), out outLong))
+                                    {
+                                        sqlDb.allocated_data_storage = outLong;
+                                    }
+                                    break;
+                            }
                         }
 
-                        string metricName = metric.name.value;
-                        long outLong;
-                        switch (metricName)
+                        // spend analysis
+                        if (minutes > 2)
                         {
-                            case "dtu_consumption_percent":
-                                sqlDb.dtu_consumption_percent = latestAvg;
-
-                                sqlDb.PerformanceMetricSeries.Clear();
-
-                                sqlDb.MaxDtuUsed = 0;
-                                foreach (var d in metric.timeseries[0].data.OrderByDescending(x=>x.timeStamp))
-                                {
-                                    sqlDb.PerformanceMetricSeries.Add(d);
-                                    if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
-                                }
-                                
-                                break;
-                            case "cpu_percent":
-                                sqlDb.dtu_consumption_percent = latestAvg;
-
-                                sqlDb.PerformanceMetricSeries.Clear();
-
-                                sqlDb.MaxDtuUsed = 0;
-                                foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
-                                {
-                                    sqlDb.PerformanceMetricSeries.Add(d);
-                                    if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
-                                }
-
-                                break;
-                            case "dwu_consumption_percent": // DWH
-                                sqlDb.dtu_consumption_percent = latestAvg;
-
-                                sqlDb.PerformanceMetricSeries.Clear();
-
-                                sqlDb.MaxDtuUsed = 0;
-                                foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
-                                {
-                                    sqlDb.PerformanceMetricSeries.Add(d);
-                                    if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
-                                }
-
-                                break;
-
-                                
-                            case "physical_data_read_percent":
-                                sqlDb.physical_data_read_percent = latestAvg;
-                                break;
-                            case "log_write_percent":
-                                sqlDb.log_write_percent = latestAvg;
-                                break;
-                            case "storage_percent":
-                                sqlDb.storage_percent = latestAvg;
-                                break;
-                            case "workers_percent":
-                                sqlDb.workers_percent = latestAvg;
-                                break;
-                            case "sessions_percent":
-                                sqlDb.sessions_percent = latestAvg;
-                                break;
-                            case "sqlserver_process_core_percent":
-                                sqlDb.sqlserver_process_core_percent = latestAvg;
-                                break;
-                            case "sqlserver_process_memory_percent":
-                                sqlDb.sqlserver_process_memory_percent = latestAvg;
-                                break;
-                           
-                            case "sessions_count":
-                                if (Int64.TryParse(latestAvg.ToString(), out outLong)) { 
-                                    sqlDb.sessions_count = outLong;
-                                }
-                                break;
-                            case "storage":
-                                if (Int64.TryParse(latestAvg.ToString(), out outLong))
-                                {
-                                    sqlDb.storage = outLong;
-                                }
-                                break;
-                            case "dtu_limit":
-                                if (Int64.TryParse(latestAvg.ToString(), out outLong))
-                                {
-                                    sqlDb.dtu_limit = outLong;
-                                }
-                                break;
-                            case "dtu_used":
-                                if (Int64.TryParse(latestAvg.ToString(), out outLong))
-                                {
-                                    sqlDb.dtu_used = outLong;
-                                }
-                                break;
-                            case "tempdb_data_size":
-                                sqlDb.tempdb_data_size = latestMax;
-                                // always 0
-                                break;
-                            case "tempdb_log_size":
-                                sqlDb.tempdb_log_size = latestMax;
-                                // always 0
-                                break;
-                            case "tempdb_log_used_percent":
-                                sqlDb.tempdb_log_used_percent = latestMax;
-                                // always 0
-                                break;
-                            case "allocated_data_storage":
-                                if (Int64.TryParse(latestAvg.ToString(), out outLong))
-                                {
-                                    sqlDb.allocated_data_storage = outLong;
-                                }
-                                break;
+                            sqlDb.GotMetricsHistory = true;
+                            sqlDb.OverSpendFromMaxPc = 100 - sqlDb.MaxDtuUsed;
+                            sqlDb.CalcPotentialSaving();
                         }
                     }
-
-                    // spend analysis
-                    if (minutes > 2)
-                    {
-                        sqlDb.GotMetricsHistory = true;
-                        sqlDb.OverSpendFromMaxPc = 100 - sqlDb.MaxDtuUsed;
-                        sqlDb.CalcPotentialSaving();
-                    }
-                }
+                }));
 
                 //Debug.WriteLine($"finished getting {sqlDb.name} metrics");
             }

@@ -34,12 +34,12 @@
         <Style TargetType="Expander">
             <Setter Property="Background" Value="{StaticResource LightestGreyHighlight}"/>
         </Style>
-        
+
         <Style TargetType="{x:Type Image}" x:Key="LoadingGifStyle">
             <Setter Property="Height" Value="24"></Setter>
             <Setter Property="Width" Value="24"></Setter>
         </Style>
-        
+
         <converters:NonZeroNumberToBooleanConverter x:Key="NonZeroNumberToBooleanConverter"></converters:NonZeroNumberToBooleanConverter>
 
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"></converters:InverseBooleanConverter>
@@ -111,7 +111,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        
+
         <mah:MetroAnimatedSingleRowTabControl Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged">
 
             <mah:MetroTabItem Header="DB Summary" Name="TabRest">
@@ -147,7 +147,7 @@
 
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total SQL DB Costs:</TextBlock>
                             <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalSqlDbCostsText}"></TextBlock>
-                            
+
                             <Button x:Name="DBAnalyseSpendButton" Margin="28,2,2,2" Padding="8,1,8,1" Click="DBAnalyseSpendButton_Click" Content="Analyse Spend"/>
 
 
@@ -181,22 +181,22 @@
                               AutoGenerateColumns="False"
                               CanUserResizeRows="False"
                               FrozenColumnCount ="1"
-                                 
                               RowHeight="20"
                                 MouseUp="RestDbDataGrid_MouseUp"
                                 KeyDown="RestDbDataGrid_KeyDown"
-                              IsReadOnly="True"
+                                IsReadOnly="True"
                                   Grid.ColumnSpan="3"  
                                   Grid.RowSpan="4"
+                                local:DataGridExtensions.SortDesc="True"
+                            >
                             
-                  >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
                                     <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectRowDetails"/>
                                 </Style>
                             </DataGrid.RowStyle>
-                            
+
                             <!--<DataGrid.GroupStyle>
 
                             <GroupStyle>
@@ -260,7 +260,7 @@
                                                     <Setter Property="Background" Value="LightGray"></Setter>
                                                 </Trigger>
 
-                                            </Style.Triggers> 
+                                            </Style.Triggers>
                                         </Style>
                                     </DataGridTextColumn.CellStyle>
                                 </DataGridTextColumn>
@@ -285,7 +285,7 @@
 
                                 </DataGridTextColumn>
 
-                                <DataGridTextColumn Header="DTU %"  Binding="{Binding dtu_consumption_percent, StringFormat=N0}"   >
+                                <DataGridTextColumn Header="DTU %"  Binding="{Binding dtu_consumption_percent, StringFormat=N0}" local:DataGridExtensions.SortDesc="True" >
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
                                             <Style.Triggers>
@@ -297,16 +297,16 @@
                                         </Style>
                                     </DataGridTextColumn.CellStyle>
                                 </DataGridTextColumn>
-                                
-                                <DataGridTextColumn Header="Sessions"  Binding="{Binding sessions_count}" CellStyle="{StaticResource NumericGridCellStyle}"  />
 
-                                <DataGridTextColumn Header="Size Limit GB"  Binding="{Binding currentDbSizeLimitGb, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
-                                
-                                <DataGridTextColumn Header="Allocated GB"  Binding="{Binding currentAllocatedDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="Sessions"  Binding="{Binding sessions_count}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
 
-                                <DataGridTextColumn Header="Used GB"  Binding="{Binding currentDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="Size Limit GB"  Binding="{Binding currentDbSizeLimitGb, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
 
-                                <DataGridTextColumn Header="Used GB %"  Binding="{Binding currentDbSizeUsedPc, StringFormat=N2}" >
+                                <DataGridTextColumn Header="Allocated GB"  Binding="{Binding currentAllocatedDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
+
+                                <DataGridTextColumn Header="Used GB"  Binding="{Binding currentDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
+
+                                <DataGridTextColumn Header="Used GB %"  Binding="{Binding currentDbSizeUsedPc, StringFormat=N2}" local:DataGridExtensions.SortDesc="True">
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
                                             <Style.Triggers>
@@ -321,8 +321,8 @@
 
                                 <DataGridTextColumn Header="Elastic Pool"  Binding="{Binding properties.elasticPoolName}" ></DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Over Provision%"  Binding="{Binding OverSpendFromMaxPc, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
-                                <DataGridTextColumn Header="Potential Saving"  Binding="{Binding PotentialSavingAmount, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="Over Provision%"  Binding="{Binding OverSpendFromMaxPc, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="Potential Saving"  Binding="{Binding PotentialSavingAmount, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
 
                                 <DataGridTextColumn Header="Location"  Binding="{Binding location}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>
@@ -382,17 +382,13 @@
 
                                 <DataGridTextColumn Header="Recommendations Error" Width="140" Foreground="OrangeRed"  Binding="{Binding RecommendationsError}" ></DataGridTextColumn>
 
-
-
-
-
-                                <DataGridTextColumn Header="Physical Read %"  Binding="{Binding physical_data_read_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
-                                <DataGridTextColumn Header="Log Write %"  Binding="{Binding log_write_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="Physical Read %"  Binding="{Binding physical_data_read_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="Log Write %"  Binding="{Binding log_write_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True" />
                                 <!--<DataGridTextColumn Header="Storage %"  Binding="{Binding storage_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />-->
-                                <DataGridTextColumn Header="Workers %"  Binding="{Binding workers_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
-                                <DataGridTextColumn Header="Sessions %"  Binding="{Binding sessions_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
-                                <DataGridTextColumn Header="SqlServer Proc Core %"  Binding="{Binding sqlserver_process_core_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
-                                <DataGridTextColumn Header="SqlServer Proc Mem %"  Binding="{Binding sqlserver_process_memory_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
+                                <DataGridTextColumn Header="Workers %"  Binding="{Binding workers_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="Sessions %"  Binding="{Binding sessions_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="SqlServer Proc Core %"  Binding="{Binding sqlserver_process_core_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"   local:DataGridExtensions.SortDesc="True"/>
+                                <DataGridTextColumn Header="SqlServer Proc Mem %"  Binding="{Binding sqlserver_process_memory_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True" />
 
                                 <!--<DataGridTextColumn Header="Storage"  Binding="{Binding storage}" CellStyle="{StaticResource NumericGridCellStyle}"  />
                             <DataGridTextColumn Header="DTU Limit"  Binding="{Binding dtu_limit}" CellStyle="{StaticResource NumericGridCellStyle}"  />
@@ -433,7 +429,7 @@
 
                                             <StackPanel Orientation="Horizontal" Margin="2">
                                                 <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">DB Usage</TextBlock>
-                                                
+
                                             </StackPanel>
 
                                             <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="1">
@@ -442,8 +438,8 @@
 
                                                 <Button x:Name="RefreshDbStatsButton" Margin="8,2,2,2" Click="RefreshDbStatsButton_Click">Refresh</Button>
                                             </StackPanel>
-                                            
-                                            
+
+
                                             <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="2">
                                                 <TextBlock Margin="2">Max DTU/CPU % found:</TextBlock>
                                                 <TextBlock Margin="2" Text="{Binding MaxDtuUsed}"></TextBlock>
@@ -463,12 +459,13 @@
                                                       ItemsSource="{Binding Path=PerformanceMetricSeries}"                                                   
                                                       AutoGenerateColumns="False" 
                                                       CanUserAddRows="False"
+                                                      local:DataGridExtensions.SortDesc="True"
                                                  >
                                                     <DataGrid.Columns>
 
                                                         <DataGridTextColumn Header="Time" Binding="{Binding Path=timeStamp}" IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
+                                                        <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
 
                                                     </DataGrid.Columns>
                                                 </DataGrid>
@@ -503,17 +500,18 @@
 
 
                                                 <DataGrid MaxHeight="400" 
-                                                      MaxWidth="320" 
-                                                      HorizontalAlignment="Left" 
-                                                      ItemsSource="{Binding Path=ElasticPool.PerformanceMetricSeries}"                                                   
-                                                      AutoGenerateColumns="False" 
-                                                      CanUserAddRows="False"
+                                                          MaxWidth="320" 
+                                                          HorizontalAlignment="Left" 
+                                                          ItemsSource="{Binding Path=ElasticPool.PerformanceMetricSeries}"                                                   
+                                                          AutoGenerateColumns="False" 
+                                                          CanUserAddRows="False"
+                                                          local:DataGridExtensions.SortDesc="True"
                                                  >
                                                     <DataGrid.Columns>
 
                                                         <DataGridTextColumn Header="Time" Binding="{Binding Path=timeStamp}" IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
+                                                        <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
 
                                                     </DataGrid.Columns>
                                                 </DataGrid>
@@ -534,7 +532,7 @@
 
                                             </StackPanel>
 
-                                            <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
+                                            <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
                                                     <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
@@ -568,14 +566,14 @@
                                             </Grid.RowDefinitions>
 
                                             <TextBlock Margin="2,4,2,2" FontSize="16" VerticalAlignment="Center" Text="Advisor Recomendations"/>
-                                            
-                                            
+
+
                                             <TextBox Margin="2,8,2,2" Width="450" TextWrapping="Wrap" IsReadOnly="True"  Grid.Row="1" Text="{Binding advisorRecomendationDetails}"/>
                                         </Grid>
                                     </Grid>
                                 </DataTemplate>
                             </DataGrid.RowDetailsTemplate>
-                            
+
                         </DataGrid>
 
                     </Grid>
@@ -649,7 +647,7 @@
                                         <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Event Log: "></TextBlock>
                                     </StackPanel>
 
-                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="ServerEventLogGrid" AutoGenerateColumns="True">
+                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="ServerEventLogGrid" AutoGenerateColumns="True" local:DataGridExtensions.SortDesc="True">
                                         <!--<DataGrid.Columns>
                     <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
                 </DataGrid.Columns>-->
@@ -669,7 +667,7 @@
                                         <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Firewall Rules: "></TextBlock>
                                     </StackPanel>
 
-                                    <DataGrid Grid.Row="1"  IsReadOnly="True" x:Name="ServerFirewallGrid" AutoGenerateColumns="True">
+                                    <DataGrid Grid.Row="1"  IsReadOnly="True" x:Name="ServerFirewallGrid" AutoGenerateColumns="True" local:DataGridExtensions.SortDesc="True">
                                         <!--<DataGrid.Columns>
                     <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
                 </DataGrid.Columns>-->
@@ -703,7 +701,7 @@
                                         <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Event Log: "></TextBlock>
                                     </StackPanel>
 
-                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbEventLogGrid" AutoGenerateColumns="True">
+                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbEventLogGrid" AutoGenerateColumns="True" local:DataGridExtensions.SortDesc="True">
                                         <!--<DataGrid.Columns>
                     <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
                 </DataGrid.Columns>-->
@@ -727,7 +725,7 @@
                                     <TextBlock Margin="0,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Running Requests Only"></TextBlock>-->
                                     </StackPanel>
 
-                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbRequestsGrid" AutoGenerateColumns="True" CanUserResizeRows="False" RowHeight="20">
+                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbRequestsGrid" AutoGenerateColumns="True" CanUserResizeRows="False" RowHeight="20" local:DataGridExtensions.SortDesc="True">
                                         <!--<DataGrid.Columns>
                                         <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
                                     </DataGrid.Columns>-->
@@ -755,7 +753,7 @@
                                         <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Logins: "></TextBlock>
                                     </StackPanel>
 
-                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbLoginsGrid" AutoGenerateColumns="True">
+                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbLoginsGrid" AutoGenerateColumns="True" local:DataGridExtensions.SortDesc="True">
                                         <!--<DataGrid.Columns>
                     <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
                 </DataGrid.Columns>-->
@@ -776,7 +774,7 @@
                                         <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Sync state: "></TextBlock>
                                     </StackPanel>
 
-                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbSyncStateGrid" AutoGenerateColumns="True">
+                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbSyncStateGrid" AutoGenerateColumns="True" local:DataGridExtensions.SortDesc="True">
                                         <!--<DataGrid.Columns>
                     <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
                 </DataGrid.Columns>-->
@@ -827,12 +825,13 @@
                                 MouseUp="DataFactoryDataGrid_MouseUp"
                                 KeyDown="DataFactoryDataGrid_KeyDown"  
                               RowDetailsVisibilityMode="Collapsed"
-                                 
+                                 local:DataGridExtensions.SortDesc="True"
                                   IsReadOnly="True" Grid.ColumnSpan="3"
                     >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectRowDetails"/>
                                 </Style>
                             </DataGrid.RowStyle>
 
@@ -883,7 +882,7 @@
 
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
-                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
+                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
                                             <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
@@ -950,11 +949,12 @@
                                 KeyDown="StorageDataGrid_KeyDown"  
                               RowDetailsVisibilityMode="Collapsed"
                                   IsReadOnly="True"
-                                
+                                local:DataGridExtensions.SortDesc="True"
                     >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectRowDetails"/>
                                 </Style>
                             </DataGrid.RowStyle>
 
@@ -1009,7 +1009,7 @@
 
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
-                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
+                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
                                             <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
@@ -1077,13 +1077,14 @@
                                 MouseUp="VNetDataGrid_MouseUp"
                                 KeyDown="VNetDataGrid_KeyDown"  
                               RowDetailsVisibilityMode="Collapsed"
-                               
+                               local:DataGridExtensions.SortDesc="True"
                                   IsReadOnly="True"
                                 
                     >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectRowDetails"/>
                                 </Style>
                             </DataGrid.RowStyle>
 
@@ -1127,14 +1128,14 @@
                                     </DataGridTextColumn.CellStyle>
                                 </DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Sub Nets"  Binding="{Binding properties.subnets.Count}" CellStyle="{StaticResource DataGridParentCell}" />
-                                <DataGridTextColumn Header="VNet Peerings"  Binding="{Binding properties.virtualNetworkPeerings.Count}" CellStyle="{StaticResource DataGridParentCell}" />
+                                <DataGridTextColumn Header="Sub Nets"  Binding="{Binding properties.subnets.Count}" CellStyle="{StaticResource DataGridParentCell}"  local:DataGridExtensions.SortDesc="True"/>
+                                <DataGridTextColumn Header="VNet Peerings"  Binding="{Binding properties.virtualNetworkPeerings.Count}" CellStyle="{StaticResource DataGridParentCell}"  local:DataGridExtensions.SortDesc="True"/>
 
                             </DataGrid.Columns>
 
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
-                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
+                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
                                             <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
@@ -1204,11 +1205,12 @@
                               RowDetailsVisibilityMode="Collapsed"
                                   IsReadOnly="True"
                                   LoadingRowDetails="VMDataGrid_LoadingRowDetails"
-                                
+                               local:DataGridExtensions.SortDesc="True" 
                     >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectRowDetails"/>
                                 </Style>
                             </DataGrid.RowStyle>
 
@@ -1233,7 +1235,7 @@
 
                                 <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}"  CellStyle="{StaticResource DataGridParentCell}" />
 
-                                <DataGridTextColumn Header="Size"  Binding="{Binding properties.hardwareProfile.vmSize}"  CellStyle="{StaticResource DataGridParentCell}" />
+                                <DataGridTextColumn Header="Size"  Binding="{Binding properties.hardwareProfile.vmSize}"  CellStyle="{StaticResource DataGridParentCell}"  local:DataGridExtensions.SortDesc="True"/>
 
                                 <!--<DataGridTextColumn Header="Computer Name"  Binding="{Binding properties.osProfile.computerName}"  CellStyle="{StaticResource DataGridParentCell}" />-->
 
@@ -1308,17 +1310,18 @@
 
 
                                                 <DataGrid MaxHeight="300" 
-                                                      MaxWidth="320" 
-                                                      HorizontalAlignment="Left" 
-                                                      ItemsSource="{Binding Path=PerformanceMetricSeries}"                                                   
-                                                      AutoGenerateColumns="False" 
-                                                      CanUserAddRows="False"
+                                                          MaxWidth="320" 
+                                                          HorizontalAlignment="Left" 
+                                                          ItemsSource="{Binding Path=PerformanceMetricSeries}"                                                   
+                                                          AutoGenerateColumns="False" 
+                                                          CanUserAddRows="False"
+                                                          local:DataGridExtensions.SortDesc="True"
                                                  >
                                                     <DataGrid.Columns>
 
                                                         <DataGridTextColumn Header="Time" Binding="{Binding Path=timeStamp}" IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
+                                                        <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
 
                                                     </DataGrid.Columns>
                                                 </DataGrid>
@@ -1339,7 +1342,7 @@
 
                                             </StackPanel>
 
-                                            <DataGrid ItemsSource="{Binding Path=Costs}" Grid.Row="1" AutoGenerateColumns="false" CanUserAddRows="False">
+                                            <DataGrid ItemsSource="{Binding Path=Costs}" Grid.Row="1" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                                 <DataGrid.Columns>
                                                     <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
                                                     <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
@@ -1386,13 +1389,17 @@
                 <busyIndicator:BusyMask IsBusy="{Binding IsPurviewQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
                     <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="47*"/>
+                            <ColumnDefinition Width="1153*"/>
+                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <StackPanel Orientation="Horizontal" Margin="4">
+                        <StackPanel Orientation="Horizontal" Margin="4,4,4,4" Grid.ColumnSpan="2">
                             <Button x:Name="PurviewRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="PurviewRefreshButton_Click">Refresh</Button>
 
                             <Button x:Name="PurviewCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="PurviewCollapseCostsButton_Click">Show/Collapse Costs</Button>
@@ -1401,7 +1408,7 @@
                             <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPurviewCostsText}"></TextBlock>
                         </StackPanel>
 
-                        <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding VMErrorMessage}" MaxHeight="150" ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
+                        <TextBlock Grid.Row="1" Padding="6" Margin="2,2,2,2" Text="{Binding VMErrorMessage}" MaxHeight="150" ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange" Grid.ColumnSpan="2"></TextBlock>
 
                         <DataGrid Grid.Row="2" x:Name="PurviewDataGrid"
                               VirtualizingStackPanel.IsVirtualizing="true" 
@@ -1414,12 +1421,13 @@
                                 MouseUp="VMDataGrid_MouseUp"
                                 KeyDown="VMDataGrid_KeyDown"  
                               RowDetailsVisibilityMode="Collapsed"
-                                  IsReadOnly="True"
-                                
+                                  IsReadOnly="True" Grid.ColumnSpan="2"
+                                local:DataGridExtensions.SortDesc="True"
                     >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectRowDetails"/>
                                 </Style>
                             </DataGrid.RowStyle>
 
@@ -1454,31 +1462,11 @@
                                 <DataGridTextColumn Header="Public Net Access"  Binding="{Binding properties.publicNetworkAccess}"  CellStyle="{StaticResource DataGridParentCell}" />
 
 
-                                <!--<DataGridTextColumn Header="Cost (Bill CCY)" Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);}}"  >
-                                    <DataGridTextColumn.CellStyle>
-                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}" >
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding TotalCostBilling, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                    <Setter Property="Foreground" Value="OrangeRed" />
-                                                    <Setter Property="FontWeight" Value="Bold" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-
-                                            <Setter Property="Background" Value="LightGray"></Setter>
-                                            <Setter Property="FontSize" Value="13"></Setter>
-
-                                        </Style>
-                                    </DataGridTextColumn.CellStyle>
-                                </DataGridTextColumn>-->
-
-                                <!--<DataGridTextColumn Header="Sub Nets"  Binding="{Binding properties.subnets.Count}" CellStyle="{StaticResource DataGridParentCell}" />
-                                <DataGridTextColumn Header="VNet Peerings"  Binding="{Binding properties.virtualNetworkPeerings.Count}" CellStyle="{StaticResource DataGridParentCell}" />-->
-
                             </DataGrid.Columns>
 
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
-                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False">
+                                    <DataGrid ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
                                             <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
@@ -1560,7 +1548,7 @@
 
                         <TextBlock Margin="0,18,2,0" FontSize="13" Padding="6" Background="LightGray">Detected Subscriptions</TextBlock>
 
-                        <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="SubscriptionsGrid" AutoGenerateColumns="False" ItemsSource="{Binding DetectedSubscriptions}">
+                        <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="SubscriptionsGrid" AutoGenerateColumns="False" ItemsSource="{Binding DetectedSubscriptions}" local:DataGridExtensions.SortDesc="True">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Subscription Name"  Binding="{Binding displayName}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Id"  Binding="{Binding subscriptionId}" ></DataGridTextColumn>
@@ -1593,19 +1581,19 @@
 
         </mah:MetroAnimatedSingleRowTabControl>
 
-       
-            <StatusBar Grid.Row="1" Background="LightGray" Foreground="Gray">
-                <StatusBarItem>
-                    <TextBlock Margin="2" Text="{Binding HttpAccessCountMessage}"></TextBlock>
-                </StatusBarItem>
-                
-                <StatusBarItem>
-                    <TextBlock Margin="12,2,2,2">Limit: 12,000 per subscription/user/hour</TextBlock>
-                </StatusBarItem>
-           
-            </StatusBar>
-        
-        
+
+        <StatusBar Grid.Row="1" Background="LightGray" Foreground="Gray">
+            <StatusBarItem>
+                <TextBlock Margin="2" Text="{Binding HttpAccessCountMessage}"></TextBlock>
+            </StatusBarItem>
+
+            <StatusBarItem>
+                <TextBlock Margin="12,2,2,2">Limit: 12,000 per subscription/user/hour</TextBlock>
+            </StatusBarItem>
+
+        </StatusBar>
+
+
         <Grid.Resources>
 
 
