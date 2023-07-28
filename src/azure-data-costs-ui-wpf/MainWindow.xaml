@@ -321,8 +321,6 @@
 
                                 <DataGridTextColumn Header="Elastic Pool"  Binding="{Binding properties.elasticPoolName}" ></DataGridTextColumn>
 
-                                <!--<DataGridTextColumn Header="Spend Analysis Status"  Binding="{Binding SpendAnalysisStatus}" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=DataContext.IsDbSpendAnalysisBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />-->
-
                                 <DataGridTextColumn Header="Over Provision%"  Binding="{Binding OverSpendFromMaxPc, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
                                 <DataGridTextColumn Header="Potential Saving"  Binding="{Binding PotentialSavingAmount, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />
 
@@ -828,7 +826,7 @@
                               RowHeight="20"
                                 MouseUp="DataFactoryDataGrid_MouseUp"
                                 KeyDown="DataFactoryDataGrid_KeyDown"  
-                              RowDetailsVisibilityMode="Visible"
+                              RowDetailsVisibilityMode="Collapsed"
                                  
                                   IsReadOnly="True" Grid.ColumnSpan="3"
                     >
@@ -950,7 +948,7 @@
                               RowHeight="20"
                                 MouseUp="StorageDataGrid_MouseUp"
                                 KeyDown="StorageDataGrid_KeyDown"  
-                              RowDetailsVisibilityMode="Visible"
+                              RowDetailsVisibilityMode="Collapsed"
                                   IsReadOnly="True"
                                 
                     >
@@ -1078,7 +1076,7 @@
                               RowHeight="20"
                                 MouseUp="VNetDataGrid_MouseUp"
                                 KeyDown="VNetDataGrid_KeyDown"  
-                              RowDetailsVisibilityMode="Visible"
+                              RowDetailsVisibilityMode="Collapsed"
                                
                                   IsReadOnly="True"
                                 
@@ -1203,7 +1201,7 @@
                               RowHeight="20"
                                 MouseUp="VMDataGrid_MouseUp"
                                 KeyDown="VMDataGrid_KeyDown"  
-                              RowDetailsVisibilityMode="Visible"
+                              RowDetailsVisibilityMode="Collapsed"
                                   IsReadOnly="True"
                                   LoadingRowDetails="VMDataGrid_LoadingRowDetails"
                                 
@@ -1415,7 +1413,7 @@
                               RowHeight="20"
                                 MouseUp="VMDataGrid_MouseUp"
                                 KeyDown="VMDataGrid_KeyDown"  
-                              RowDetailsVisibilityMode="Visible"
+                              RowDetailsVisibilityMode="Collapsed"
                                   IsReadOnly="True"
                                 
                     >
@@ -1425,11 +1423,18 @@
                                 </Style>
                             </DataGrid.RowStyle>
 
-                            <!--<DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Refresh DB" Click="RestGridMenuItemRefresh_Click" />
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>-->
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGrid.CellStyle>
+
+                            <DataGrid.RowHeaderTemplate>
+                                <DataTemplate>
+                                    <Expander VerticalAlignment="Top" Margin="0" Padding="0" Expanded="Expander_Process"  Collapsed="Expander_Process">
+                                    </Expander>
+                                </DataTemplate>
+                            </DataGrid.RowHeaderTemplate>
 
                             <DataGrid.Columns>
 
@@ -1595,7 +1600,7 @@
                 </StatusBarItem>
                 
                 <StatusBarItem>
-                    <TextBlock Margin="12,2,2,2">Limit: 12,000 per subscription per user/hour</TextBlock>
+                    <TextBlock Margin="12,2,2,2">Limit: 12,000 per subscription/user/hour</TextBlock>
                 </StatusBarItem>
            
             </StatusBar>
