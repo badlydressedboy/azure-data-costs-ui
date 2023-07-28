@@ -21,6 +21,20 @@
 
     <mah:MetroWindow.Resources>
 
+        <SolidColorBrush Color="#F3F4F6" x:Key="LightestGreyHighlight"/>
+
+        <Style BasedOn="{StaticResource {x:Type DataGridRowHeader}}" TargetType="{x:Type DataGridRowHeader}">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Height" Value="23" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+
+        <Style TargetType="Expander">
+            <Setter Property="Background" Value="{StaticResource LightestGreyHighlight}"/>
+        </Style>
+        
         <Style TargetType="{x:Type Image}" x:Key="LoadingGifStyle">
             <Setter Property="Height" Value="24"></Setter>
             <Setter Property="Width" Value="24"></Setter>
@@ -167,15 +181,19 @@
                               AutoGenerateColumns="False"
                               CanUserResizeRows="False"
                               FrozenColumnCount ="1"
+                                 
                               RowHeight="20"
                                 MouseUp="RestDbDataGrid_MouseUp"
                                 KeyDown="RestDbDataGrid_KeyDown"
-                              IsReadOnly="True" Grid.ColumnSpan="3"  Grid.RowSpan="4"
+                              IsReadOnly="True"
+                                  Grid.ColumnSpan="3"  
+                                  Grid.RowSpan="4"
                             
                   >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
+                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectRowDetails"/>
                                 </Style>
                             </DataGrid.RowStyle>
                             
@@ -223,33 +241,9 @@
                                 </Style>
                             </DataGrid.CellStyle>
 
-                            <DataGrid.Resources>
-
-                                <Style BasedOn="{StaticResource {x:Type DataGridRowHeader}}" TargetType="{x:Type DataGridRowHeader}">
-                                    <Setter Property="Background" Value="White" />
-                                    <Setter Property="Padding" Value="0" />
-                                    <Setter Property="Height" Value="23" />
-                                    
-                                    <Setter Property="BorderThickness" Value="0" />
-                                    <Setter Property="VerticalAlignment" Value="Top" />
-                                </Style>
-
-                                <Style TargetType="Expander">
-                                    <Style.Resources>
-                                        <LinearGradientBrush x:Key="BackBrush" StartPoint="0.5,0" EndPoint="0.5,1">
-                                            <GradientStop Color="#EF3132" Offset="0.1" />
-                                            <GradientStop Color="#D62B2B" Offset="0.9" />
-                                        </LinearGradientBrush>
-                                    </Style.Resources>
-                                    <Setter Property="Background" Value="LightGray"/>
-                                </Style>
-                            </DataGrid.Resources>
-                            
                             <DataGrid.RowHeaderTemplate>
-                            
                                 <DataTemplate>
                                     <Expander VerticalAlignment="Top" Margin="0" Padding="0" Expanded="Expander_Process"  Collapsed="Expander_Process">
-
                                     </Expander>
                                 </DataTemplate>
                             </DataGrid.RowHeaderTemplate>
@@ -421,7 +415,7 @@
 
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
-                                    <Grid Margin="8,6,0,0">
+                                    <Grid Margin="8,6,0,0" Background="{StaticResource LightestGreyHighlight}">
 
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
@@ -835,7 +829,7 @@
                                 MouseUp="DataFactoryDataGrid_MouseUp"
                                 KeyDown="DataFactoryDataGrid_KeyDown"  
                               RowDetailsVisibilityMode="Visible"
-                                 RowBackground="LightGray"
+                                 
                                   IsReadOnly="True" Grid.ColumnSpan="3"
                     >
                             <DataGrid.RowStyle>
@@ -844,11 +838,18 @@
                                 </Style>
                             </DataGrid.RowStyle>
 
-                            <!--<DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Refresh DB" Click="RestGridMenuItemRefresh_Click" />
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>-->
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGrid.CellStyle>
+
+                            <DataGrid.RowHeaderTemplate>
+                                <DataTemplate>
+                                    <Expander VerticalAlignment="Top" Margin="0" Padding="0" Expanded="Expander_Process"  Collapsed="Expander_Process">
+                                    </Expander>
+                                </DataTemplate>
+                            </DataGrid.RowHeaderTemplate>
 
                             <DataGrid.Columns>
 
@@ -950,7 +951,6 @@
                                 MouseUp="StorageDataGrid_MouseUp"
                                 KeyDown="StorageDataGrid_KeyDown"  
                               RowDetailsVisibilityMode="Visible"
-                                 RowBackground="LightGray"
                                   IsReadOnly="True"
                                 
                     >
@@ -960,11 +960,18 @@
                                 </Style>
                             </DataGrid.RowStyle>
 
-                            <!--<DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Refresh DB" Click="RestGridMenuItemRefresh_Click" />
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>-->
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGrid.CellStyle>
+
+                            <DataGrid.RowHeaderTemplate>
+                                <DataTemplate>
+                                    <Expander VerticalAlignment="Top" Margin="0" Padding="0" Expanded="Expander_Process"  Collapsed="Expander_Process">
+                                    </Expander>
+                                </DataTemplate>
+                            </DataGrid.RowHeaderTemplate>
 
                             <DataGrid.Columns>
 
@@ -1072,7 +1079,7 @@
                                 MouseUp="VNetDataGrid_MouseUp"
                                 KeyDown="VNetDataGrid_KeyDown"  
                               RowDetailsVisibilityMode="Visible"
-                                 RowBackground="LightGray"
+                               
                                   IsReadOnly="True"
                                 
                     >
@@ -1082,11 +1089,18 @@
                                 </Style>
                             </DataGrid.RowStyle>
 
-                            <!--<DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Refresh DB" Click="RestGridMenuItemRefresh_Click" />
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>-->
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGrid.CellStyle>
+
+                            <DataGrid.RowHeaderTemplate>
+                                <DataTemplate>
+                                    <Expander VerticalAlignment="Top" Margin="0" Padding="0" Expanded="Expander_Process"  Collapsed="Expander_Process">
+                                    </Expander>
+                                </DataTemplate>
+                            </DataGrid.RowHeaderTemplate>
 
                             <DataGrid.Columns>
 
@@ -1190,7 +1204,6 @@
                                 MouseUp="VMDataGrid_MouseUp"
                                 KeyDown="VMDataGrid_KeyDown"  
                               RowDetailsVisibilityMode="Visible"
-                                 RowBackground="LightGray"
                                   IsReadOnly="True"
                                   LoadingRowDetails="VMDataGrid_LoadingRowDetails"
                                 
@@ -1201,11 +1214,18 @@
                                 </Style>
                             </DataGrid.RowStyle>
 
-                            <!--<DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Refresh DB" Click="RestGridMenuItemRefresh_Click" />
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>-->
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGrid.CellStyle>
+
+                            <DataGrid.RowHeaderTemplate>
+                                <DataTemplate>
+                                    <Expander VerticalAlignment="Top" Margin="0" Padding="0" Expanded="Expander_Process"  Collapsed="Expander_Process">
+                                    </Expander>
+                                </DataTemplate>
+                            </DataGrid.RowHeaderTemplate>
 
                             <DataGrid.Columns>
 
@@ -1396,7 +1416,6 @@
                                 MouseUp="VMDataGrid_MouseUp"
                                 KeyDown="VMDataGrid_KeyDown"  
                               RowDetailsVisibilityMode="Visible"
-                                 RowBackground="LightGray"
                                   IsReadOnly="True"
                                 
                     >

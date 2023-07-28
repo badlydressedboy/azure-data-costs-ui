@@ -28,6 +28,7 @@ using System.Text.Json;
 using System.IO;
 using Path = System.IO.Path;
 using Microsoft.Identity.Client;
+using System.Windows.Controls.Primitives;
 
 namespace DataEstateOverview
 {
@@ -268,18 +269,6 @@ namespace DataEstateOverview
             ExpandCollapseDataGrid(DataFactoryDataGrid);
         }
 
-        private void ExpandCollapseDataGrid(DataGrid dg)
-        {
-            if (dg.RowDetailsVisibilityMode == DataGridRowDetailsVisibilityMode.Collapsed)
-            {
-                dg.RowDetailsVisibilityMode = DataGridRowDetailsVisibilityMode.Visible;
-            }
-            else
-            {
-                dg.RowDetailsVisibilityMode = DataGridRowDetailsVisibilityMode.Collapsed;
-            }
-        }
-
         private void CostDaysText_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9]+");
@@ -344,18 +333,6 @@ namespace DataEstateOverview
 
         }
 
-        private void StorageCollapseCostsButton_Click(object sender, RoutedEventArgs e)
-        {
-            ExpandCollapseDataGrid(StorageDataGrid);
-        }
-
-        private void RowDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            var row = (DataGridRow)sender;
-            row.DetailsVisibility = row.DetailsVisibility == Visibility.Collapsed ?
-                Visibility.Visible : Visibility.Collapsed;
-        }
-
         private void VNetCollapseCostsButton_Click(object sender, RoutedEventArgs e)
         {
             ExpandCollapseDataGrid(VNetDataGrid);
@@ -416,18 +393,6 @@ namespace DataEstateOverview
             Cursor = Cursors.Arrow;
         }
 
-        private async void RestDbDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
-        {
-            
-            if (RestDbDataGrid.CurrentItem == null) return;
-            var db = (RestSqlDb)RestDbDataGrid.CurrentItem;
-
-            if (!db.GotMetricsHistory)
-            {
-                GetDbMetrics();
-            }
-        }
-
         private void RefreshDbStatsButton_Click(object sender, RoutedEventArgs e)
         {
             GetDbMetrics();
@@ -459,11 +424,6 @@ namespace DataEstateOverview
         private async void PurviewRefreshButton_Click(object sender, RoutedEventArgs e)
         {
             await vm.RefreshPurview();
-        }
-
-        private void MetroAnimatedSingleRowTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
         }
 
         private async void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -555,32 +515,59 @@ namespace DataEstateOverview
             }
         }
 
-        private void Expander_Expanded(object sender, RoutedEventArgs e)
+
+        private void StorageCollapseCostsButton_Click(object sender, RoutedEventArgs e)
         {
-            for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
-                if (vis is DataGridRow)
-                {
-                    var row = (DataGridRow)vis;
-                    row.DetailsVisibility = row.DetailsVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-                    break;
-                }
+            ExpandCollapseDataGrid(StorageDataGrid);
         }
 
-        private void Expander_Collapsed(object sender, RoutedEventArgs e)
+        private void RowDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
-                if (vis is DataGridRow)
-                {
-                    var row = (DataGridRow)vis;
-                    row.DetailsVisibility = row.DetailsVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
-                    break;
-                }
+            var row = (DataGridRow)sender;
+            row.DetailsVisibility = row.DetailsVisibility == Visibility.Collapsed ?
+                Visibility.Visible : Visibility.Collapsed;
         }
-        //private void IgnoreCheckBox_UnChecked(object sender, RoutedEventArgs e)
-        //{
+        private async void RestDbDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
+        {
 
-        //}
+            if (RestDbDataGrid.CurrentItem == null) return;
+            var db = (RestSqlDb)RestDbDataGrid.CurrentItem;
 
+            if (!db.GotMetricsHistory)
+            {
+                GetDbMetrics();
+            }
+        }
+        private void ExpandCollapseDataGrid(DataGrid dg)
+        {
+            if (dg.RowDetailsVisibilityMode == DataGridRowDetailsVisibilityMode.Collapsed)
+            {
+                dg.RowDetailsVisibilityMode = DataGridRowDetailsVisibilityMode.Visible;
+            }
+            else
+            {
+                dg.RowDetailsVisibilityMode = DataGridRowDetailsVisibilityMode.Collapsed;
+            }
+        }
+        private void SelectRowDetails(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Source is DataGridDetailsPresenter) // Like this
+            {
+                var row = sender as DataGridRow;
+                if (row == null)
+                {
+                    return;
+                }
+                row.Focusable = true;
+                row.Focus();
+
+                var elementWithFocus = Keyboard.FocusedElement as UIElement;
+                if (elementWithFocus != null)
+                {
+                    elementWithFocus.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                }
+            }
+        }
 
     }
     public class ignoresubscriptionnames
