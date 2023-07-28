@@ -217,6 +217,43 @@
                                 </ContextMenu>
                             </DataGrid.ContextMenu>
 
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGrid.CellStyle>
+
+                            <DataGrid.Resources>
+
+                                <Style BasedOn="{StaticResource {x:Type DataGridRowHeader}}" TargetType="{x:Type DataGridRowHeader}">
+                                    <Setter Property="Background" Value="White" />
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="Height" Value="23" />
+                                    
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="VerticalAlignment" Value="Top" />
+                                </Style>
+
+                                <Style TargetType="Expander">
+                                    <Style.Resources>
+                                        <LinearGradientBrush x:Key="BackBrush" StartPoint="0.5,0" EndPoint="0.5,1">
+                                            <GradientStop Color="#EF3132" Offset="0.1" />
+                                            <GradientStop Color="#D62B2B" Offset="0.9" />
+                                        </LinearGradientBrush>
+                                    </Style.Resources>
+                                    <Setter Property="Background" Value="LightGray"/>
+                                </Style>
+                            </DataGrid.Resources>
+                            
+                            <DataGrid.RowHeaderTemplate>
+                            
+                                <DataTemplate>
+                                    <Expander VerticalAlignment="Top" Margin="0" Padding="0" Expanded="Expander_Process"  Collapsed="Expander_Process">
+
+                                    </Expander>
+                                </DataTemplate>
+                            </DataGrid.RowHeaderTemplate>
+
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="DB"  Binding="{Binding name}" >
                                     <DataGridTextColumn.CellStyle>

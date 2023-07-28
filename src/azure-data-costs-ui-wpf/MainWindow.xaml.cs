@@ -418,6 +418,7 @@ namespace DataEstateOverview
 
         private async void RestDbDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
         {
+            
             if (RestDbDataGrid.CurrentItem == null) return;
             var db = (RestSqlDb)RestDbDataGrid.CurrentItem;
 
@@ -541,6 +542,39 @@ namespace DataEstateOverview
             {
                 await APIAccess.GetVmMetrics(vm);
             } // no minutes param passed so sqlDb.MetricsHistoryDays is used            
+        }
+
+        private void Expander_Process(object sender, RoutedEventArgs e)
+        {
+            if (sender is Expander expander)
+            {
+                var row = DataGridRow.GetRowContainingElement(expander);
+
+                row.DetailsVisibility = expander.IsExpanded ? Visibility.Visible
+                                                            : Visibility.Collapsed;
+            }
+        }
+
+        private void Expander_Expanded(object sender, RoutedEventArgs e)
+        {
+            for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
+                if (vis is DataGridRow)
+                {
+                    var row = (DataGridRow)vis;
+                    row.DetailsVisibility = row.DetailsVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                    break;
+                }
+        }
+
+        private void Expander_Collapsed(object sender, RoutedEventArgs e)
+        {
+            for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
+                if (vis is DataGridRow)
+                {
+                    var row = (DataGridRow)vis;
+                    row.DetailsVisibility = row.DetailsVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                    break;
+                }
         }
         //private void IgnoreCheckBox_UnChecked(object sender, RoutedEventArgs e)
         //{
