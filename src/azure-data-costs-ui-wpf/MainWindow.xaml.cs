@@ -569,6 +569,10 @@ namespace DataEstateOverview
             }
         }
 
+        private async void VMAnalyseSpendButton_Click(object sender, RoutedEventArgs e)
+        {
+            await vm.AnalyseVmSpend();
+        }
     }
     public class ignoresubscriptionnames
     {

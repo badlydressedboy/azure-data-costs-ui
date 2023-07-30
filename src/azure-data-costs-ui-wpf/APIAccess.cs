@@ -926,8 +926,8 @@ namespace DataEstateOverview
                     if (minutes > 2)
                     {
                         vm.GotMetricsHistory = true;
-                        //vm.OverSpendFromMaxPc = 100 - vm.MaxDtuUsed;
-                        //vm.CalcPotentialSaving();
+                        vm.OverSpendFromMaxPc = 100 - vm.MaxCpuUsed;
+                        vm.CalcPotentialSaving();
                     }
                 }
 

@@ -174,15 +174,33 @@ namespace DataEstateOverview
                 SetProperty(ref isDbSpendAnalysisBusy, value);
             }
         }
-
-        private decimal _totalPotentialSavingAmount;
-        public decimal TotalPotentialSavingAmount
+        private bool isVmSpendAnalysisBusy;
+        public bool IsVmSpendAnalysisBusy
         {
-            get { return _totalPotentialSavingAmount; }
+            get => isVmSpendAnalysisBusy;
             set
             {
-                _totalPotentialSavingAmount = value;
-                OnPropertyChanged("TotalPotentialSavingAmount");
+                SetProperty(ref isVmSpendAnalysisBusy, value);
+            }
+        }
+        private decimal _totalPotentialDbSavingAmount;
+        public decimal TotalPotentialDbSavingAmount
+        {
+            get { return _totalPotentialDbSavingAmount; }
+            set
+            {
+                _totalPotentialDbSavingAmount = value;
+                OnPropertyChanged("TotalPotentialDbSavingAmount");
+            }
+        }
+        private decimal _totalPotentialVmSavingAmount;
+        public decimal TotalPotentialVmSavingAmount
+        {
+            get { return _totalPotentialVmSavingAmount; }
+            set
+            {
+                _totalPotentialVmSavingAmount = value;
+                OnPropertyChanged("TotalPotentialVmSavingAmount");
             }
         }
         private string restErrorMessage;
@@ -504,13 +522,11 @@ namespace DataEstateOverview
         {
             if (IsVMQueryBusy) return;
 
-            App.Current.Dispatcher.Invoke(()=>
-            {
+            //{
                 IsVMQueryBusy = true;
-            }
-            );
+            //}
+            //);
            
-
             try
             {
                 VMList.Clear();
@@ -723,6 +739,15 @@ namespace DataEstateOverview
                     if (!cost.ResourceId.Contains(@"virtualmachines/")) continue;
                     string costVmName = cost.ResourceId.Substring(cost.ResourceId.IndexOf("virtualmachines/") + 16);
 
+                    if(vm.name.ToUpper() == "DEV-DWH-ETL02")
+                    {
+                        Debug.WriteLine("DEV-DWH-ETL02");
+                    }
+
+                    if (costVmName.ToUpper().Contains("DEV-DWH-ETL02")){
+                        Debug.WriteLine("DEV-DWH-ETL02");
+                    }
+
                     if (costVmName.ToLower() == vm.name.ToLower())
                     {
                         if (cost.ServiceName == "Virtual Machines" || cost.ServiceName == "Bandwidth" || cost.ServiceName == "Virtual Network")
@@ -785,7 +810,7 @@ namespace DataEstateOverview
 
             RestErrorMessage = "";
             //decimal totalPotentialSaving = 0;
-            TotalPotentialSavingAmount = 0;
+            TotalPotentialDbSavingAmount = 0;
             try
             {
                 await Parallel.ForEachAsync(RestSqlDbList.OrderByDescending(x=>x.TotalCostBilling)
@@ -799,30 +824,6 @@ namespace DataEstateOverview
                         db.SpendAnalysisStatus = "Complete";
                         //await APIAccess.GetSqlServers(sub);
                     });
-
-                // on ui thread
-                //foreach (var sub in Subscriptions)
-                //{
-                //    if (!sub.ReadObjects) continue; // ignore this subscription
-
-                //    foreach (var s in sub.SqlServers)
-                //    {
-                //        foreach (var db in s.Dbs)
-                //        {
-                //            MapCostToDb(db, sub.ResourceCosts);
-                //            RestSqlDbList.Add(db);
-
-                //            totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool
-                //        }
-                //    }
-
-                //    if (!string.IsNullOrEmpty(sub.CostsErrorMessage))
-                //    {
-                //        if (!string.IsNullOrEmpty(RestErrorMessage)) RestErrorMessage += "\n";
-                //        RestErrorMessage += sub.CostsErrorMessage;
-                //    }
-                //}
-                //TotalSqlDbCostsText = totalSqlDbCosts.ToString("N2");
             }
             catch (Exception ex)
             {
@@ -830,9 +831,37 @@ namespace DataEstateOverview
             }
             IsDbSpendAnalysisBusy = false;
             UpdateHttpAccessCountMessage();
-            TotalPotentialSavingAmount = RestSqlDbList.Sum(x => x.PotentialSavingAmount);
+            TotalPotentialDbSavingAmount = RestSqlDbList.Sum(x => x.PotentialSavingAmount);
         }
+        public async Task AnalyseVmSpend()
+        {
+            if (IsVmSpendAnalysisBusy) return;
+            IsVmSpendAnalysisBusy = true;
 
+            RestErrorMessage = "";
+            //decimal totalPotentialSaving = 0;
+            TotalPotentialVmSavingAmount = 0;
+            try
+            {
+                await Parallel.ForEachAsync(VMList.OrderByDescending(x => x.TotalCostBilling)
+                    , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                    , async (vm, y) =>
+                    {
+                        vm.SpendAnalysisStatus = "Analysing...";
+                        vm.OverSpendFromMaxPcString = "?";
+                        await APIAccess.GetVmMetrics(vm);
+
+                        vm.SpendAnalysisStatus = "Complete";
+                    });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            IsVmSpendAnalysisBusy = false;
+            UpdateHttpAccessCountMessage();
+            TotalPotentialVmSavingAmount = VMList.Sum(x => x.PotentialSavingAmount);
+        }
         public async Task RefreshSqlDb()
         {
             if (IsQueryingDatabase) return;

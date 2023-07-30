@@ -86,12 +86,81 @@ namespace DbMeta.Ui.Wpf.Models.Rest
                 OnPropertyChanged("MaxCpuUsed");
             }
         }
+
+        private decimal _overSpendFromMaxPc;
+        public decimal OverSpendFromMaxPc // 100 - max(dtu/cpu use)
+        {
+            get { return _overSpendFromMaxPc; }
+            set
+            {
+                _overSpendFromMaxPc = value;
+                OverSpendFromMaxPcString = value.ToString();
+                OnPropertyChanged("OverSpendFromMaxPc");
+            }
+        }
+        private string _overSpendFromMaxPcString = "?";
+        public string OverSpendFromMaxPcString // 100 - max(dtu/cpu use)
+        {
+            get { return _overSpendFromMaxPcString; }
+            set
+            {
+                _overSpendFromMaxPcString = value;
+                OnPropertyChanged("OverSpendFromMaxPcString");
+            }
+        }
+
+        private decimal _potentialSavingAmount;
+        public decimal PotentialSavingAmount
+        {
+            get { return _potentialSavingAmount; }
+            set
+            {
+                _potentialSavingAmount = value;
+                PotentialSavingAmountString = value.ToString("N0");
+                OnPropertyChanged("PotentialSavingAmount");
+            }
+        }
+        private string _potentialSavingAmountString = "?";
+        public string PotentialSavingAmountString
+        {
+            get { return _potentialSavingAmountString; }
+            set
+            {
+                _potentialSavingAmountString = value;
+                OnPropertyChanged("PotentialSavingAmountString");
+            }
+        }
+        protected string _spendAnalysisStatus;
+
+        public string SpendAnalysisStatus
+        {
+            get { return _spendAnalysisStatus; }
+            set
+            {
+                _spendAnalysisStatus = value;
+                OnPropertyChanged("SpendAnalysisStatus");
+            }
+        }
         public ObservableCollection<MetricTimeSeriesData> PerformanceMetricSeries { get; set; } = new ObservableCollection<MetricTimeSeriesData>();
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        public void CalcPotentialSaving()
+        {
+            PotentialSavingAmount = 0;
+            if (TotalCostBilling <= 6) return; // too small to decrease
+            if (OverSpendFromMaxPc > 75)
+            {
+                PotentialSavingAmount = TotalCostBilling * (decimal)0.75;
+            }
+            if (OverSpendFromMaxPc > 50 && OverSpendFromMaxPc <= 75)
+            {
+                PotentialSavingAmount = TotalCostBilling * (decimal)0.50;
+            }
         }
     }
     public class VMProperties
