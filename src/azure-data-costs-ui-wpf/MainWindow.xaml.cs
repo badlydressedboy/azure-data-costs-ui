@@ -529,7 +529,7 @@ namespace DataEstateOverview
         }
         private async void RestDbDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
         {
-
+            return;
             if (RestDbDataGrid.CurrentItem == null) return;
             var db = (RestSqlDb)RestDbDataGrid.CurrentItem;
 

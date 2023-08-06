@@ -92,6 +92,17 @@
                 <Setter Property="CanUserAddRows" Value="False"/>
                 <Setter Property="VerticalGridLinesBrush" Value="LightGray"/>
                 <Setter Property="HorizontalGridLinesBrush" Value="LightGray"/>
+
+
+                <Setter Property="AutoGenerateColumns" Value="False"/>
+                <Setter Property="IsReadOnly" Value="True"/>
+                <Setter Property="RowHeight" Value="20"/>
+                <Setter Property="SelectionMode" Value="Extended"/>
+                <Setter Property="SelectionUnit" Value="Cell"/>
+                <Setter Property="CanUserResizeRows" Value="False"/>
+                <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="true" />
+                <Setter Property="EnableRowVirtualization"  Value="True"/>
+                <Setter Property="RowDetailsVisibilityMode"  Value="Collapsed"/>
             </Style.Setters>
         </Style>
 
@@ -172,28 +183,21 @@
                         IsReadOnly="True" Margin="2,2,2,728" Text="{Binding RestErrorMessage}" MaxHeight="150" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Background="Orange" Grid.ColumnSpan="3" Grid.RowSpan="2"></TextBox>
 
                         <DataGrid x:Name="RestDbDataGrid"
-                                  Margin="0,39,0,0"
-                                  RowDetailsVisibilityMode="VisibleWhenSelected"
-                                  LoadingRowDetails="RestDbDataGrid_LoadingRowDetails"
-                              VirtualizingStackPanel.IsVirtualizing="true" 
-                                EnableRowVirtualization ="True"
-                              ItemsSource="{Binding Source={StaticResource RestDbDataGridViewSource}}" 
-                              AutoGenerateColumns="False"
-                              CanUserResizeRows="False"
-                              FrozenColumnCount ="1"
-                              RowHeight="20"
-                                MouseUp="RestDbDataGrid_MouseUp"
-                                KeyDown="RestDbDataGrid_KeyDown"
-                                IsReadOnly="True"
+                                  Margin="0,39,0,0"                                                              
+                                  ItemsSource="{Binding Source={StaticResource RestDbDataGridViewSource}}" 
+                                  FrozenColumnCount ="1"
+                                  MouseUp="RestDbDataGrid_MouseUp"
+                                  KeyDown="RestDbDataGrid_KeyDown"
                                   Grid.ColumnSpan="3"  
                                   Grid.RowSpan="4"
+                                  ClipboardCopyMode="IncludeHeader"                        
                                 local:DataGridExtensions.SortDesc="True"
                             >
                             
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
-                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectRowDetails"/>
+                                    <!--<EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectRowDetails"/>-->
                                 </Style>
                             </DataGrid.RowStyle>
 
@@ -249,6 +253,7 @@
                             </DataGrid.RowHeaderTemplate>
 
                             <DataGrid.Columns>
+                                
                                 <DataGridTextColumn Header="DB"  Binding="{Binding name}" >
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="DataGridCell">
@@ -1214,18 +1219,11 @@
 
                         <busyIndicator:BusyMask Grid.Row="2" Name="VmBusyMask" IsBusy="{Binding IsVMQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
-                            <DataGrid x:Name="VMDataGrid"
-                              VirtualizingStackPanel.IsVirtualizing="true" 
-                                EnableRowVirtualization ="True"
-                              ItemsSource="{Binding Source={StaticResource VMDataGridViewSource}}" 
-                              AutoGenerateColumns="False"
-                              CanUserResizeRows="False"
-                              FrozenColumnCount ="1"
-                              RowHeight="20"
+                            <DataGrid x:Name="VMDataGrid"                              
+                              ItemsSource="{Binding Source={StaticResource VMDataGridViewSource}}"                               
+                              FrozenColumnCount ="1"                             
                                 MouseUp="VMDataGrid_MouseUp"
-                                KeyDown="VMDataGrid_KeyDown"  
-                              RowDetailsVisibilityMode="Collapsed"
-                                  IsReadOnly="True"
+                                KeyDown="VMDataGrid_KeyDown"                                
                                   LoadingRowDetails="VMDataGrid_LoadingRowDetails"
                                local:DataGridExtensions.SortDesc="True" 
                     >
