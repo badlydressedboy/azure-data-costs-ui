@@ -473,10 +473,10 @@ namespace DataEstateOverview
                 {
                     foreach (var a in advisors)
                     {
-                        sqlDb.advisorRecomendationCount += a.properties.recommendedActions.Count;
+                        sqlDb.AdvisorRecommendationCount += a.properties.recommendedActions.Count;
 
                         foreach (var ra in a.properties.recommendedActions) {
-                            sqlDb.advisorRecomendationDetails += ra.properties.implementationDetails.script + "\n\n";
+                            sqlDb.advisorRecommendationDetails += ra.properties.implementationDetails.script + "\n\n";
                         }
                     }
                 }

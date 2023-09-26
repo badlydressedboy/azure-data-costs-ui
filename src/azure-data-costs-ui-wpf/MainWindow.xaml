@@ -40,6 +40,11 @@
             <Setter Property="Width" Value="24"></Setter>
         </Style>
 
+        <Style TargetType="Grid" x:Key="SubSectionGrid">
+            <Setter Property="Background" Value="{StaticResource LightestGreyHighlight}"></Setter>
+            <Setter Property="Margin" Value="0,8,0,0"></Setter>
+        </Style>
+
         <converters:NonZeroNumberToBooleanConverter x:Key="NonZeroNumberToBooleanConverter"></converters:NonZeroNumberToBooleanConverter>
 
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"></converters:InverseBooleanConverter>
@@ -194,7 +199,7 @@
                                   SelectionChanged="RestDbDataGrid_SelectionChanged"
                                 local:DataGridExtensions.SortDesc="True"
                             >
-                            
+
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
@@ -254,7 +259,7 @@
                             </DataGrid.RowHeaderTemplate>
 
                             <DataGrid.Columns>
-                                
+
                                 <DataGridTextColumn Header="DB"  Binding="{Binding name}" >
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="DataGridCell">
@@ -368,16 +373,16 @@
 
 
 
-                                <DataGridTextColumn Header="Advisor Recomendations"  Binding="{Binding advisorRecomendationCount, StringFormat=N0}" >
+                                <DataGridTextColumn Header="Advisor Recommendations"  Binding="{Binding advisorRecommendationCount, StringFormat=N0}" >
 
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
                                             <Style.Setters>
-                                                <Setter Property="ToolTip" Value="{Binding advisorRecomendationDetails}"/>
+                                                <Setter Property="ToolTip" Value="{Binding advisorRecommendationDetails}"/>
                                                 <Setter Property="Cursor" Value="Hand"/>
                                             </Style.Setters>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding advisorRecomendationCount, ConverterParameter=1, Converter={StaticResource NonZeroNumberToBooleanConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                <DataTrigger Binding="{Binding advisorRecommendationCount, ConverterParameter=1, Converter={StaticResource NonZeroNumberToBooleanConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                                     <Setter Property="Foreground" Value="OrangeRed" />
                                                     <Setter Property="FontWeight" Value="Bold" />
                                                 </DataTrigger>
@@ -420,18 +425,26 @@
 
                                         <mah:MetroTabItem Header="Useage" Name="TabDbUseage">
 
-                                            <Grid Margin="8,6,0,0" Background="{StaticResource LightestGreyHighlight}">
+                                            <Grid Style="{StaticResource SubSectionGrid}">
+
 
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="*"/>
+
                                                 </Grid.RowDefinitions>
 
-                                                <Grid>
+                                                <StackPanel Orientation="Horizontal" Margin="2,2,2,8">
+
+                                                    <TextBlock Margin="4,2,0,2" Text="Last" VerticalAlignment="Center"></TextBlock>
+                                                    <TextBox Height="22" Width="30" VerticalContentAlignment="Center" Padding="0" VerticalAlignment="Center" Margin="6,2,2,2" Text="{Binding MetricsHistoryDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                                    <TextBlock Margin="4,2,2,2" Text="Days" VerticalAlignment="Center"></TextBlock>
+
+                                                    <Button x:Name="RefreshDbStatsButton" Margin="8,2,2,2" Click="RefreshDbStatsButton_Click">Refresh</Button>
+                                                </StackPanel>
+
+                                                <Grid Grid.Row="1">
                                                     <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="Auto"/>
                                                         <ColumnDefinition Width="Auto"/>
                                                         <ColumnDefinition Width="*"/>
                                                     </Grid.ColumnDefinitions>
@@ -446,20 +459,12 @@
 
                                                         <Border BorderThickness="0,0,0,1" BorderBrush="Gray">
                                                             <StackPanel Orientation="Horizontal" Margin="2">
-                                                                <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">DB Usage</TextBlock>
+                                                                <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">Database Usage</TextBlock>
 
                                                             </StackPanel>
                                                         </Border>
 
-                                                        <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="1">
-                                                            <TextBox Height="22" Width="30" VerticalContentAlignment="Center" Padding="0" VerticalAlignment="Center" Margin="10,2,2,2" Text="{Binding MetricsHistoryDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                                                            <TextBlock Margin="4,2,2,2" Text="Days" VerticalAlignment="Center"></TextBlock>
-
-                                                            <Button x:Name="RefreshDbStatsButton" Margin="8,2,2,2" Click="RefreshDbStatsButton_Click">Refresh</Button>
-                                                        </StackPanel>
-
-
-                                                        <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="2">
+                                                        <StackPanel Orientation="Horizontal" Margin="8" Grid.Row="2">
                                                             <TextBlock Margin="2">Max DTU/CPU % found:</TextBlock>
                                                             <TextBlock Margin="2" Text="{Binding MaxDtuUsed}"></TextBlock>
 
@@ -467,19 +472,19 @@
                                                         </StackPanel>
 
                                                         <busyIndicator:BusyMask Grid.Row="3"
-                                            IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" 
-                                            IndicatorType="Cogs"
-                                            BusyContent="Please wait..." >
+                                                        IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" 
+                                                        IndicatorType="Cogs"
+                                                        BusyContent="Please wait..." >
 
 
                                                             <DataGrid MaxHeight="400" 
-                                                      MaxWidth="320" 
-                                                      HorizontalAlignment="Left" 
-                                                      ItemsSource="{Binding Path=PerformanceMetricSeries}"                                                   
-                                                      AutoGenerateColumns="False" 
-                                                      CanUserAddRows="False"
-                                                      local:DataGridExtensions.SortDesc="True"
-                                                 >
+                                                    MaxWidth="320" 
+                                                    HorizontalAlignment="Left" 
+                                                    ItemsSource="{Binding Path=PerformanceMetricSeries}"                                                   
+                                                    AutoGenerateColumns="False" 
+                                                    CanUserAddRows="False"
+                                                    local:DataGridExtensions.SortDesc="True"
+                                                >
                                                                 <DataGrid.Columns>
 
                                                                     <DataGridTextColumn Header="Time" Binding="{Binding Path=timeStamp}" IsReadOnly="True"/>
@@ -504,12 +509,12 @@
                                                             <TextBlock Margin="2,4,2,4" FontSize="16" VerticalAlignment="Center">Elastic Pool Usage</TextBlock>
                                                         </Border>
 
-                                                        <TextBlock Margin="2" Grid.Row="1" FontSize="16" VerticalAlignment="Center"></TextBlock>
+                                                        <!--<TextBlock Margin="2" Grid.Row="1" FontSize="16" VerticalAlignment="Center"></TextBlock>-->
 
 
-                                                        <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="2">
-                                                            <TextBlock Margin="2">Max DTU/CPU % found:</TextBlock>
-                                                            <TextBlock Margin="2" Text="{Binding ElasticPool.MaxDtuUsed}"></TextBlock>
+                                                        <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="1">
+                                                            <TextBlock Margin="8">Max DTU/CPU % found:</TextBlock>
+                                                            <TextBlock Margin="2" Text="{Binding ElasticPool.MaxDtuUsed}" VerticalAlignment="Center"></TextBlock>
 
                                                             <TextBlock Margin="30,2,2,2" Text="{Binding ElasticPool.MetricsErrorMessage}"></TextBlock>
                                                         </StackPanel>
@@ -541,12 +546,8 @@
 
                                                     </Grid>
 
-                                                    
 
-                                               
                                                 </Grid>
-
-                                                
 
                                             </Grid>
 
@@ -554,18 +555,18 @@
 
                                         <mah:MetroTabItem Header="Costs" Name="TabDbCosts">
 
-                                            <Grid >
+                                            <Grid Style="{StaticResource SubSectionGrid}">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
                                                     <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
 
-                                                <Border BorderThickness="0,0,0,1" BorderBrush="Gray">
+                                                <!--<Border BorderThickness="0,0,0,1" BorderBrush="Gray">
                                                     <StackPanel Orientation="Horizontal" Margin="2,2,2,2">
                                                         <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">Costs</TextBlock>
 
                                                     </StackPanel>
-                                                </Border>
+                                                </Border>-->
 
                                                 <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                                     <DataGrid.Columns>
@@ -597,25 +598,31 @@
 
                                         <mah:MetroTabItem Header="Advisor" Name="TabDbAdvisor">
 
-                                            <Grid HorizontalAlignment="Left" Visibility="{Binding HasAdvisorRecommendations, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                                            <Grid HorizontalAlignment="Left"  Style="{StaticResource SubSectionGrid}">
 
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
                                                     <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
 
-                                                <TextBlock Margin="2,4,2,2" FontSize="16" VerticalAlignment="Center" Text="Advisor Recomendations"/>
+                                                <TextBlock Margin="2,4,2,2" FontSize="16" VerticalAlignment="Center" Text="{Binding AdvisorRecommendationSummary}"/>
 
 
-                                                <TextBox Margin="2,8,2,2" Width="450" TextWrapping="Wrap" IsReadOnly="True"  Grid.Row="1" Text="{Binding advisorRecomendationDetails}"/>
+                                                <TextBox Margin="2,8,2,2" 
+                                                         Visibility="{Binding HasAdvisorRecommendations, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"
+                                                         Width="450" 
+                                                         TextWrapping="Wrap" 
+                                                         IsReadOnly="True"  
+                                                         Grid.Row="1" 
+                                                         Text="{Binding advisorRecommendationDetails}"/>
                                             </Grid>
 
                                         </mah:MetroTabItem>
 
                                         <mah:MetroTabItem Header="Live Status" Name="TabDbLiveStatus">
 
-                                            <Grid Grid.Row="1">
-                                                <busyIndicator:BusyMask IsBusy="{Binding IsQueryingDatabase, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                                            <Grid Style="{StaticResource SubSectionGrid}">
+                                                <busyIndicator:BusyMask IsBusy="{Binding AzDB.IsQueryingDatabase, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
                                                     <Grid Width="1100" Height="500" HorizontalAlignment="Left">
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="Auto"/>
@@ -633,15 +640,16 @@
 
                                                         </StackPanel>
 
-                                                        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="2" Background="Orange" Visibility="{Binding SelectedAzServer.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                                                        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="2" Background="Orange" Visibility="{Binding AzDB.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
 
-                                                            <TextBlock Margin="1" Padding="5" Text="{Binding SelectedAzServer.ConnectivityError}"/>
+                                                            <TextBlock Margin="1" Padding="5" Text="{Binding AzDB.ConnectivityError}"/>
 
                                                         </StackPanel>
 
-                                                        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="2" Background="Orange" Visibility="{Binding SelectedAzDB.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                                                        <!--<StackPanel Orientation="Horizontal" Grid.Row="2" Margin="2" Background="Orange" Visibility="{Binding AzDB.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">-->
+                                                        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="2" Background="Orange" >
 
-                                                            <TextBlock Margin="1" Padding="5" Text="{Binding SelectedAzDB.ConnectivityError}"/>
+                                                            <TextBlock Margin="1" Padding="5" Text="{Binding AzDB.ConnectivityError}"/>
 
                                                         </StackPanel>
 
@@ -652,7 +660,7 @@
                                                                 <RowDefinition Height=".5*"/>
                                                                 <RowDefinition Height="2"/>
                                                                 <RowDefinition Height=".5*"/>
-                                                              
+
                                                             </Grid.RowDefinitions>
 
                                                             <StackPanel Orientation="Horizontal" Background="LightGray"  VerticalAlignment="Center">
@@ -784,7 +792,7 @@
 
                                         <mah:MetroTabItem Header="Server" Name="TabDbServer">
 
-                                            <Grid Grid.Row="1">
+                                            <Grid Style="{StaticResource SubSectionGrid}">
                                                 <busyIndicator:BusyMask IsBusy="{Binding IsQueryingDatabase, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
                                                     <Grid Width="1100" Height="500" HorizontalAlignment="Left">
                                                         <Grid.RowDefinitions>
@@ -819,7 +827,7 @@
                                                             <Grid.RowDefinitions>
                                                                 <RowDefinition Height="Auto"/>
                                                                 <RowDefinition Height="*"/>
-                                                             
+
                                                             </Grid.RowDefinitions>
 
                                                             <StackPanel Orientation="Horizontal" Background="LightGray"  VerticalAlignment="Center">
@@ -881,7 +889,7 @@
 
                                         </mah:MetroTabItem>
 
-                                       
+
 
                                     </mah:MetroAnimatedSingleRowTabControl>
 
@@ -898,7 +906,7 @@
             <mah:MetroTabItem Header="DB Details" Name="TabSql">
 
 
-                
+
             </mah:MetroTabItem>
 
             <mah:MetroTabItem Header="Data Factories" Name="TabDataFactories">
@@ -1286,44 +1294,44 @@
 
             <mah:MetroTabItem Header="VMs" Name="TabVMs">
 
-                
 
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
 
-                        <StackPanel Orientation="Horizontal" Margin="4">
-                            <Button x:Name="VMRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VMsRefreshButton_Click">Refresh</Button>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                            <Button x:Name="VMCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VMCollapseCostsButton_Click">Show/Collapse Costs</Button>
+                    <StackPanel Orientation="Horizontal" Margin="4">
+                        <Button x:Name="VMRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VMsRefreshButton_Click">Refresh</Button>
 
-                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VM Costs:</TextBlock>
-                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalVMCostsText}"></TextBlock>
+                        <Button x:Name="VMCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VMCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
-                            <Button x:Name="VMAnalyseSpendButton" Margin="28,2,2,2" Padding="8,1,8,1" Click="VMAnalyseSpendButton_Click" Content="Analyse Spend"/>
+                        <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VM Costs:</TextBlock>
+                        <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalVMCostsText}"></TextBlock>
 
-                            <Image gif:ImageBehavior.AnimatedSource="/Images/loading.gif" 
+                        <Button x:Name="VMAnalyseSpendButton" Margin="28,2,2,2" Padding="8,1,8,1" Click="VMAnalyseSpendButton_Click" Content="Analyse Spend"/>
+
+                        <Image gif:ImageBehavior.AnimatedSource="/Images/loading.gif" 
                                Margin="8,0,0,0" 
                                Style="{StaticResource LoadingGifStyle}"
                                Visibility="{Binding IsVmSpendAnalysisBusy,Converter={StaticResource BooleanToVisibilityConverter}}">
-                                <Image.LayoutTransform>
-                                    <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
-                                </Image.LayoutTransform>
-                            </Image>
+                            <Image.LayoutTransform>
+                                <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
+                            </Image.LayoutTransform>
+                        </Image>
 
-                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total Potential Saving:</TextBlock>
-                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialVmSavingAmount, StringFormat=N0}"></TextBlock>
+                        <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total Potential Saving:</TextBlock>
+                        <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialVmSavingAmount, StringFormat=N0}"></TextBlock>
 
-                        </StackPanel>
+                    </StackPanel>
 
-                        <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding VMErrorMessage}" MaxHeight="150" ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
+                    <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding VMErrorMessage}" MaxHeight="150" ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
 
-                        <busyIndicator:BusyMask Grid.Row="2" Name="VmBusyMask" IsBusy="{Binding IsVMQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                    <busyIndicator:BusyMask Grid.Row="2" Name="VmBusyMask" IsBusy="{Binding IsVMQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
-                            <DataGrid x:Name="VMDataGrid"                              
+                        <DataGrid x:Name="VMDataGrid"                              
                               ItemsSource="{Binding Source={StaticResource VMDataGridViewSource}}"                               
                               FrozenColumnCount ="1"                             
                                 MouseUp="VMDataGrid_MouseUp"
@@ -1504,12 +1512,12 @@
                             </DataGrid.RowDetailsTemplate>
 
                         </DataGrid>
-                        
-                        </busyIndicator:BusyMask>
-    
-                    </Grid>
 
-               
+                    </busyIndicator:BusyMask>
+
+                </Grid>
+
+
 
             </mah:MetroTabItem>
 

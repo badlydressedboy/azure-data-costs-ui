@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,16 @@ namespace DataEstateOverview.Models.SQL
 {
     public class AzDB : BaseModel
     {
+        private bool isQueryingDatabase;
+
+        public bool IsQueryingDatabase
+        {
+            get => isQueryingDatabase;
+            set
+            {
+                SetProperty(ref isQueryingDatabase, value);
+            }
+        }
         public AzServer ParentAzServer { get; set; }
         public string ServerName { get; set; }
 
@@ -40,39 +51,49 @@ namespace DataEstateOverview.Models.SQL
 
         public async Task Refresh()
         {
-            ExceptionMessages.Clear();
-            ConnectivityError = "";
-            ParentAzServer.ConnectivityError = "";
+            if (IsQueryingDatabase) return;
+            IsQueryingDatabase = true;
 
-            Task[] tasks = new Task[4];
+            try
+            {
+                ExceptionMessages.Clear();
+                ConnectivityError = "";
+                ParentAzServer.ConnectivityError = "";
 
-            tasks[0] = Task.Run(async () =>
-            {
-                var result = await ProcessResult(await DataAccess.GetDbPrincipals(ConnString));
-                ConnectivityError = result.ExceptionMessage ;
-                if (result.Result != null) DBPrincipals = (List<DBPrincipal>)result.Result;
-            });
-            tasks[1] = Task.Run(async () =>
-            {
-                var result = await ProcessResult(await DataAccess.GetDbFireWallRules(ConnString));
-                ConnectivityError = result.ExceptionMessage ;
-                if (result.Result != null) DBFireWallRules = (List<FireWallRule>)result.Result;
-            });
-            tasks[2] = Task.Run(async () =>
-            {
-                var result = await ProcessResult(await DataAccess.GetDbReplication(ConnString));
-                ConnectivityError = result.ExceptionMessage ;
-                if (result.Result != null) SyncStates = (List<DBSyncState>)result.Result;
-            });
-            tasks[3] = Task.Run(async () =>
-            {
-                var result = await ProcessResult(await DataAccess.GetDbSessions(ConnString));
-                ConnectivityError = result.ExceptionMessage;
-                if (result.Result != null) Sessions = (List<Session>)result.Result;
-            });            
+                Task[] tasks = new Task[4];
+
+                tasks[0] = Task.Run(async () =>
+                {
+                    var result = await ProcessResult(await DataAccess.GetDbPrincipals(ConnString));
+                    ConnectivityError = result.ExceptionMessage;
+                    if (result.Result != null) DBPrincipals = (List<DBPrincipal>)result.Result;
+                });
+                tasks[1] = Task.Run(async () =>
+                {
+                    var result = await ProcessResult(await DataAccess.GetDbFireWallRules(ConnString));
+                    ConnectivityError = result.ExceptionMessage;
+                    if (result.Result != null) DBFireWallRules = (List<FireWallRule>)result.Result;
+                });
+                tasks[2] = Task.Run(async () =>
+                {
+                    var result = await ProcessResult(await DataAccess.GetDbReplication(ConnString));
+                    ConnectivityError = result.ExceptionMessage;
+                    if (result.Result != null) SyncStates = (List<DBSyncState>)result.Result;
+                });
+                tasks[3] = Task.Run(async () =>
+                {
+                    var result = await ProcessResult(await DataAccess.GetDbSessions(ConnString));
+                    ConnectivityError = result.ExceptionMessage;
+                    if (result.Result != null) Sessions = (List<Session>)result.Result;
+                });
 
 
-            await Task.WhenAll(tasks);
+                await Task.WhenAll(tasks);
+            }catch(Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
+            IsQueryingDatabase = false;
         }
 
         public void SetParent(AzServer parentServer)

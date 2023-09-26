@@ -40,8 +40,32 @@ namespace DataEstateOverview.Models.Rest
         public string VulnerabilityScanError { get; set; }
         public string RecommendationsError { get; set; }
 
-        public int advisorRecomendationCount { get; set; }
-        public string advisorRecomendationDetails { get; set; } = "";
+        //public int advisorRecommendationCount { get; set; }
+        public string advisorRecommendationDetails { get; set; } = "";
+        
+        protected int advisorRecommendationCount;
+        
+        public int AdvisorRecommendationCount {
+            get { return advisorRecommendationCount; }
+            set
+            {
+                advisorRecommendationCount = value;
+                if (value == 0)
+                {
+                    AdvisorRecommendationSummary = $"No Advisor Recommendations";
+                }
+                else if (value == 1)
+                {
+                    AdvisorRecommendationSummary = $"1 Advisor Recommendation";
+                }
+                else
+                {
+                    AdvisorRecommendationSummary = $"{value} Advisor Recommendations";
+                }
+            }
+        }
+
+        public string AdvisorRecommendationSummary { get; set; } = "";
 
         private decimal _currentDbSizeBytes;
         public decimal currentDbSizeBytes
@@ -257,7 +281,7 @@ namespace DataEstateOverview.Models.Rest
         public bool HasAdvisorRecommendations
         {
             get {
-                if (advisorRecomendationCount > 0) return true;
+                if (advisorRecommendationCount > 0) return true;
                 return false; 
             }            
         }
