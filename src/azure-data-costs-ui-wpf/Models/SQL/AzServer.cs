@@ -13,6 +13,8 @@ namespace DataEstateOverview.Models.SQL
         public List<FireWallRule> FireWallRules { get; set; } = new List<FireWallRule>();
         public List<DBPrincipal> Logins { get; set; } = new List<DBPrincipal>();
         public List<EventLogEntry> EventLog { get; set; } = new List<EventLogEntry>();
+        public List<EventLogEntry> MasterDbEventLog { get; set; } = new List<EventLogEntry>();
+        
 
 
         public AzServer(string serverName)
@@ -31,14 +33,31 @@ namespace DataEstateOverview.Models.SQL
             {
                 var result = await ProcessResult(await DataAccess.GetServerFirewallRules(ConnString));
                 ConnectivityError = result.ExceptionMessage ;
-                if (result.Result != null) FireWallRules = (List<FireWallRule>)result.Result;
+                if (result.Result != null)
+                {
+                    FireWallRules.Clear();
+                    FireWallRules.AddRange((List<FireWallRule>)result.Result);
+                }
 
             });
             tasks[1] = Task.Run(async () =>
             {
                 var result = await ProcessResult(await DataAccess.GetServerEventLog(ConnString));
                 ConnectivityError = result.ExceptionMessage ;
-                if (result.Result != null) EventLog = (List<EventLogEntry>)result.Result;
+                if (result.Result != null)
+                {
+                    EventLog.Clear();
+                    EventLog.AddRange((List<EventLogEntry>)result.Result);
+
+                    MasterDbEventLog.Clear();
+                    MasterDbEventLog.AddRange(EventLog.Where(x => x.Database == "master").ToList());
+
+                    foreach (var db in ChildAzDBs) {
+
+                        db.EventLog.Clear();
+                        db.EventLog.AddRange(MasterDbEventLog.Where(x => x.Database == db.DatabaseName));
+                    }
+                }
 
             });
 

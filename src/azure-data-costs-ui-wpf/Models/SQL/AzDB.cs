@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DbMeta.Ui.Wpf.Models.Rest;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,6 +11,8 @@ namespace DataEstateOverview.Models.SQL
 {
     public class AzDB : BaseModel
     {
+        public List<EventLogEntry> EventLog { get; set; } = new List<EventLogEntry>();
+
         private bool isQueryingDatabase;
 
         public bool IsQueryingDatabase
@@ -53,7 +56,7 @@ namespace DataEstateOverview.Models.SQL
         {
             if (IsQueryingDatabase) return;
             IsQueryingDatabase = true;
-
+            Debug.WriteLine($"Querying {DatabaseName}...");
             try
             {
                 ExceptionMessages.Clear();
@@ -66,25 +69,46 @@ namespace DataEstateOverview.Models.SQL
                 {
                     var result = await ProcessResult(await DataAccess.GetDbPrincipals(ConnString));
                     ConnectivityError = result.ExceptionMessage;
-                    if (result.Result != null) DBPrincipals = (List<DBPrincipal>)result.Result;
+                    if (result.Result != null)
+                    {
+                        DBPrincipals.Clear();
+                        DBPrincipals.AddRange((List<DBPrincipal>)result.Result);
+                    }
                 });
                 tasks[1] = Task.Run(async () =>
                 {
                     var result = await ProcessResult(await DataAccess.GetDbFireWallRules(ConnString));
                     ConnectivityError = result.ExceptionMessage;
-                    if (result.Result != null) DBFireWallRules = (List<FireWallRule>)result.Result;
+                    if (result.Result != null)
+                    {
+                        DBFireWallRules.Clear();
+                        DBFireWallRules.AddRange((List<FireWallRule>)result.Result);
+                    }
                 });
                 tasks[2] = Task.Run(async () =>
                 {
                     var result = await ProcessResult(await DataAccess.GetDbReplication(ConnString));
                     ConnectivityError = result.ExceptionMessage;
-                    if (result.Result != null) SyncStates = (List<DBSyncState>)result.Result;
+                    if (result.Result != null)
+                    {
+                        SyncStates.Clear();
+                        SyncStates.AddRange((List<DBSyncState>)result.Result);
+
+                        if(SyncStates.FirstOrDefault(x => x.PartnerDatabase != null) == null)
+                        {
+                            SyncStates.Clear();
+                        }
+                    }
                 });
                 tasks[3] = Task.Run(async () =>
                 {
                     var result = await ProcessResult(await DataAccess.GetDbSessions(ConnString));
                     ConnectivityError = result.ExceptionMessage;
-                    if (result.Result != null) Sessions = (List<Session>)result.Result;
+                    if (result.Result != null)
+                    {
+                        Sessions.Clear();
+                        Sessions.AddRange((List<Session>)result.Result);
+                    }
                 });
 
 
@@ -94,6 +118,7 @@ namespace DataEstateOverview.Models.SQL
                 Debug.WriteLine(ex.ToString());
             }
             IsQueryingDatabase = false;
+            Debug.WriteLine($"Finished Querying {DatabaseName}");
         }
 
         public void SetParent(AzServer parentServer)

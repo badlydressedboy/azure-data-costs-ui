@@ -50,40 +50,14 @@ namespace DataEstateOverview
             CostDaysText.Text = APIAccess.CostDays.ToString();  
         }
 
-        private async void VNetCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            RefreshData();
-        }
-
-        private async Task RefreshData()
-        {
-            //if (ServerFirewallGrid == null) return;
-
-            Cursor = Cursors.Wait;
-
-            //ServerFirewallGrid.ItemsSource = null;
-            //ServerEventLogGrid.ItemsSource = null;
-            //DbLoginsGrid.ItemsSource = null;
-            //DbSyncStateGrid.ItemsSource = null;
-
-            try
-            {
-                await LoadSelectedAzDB();                
-            } catch (Exception ex) {
-                Debug.WriteLine(ex);
-            }
-            Cursor = Cursors.Arrow;
-        }
-
         private async void SQLDBRefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            await LoadSelectedAzDB();
-            await RefreshData();
+            await LoadSelectedAzSqlDB();
         }
 
         private async void SummaryDataGrid_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            LoadSelectedAzDB();
+            LoadSelectedAzSqlDB();
         }
 
         private async void SummaryDataGrid_KeyDown(object sender, KeyEventArgs e)
@@ -106,35 +80,17 @@ namespace DataEstateOverview
             vm.SelectedAzDB = selectedRestDb.AzDB;
             vm.SelectedAzServer = selectedRestDb.AzDB.ParentAzServer;
             //TabSql.IsSelected = true;
-            await LoadSelectedAzDB();
+            await LoadSelectedAzSqlDB();
         }
-        private async Task LoadSelectedAzDB()
+        private async Task LoadSelectedAzSqlDB()
         {
          
-            //ServerFirewallGrid.ItemsSource = null;
-            //ServerEventLogGrid.ItemsSource = null;
-            //DbEventLogGrid.ItemsSource = null;
-
             Cursor = Cursors.Wait;
             try
             {
-                //DbLoginsGrid.ItemsSource = null;
-                //DbSyncStateGrid.ItemsSource = null;
-                //DbRequestsGrid.ItemsSource = null;
-
+             
                 await vm.RefreshSqlDb();             
 
-                //ServerEventLogGrid.ItemsSource = vm.SelectedAzServer.EventLog.Where(x => x.Database == "master");
-                //ServerFirewallGrid.ItemsSource = vm.SelectedAzServer.FireWallRules;
-                //DbLoginsGrid.ItemsSource = vm.SelectedAzDB.DBPrincipals;
-                //DbRequestsGrid.ItemsSource = vm.SelectedAzDB.Sessions;
-                //DbEventLogGrid.ItemsSource = vm.SelectedAzServer.EventLog.Where(x=>x.Database == vm.SelectedAzDB.DatabaseName);
-
-                // todo implement logic in vm
-                if (vm.SelectedAzDB.SyncStates.FirstOrDefault(x => x.PartnerDatabase != null) != null)
-                {
-                    //DbSyncStateGrid.ItemsSource = vm.SelectedAzDB.SyncStates;
-                }
             }
             catch (Exception ex) { }
             Cursor = Cursors.Arrow;
@@ -162,8 +118,29 @@ namespace DataEstateOverview
                     var db = (RestSqlDb)tb.DataContext;
                     SetAzDB(db);
                     //if(ds != null && ds is entity )
-                    await LoadSelectedAzDB();
+                    await LoadSelectedAzSqlDB();
                 }
+            }
+        }
+
+        private async void RestDbDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
+        {
+            var db = (RestSqlDb)e.Row.DataContext;
+
+            SetAzDB(db);    
+            if (!db.GotMetricsHistory)
+            {
+                GetDbMetrics();
+            }
+        }
+        private void RestDbDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedRestDb = (RestSqlDb)RestDbDataGrid.SelectedItem;
+
+            if (selectedRestDb == null)
+            {
+                Debug.WriteLine($"RestDbDataGrid.SelectedItem == null");
+                return;
             }
         }
 
@@ -201,7 +178,7 @@ namespace DataEstateOverview
 
         private void RestGridMenuItemSqlDetails_Click(object sender, RoutedEventArgs e)
         {
-            LoadSelectedAzDB();            
+            LoadSelectedAzSqlDB();            
         }
 
         private void SQLDBBackButton_Click(object sender, RoutedEventArgs e)
@@ -550,17 +527,7 @@ namespace DataEstateOverview
             row.DetailsVisibility = row.DetailsVisibility == Visibility.Collapsed ?
                 Visibility.Visible : Visibility.Collapsed;
         }
-        private async void RestDbDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
-        {
-            return;
-            if (RestDbDataGrid.CurrentItem == null) return;
-            var db = (RestSqlDb)RestDbDataGrid.CurrentItem;
 
-            if (!db.GotMetricsHistory)
-            {
-                GetDbMetrics();
-            }
-        }
         private void ExpandCollapseDataGrid(DataGrid dg)
         {
             if (dg.RowDetailsVisibilityMode == DataGridRowDetailsVisibilityMode.Collapsed)
@@ -597,20 +564,24 @@ namespace DataEstateOverview
             await vm.AnalyseVmSpend();
         }
 
-        private void RestDbDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var selectedRestDb = (RestSqlDb)RestDbDataGrid.SelectedItem;
-
-            if (selectedRestDb == null)
-            {
-                Debug.WriteLine($"RestDbDataGrid.SelectedItem == null");
-                return;
-            }
-        }
-
+        
         private void DBTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+
+        private void Grid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+
+        }
+
+        private void Grid2_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            Debug.WriteLine(sender);
+            if(sender is RestSqlDb)
+            {
+                Debug.WriteLine("got db on change!");
+            }
         }
     }
     public class ignoresubscriptionnames

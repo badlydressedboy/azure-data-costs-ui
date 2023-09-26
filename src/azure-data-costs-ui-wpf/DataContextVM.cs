@@ -864,6 +864,7 @@ namespace DataEstateOverview
         }
         public async Task RefreshSqlDb()
         {
+            if(SelectedAzDB == null) return;
             if (IsQueryingDatabase) return;
             IsQueryingDatabase = true;
 

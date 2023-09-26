@@ -31,6 +31,10 @@
             <Setter Property="VerticalAlignment" Value="Top" />
         </Style>
 
+        <Style TargetType="TextBlock" x:Key="SubSectionGridHeader">
+            <Setter Property="FontSize" Value="16"></Setter>
+        </Style>
+        
         <Style TargetType="Expander">
             <Setter Property="Background" Value="{StaticResource LightestGreyHighlight}"/>
         </Style>
@@ -197,6 +201,7 @@
                                   Grid.RowSpan="4"
                                   ClipboardCopyMode="IncludeHeader"   
                                   SelectionChanged="RestDbDataGrid_SelectionChanged"
+                                  LoadingRowDetails="RestDbDataGrid_LoadingRowDetails"
                                 local:DataGridExtensions.SortDesc="True"
                             >
 
@@ -373,7 +378,7 @@
 
 
 
-                                <DataGridTextColumn Header="Advisor Recommendations"  Binding="{Binding advisorRecommendationCount, StringFormat=N0}" >
+                                <DataGridTextColumn Header="Advisor Recommendations"  Binding="{Binding AdvisorRecommendationCount, StringFormat=N0}" >
 
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
@@ -382,7 +387,7 @@
                                                 <Setter Property="Cursor" Value="Hand"/>
                                             </Style.Setters>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding advisorRecommendationCount, ConverterParameter=1, Converter={StaticResource NonZeroNumberToBooleanConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                <DataTrigger Binding="{Binding AdvisorRecommendationCount, ConverterParameter=1, Converter={StaticResource NonZeroNumberToBooleanConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                                     <Setter Property="Foreground" Value="OrangeRed" />
                                                     <Setter Property="FontWeight" Value="Bold" />
                                                 </DataTrigger>
@@ -421,7 +426,7 @@
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
 
-                                    <mah:MetroAnimatedSingleRowTabControl Name="DBTabControl" SelectionChanged="DBTabControl_SelectionChanged">
+                                    <mah:MetroAnimatedSingleRowTabControl Name="DBTabControl" SelectionChanged="DBTabControl_SelectionChanged" IsVisibleChanged="Grid2_IsVisibleChanged">
 
                                         <mah:MetroTabItem Header="Useage" Name="TabDbUseage">
 
@@ -459,7 +464,7 @@
 
                                                         <Border BorderThickness="0,0,0,1" BorderBrush="Gray">
                                                             <StackPanel Orientation="Horizontal" Margin="2">
-                                                                <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">Database Usage</TextBlock>
+                                                                <TextBlock Margin="2" Style="{StaticResource SubSectionGridHeader}" VerticalAlignment="Center">Database Usage</TextBlock>
 
                                                             </StackPanel>
                                                         </Border>
@@ -621,11 +626,11 @@
 
                                         <mah:MetroTabItem Header="Live Status" Name="TabDbLiveStatus">
 
-                                            <Grid Style="{StaticResource SubSectionGrid}">
+                                            <Grid Style="{StaticResource SubSectionGrid}" >
+                                                
                                                 <busyIndicator:BusyMask IsBusy="{Binding AzDB.IsQueryingDatabase, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
                                                     <Grid Width="1100" Height="500" HorizontalAlignment="Left">
                                                         <Grid.RowDefinitions>
-                                                            <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="*"/>
@@ -634,9 +639,7 @@
 
                                                         <StackPanel Orientation="Horizontal" Margin="6">
 
-                                                            <!--<Button x:Name="SQLDBBackButton" Margin="2,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBBackButton_Click">Back</Button>-->
-
-                                                            <Button x:Name="SQLDBRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBRefreshButton_Click" IsEnabled="{Binding IsQueryingDatabase, Converter={StaticResource InverseBooleanConverter}}">Refresh</Button>
+                                                            <Button x:Name="SQLDBRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBRefreshButton_Click" IsEnabled="{Binding AzDB.IsQueryingDatabase, Converter={StaticResource InverseBooleanConverter}}">Refresh</Button>
 
                                                         </StackPanel>
 
@@ -646,14 +649,7 @@
 
                                                         </StackPanel>
 
-                                                        <!--<StackPanel Orientation="Horizontal" Grid.Row="2" Margin="2" Background="Orange" Visibility="{Binding AzDB.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">-->
-                                                        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="2" Background="Orange" >
-
-                                                            <TextBlock Margin="1" Padding="5" Text="{Binding AzDB.ConnectivityError}"/>
-
-                                                        </StackPanel>
-
-                                                        <Grid x:Name="ServerGrid" Grid.Row="3">
+                                                        <Grid x:Name="ServerGrid" Grid.Row="2">
                                                             <Grid.RowDefinitions>
                                                                 <RowDefinition Height="Auto"/>
                                                                 <RowDefinition Height="Auto"/>
@@ -662,16 +658,6 @@
                                                                 <RowDefinition Height=".5*"/>
 
                                                             </Grid.RowDefinitions>
-
-                                                            <StackPanel Orientation="Horizontal" Background="LightGray"  VerticalAlignment="Center">
-                                                                <TextBlock Margin="8,4,4,4" Style="{StaticResource TitleTextStyle}" Text="Server: "></TextBlock>
-                                                                <TextBlock Margin="2,4,4,4" Style="{StaticResource TitleTextStyle}" Text="{Binding SelectedAzDB.ServerName}"></TextBlock>
-                                                            </StackPanel>
-
-                                                            <StackPanel Orientation="Horizontal" Grid.Row="1" MinHeight="16" Background="LightGray" VerticalAlignment="Center">
-                                                                <TextBlock Margin="8,4,4,4" Style="{StaticResource TitleTextStyle}" Text="Database: "></TextBlock>
-                                                                <TextBlock Margin="1,4,4,4" Style="{StaticResource TitleTextStyle}" Text="{Binding SelectedAzDB.DatabaseName}"></TextBlock>
-                                                            </StackPanel>
 
                                                             <Grid Grid.Row="2" x:Name="DatabaseGridx">
                                                                 <Grid.ColumnDefinitions>
@@ -687,10 +673,15 @@
                                                                     </Grid.RowDefinitions>
 
                                                                     <StackPanel Orientation="Horizontal" >
-                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Event Log: "></TextBlock>
+                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" Style="{StaticResource SubSectionGridHeader}" Text="Event Log: "></TextBlock>
                                                                     </StackPanel>
 
-                                                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbEventLogGrid" AutoGenerateColumns="True" local:DataGridExtensions.SortDesc="True">
+                                                                    <DataGrid Grid.Row="1" 
+                                                                              IsReadOnly="True" 
+                                                                              x:Name="DbEventLogGrid" 
+                                                                               ItemsSource="{Binding Path=AzDB.EventLog}"
+                                                                              AutoGenerateColumns="True" 
+                                                                              local:DataGridExtensions.SortDesc="True">
                                                                         <!--<DataGrid.Columns>
     <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
 </DataGrid.Columns>-->
@@ -708,14 +699,14 @@
 
 
                                                                     <StackPanel Orientation="Horizontal" >
-                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="SQL Sessions: "></TextBlock>
+                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" Style="{StaticResource SubSectionGridHeader}" Text="SQL Sessions: "></TextBlock>
 
                                                                         <!--<CheckBox Margin="22,2,2,2" IsChecked="{Binding ShowRunningSessionsOnly}"></CheckBox>
                     <TextBlock Margin="0,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Running Requests Only"></TextBlock>-->
                                                                     </StackPanel>
 
                                                                     <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbRequestsGrid" 
-                                                                          ItemsSource="{Binding Path=Sessions}"
+                                                                          ItemsSource="{Binding Path=AzDB.Sessions}"
                                                                           AutoGenerateColumns="True" 
                                                                           CanUserResizeRows="False" 
                                                                           RowHeight="20" 
@@ -744,12 +735,12 @@
                                                                     </Grid.RowDefinitions>
 
                                                                     <StackPanel Orientation="Horizontal" >
-                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Logins: "></TextBlock>
+                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" Style="{StaticResource SubSectionGridHeader}" Text="Logins: "></TextBlock>
                                                                     </StackPanel>
 
                                                                     <DataGrid Grid.Row="1" IsReadOnly="True" 
                                                                           x:Name="DbLoginsGrid" 
-                                                                          ItemsSource="{Binding Path=DBPrincipals}"
+                                                                          ItemsSource="{Binding Path=AzDB.DBPrincipals}"
                                                                           AutoGenerateColumns="True" 
                                                                           local:DataGridExtensions.SortDesc="True">
                                                                         <!--<DataGrid.Columns>
@@ -769,11 +760,11 @@
 
 
                                                                     <StackPanel Orientation="Horizontal" >
-                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Sync state: "></TextBlock>
+                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" Style="{StaticResource SubSectionGridHeader}" Text="Sync state: "></TextBlock>
                                                                     </StackPanel>
 
                                                                     <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="DbSyncStateGrid" 
-                                                                          ItemsSource="{Binding Path=DbSyncStateGrid}"
+                                                                          ItemsSource="{Binding Path=AzDB.SyncStates}"
                                                                           AutoGenerateColumns="True" 
                                                                           local:DataGridExtensions.SortDesc="True">
                                                                         <!--<DataGrid.Columns>
@@ -793,10 +784,9 @@
                                         <mah:MetroTabItem Header="Server" Name="TabDbServer">
 
                                             <Grid Style="{StaticResource SubSectionGrid}">
-                                                <busyIndicator:BusyMask IsBusy="{Binding IsQueryingDatabase, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                                                <busyIndicator:BusyMask IsBusy="{Binding AzDB.IsQueryingDatabase, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
                                                     <Grid Width="1100" Height="500" HorizontalAlignment="Left">
                                                         <Grid.RowDefinitions>
-                                                            <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="*"/>
@@ -805,35 +795,22 @@
 
                                                         <StackPanel Orientation="Horizontal" Margin="6">
 
-                                                            <!--<Button x:Name="SQLDBBackButton" Margin="2,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBBackButton_Click">Back</Button>-->
-
-                                                            <Button  Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBRefreshButton_Click" IsEnabled="{Binding IsQueryingDatabase, Converter={StaticResource InverseBooleanConverter}}">Refresh</Button>
+                                                            <Button  Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBRefreshButton_Click" IsEnabled="{Binding AzDB.IsQueryingDatabase, Converter={StaticResource InverseBooleanConverter}}">Refresh</Button>
 
                                                         </StackPanel>
 
-                                                        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="2" Background="Orange" Visibility="{Binding SelectedAzServer.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                                                        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="2" Background="Orange" Visibility="{Binding AzDB.ParentAzServer.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
 
-                                                            <TextBlock Margin="1" Padding="5" Text="{Binding SelectedAzServer.ConnectivityError}"/>
-
-                                                        </StackPanel>
-
-                                                        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="2" Background="Orange" Visibility="{Binding SelectedAzDB.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
-
-                                                            <TextBlock Margin="1" Padding="5" Text="{Binding SelectedAzDB.ConnectivityError}"/>
+                                                            <TextBlock Margin="1" Padding="5" Text="{Binding AzDB.ParentAzServer.ConnectivityError}"/>
 
                                                         </StackPanel>
 
-                                                        <Grid x:Name="ServerGridA" Grid.Row="3">
+                                                        <Grid x:Name="ServerGridA" Grid.Row="2">
                                                             <Grid.RowDefinitions>
                                                                 <RowDefinition Height="Auto"/>
                                                                 <RowDefinition Height="*"/>
 
                                                             </Grid.RowDefinitions>
-
-                                                            <StackPanel Orientation="Horizontal" Background="LightGray"  VerticalAlignment="Center">
-                                                                <TextBlock Margin="8,4,4,4" Style="{StaticResource TitleTextStyle}" Text="Server: "></TextBlock>
-                                                                <TextBlock Margin="2,4,4,4" Style="{StaticResource TitleTextStyle}" Text="{Binding SelectedAzDB.ServerName}"></TextBlock>
-                                                            </StackPanel>
 
                                                             <Grid Grid.Row="1" x:Name="ServerGridx">
                                                                 <Grid.ColumnDefinitions>
@@ -849,10 +826,15 @@
                                                                     </Grid.RowDefinitions>
 
                                                                     <StackPanel Orientation="Horizontal" >
-                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Event Log: "></TextBlock>
+                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" Style="{StaticResource SubSectionGridHeader}" Text="Event Log: "></TextBlock>
                                                                     </StackPanel>
 
-                                                                    <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="ServerEventLogGrid" AutoGenerateColumns="True" local:DataGridExtensions.SortDesc="True">
+                                                                    <DataGrid Grid.Row="1" 
+                                                                              ItemsSource="{Binding AzDB.ParentAzServer.MasterDbEventLog}"
+                                                                              IsReadOnly="True" 
+                                                                              x:Name="ServerEventLogGrid" 
+                                                                              AutoGenerateColumns="True" 
+                                                                              local:DataGridExtensions.SortDesc="True">
                                                                         <!--<DataGrid.Columns>
     <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
 </DataGrid.Columns>-->
@@ -869,10 +851,15 @@
                                                                     </Grid.RowDefinitions>
 
                                                                     <StackPanel Orientation="Horizontal" >
-                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" FontSize="11" Text="Firewall Rules: "></TextBlock>
+                                                                        <TextBlock Margin="8,4,4,4" VerticalAlignment="Center" Style="{StaticResource SubSectionGridHeader}" Text="Firewall Rules: "></TextBlock>
                                                                     </StackPanel>
 
-                                                                    <DataGrid Grid.Row="1"  IsReadOnly="True" x:Name="ServerFirewallGrid" AutoGenerateColumns="True" local:DataGridExtensions.SortDesc="True">
+                                                                    <DataGrid Grid.Row="1"  
+                                                                              ItemsSource="{Binding AzDB.ParentAzServer.FireWallRules}"
+                                                                              IsReadOnly="True" 
+                                                                              x:Name="ServerFirewallGrid" 
+                                                                              AutoGenerateColumns="True" 
+                                                                              local:DataGridExtensions.SortDesc="True">
                                                                         <!--<DataGrid.Columns>
     <DataGridTextColumn Header="col1"  Binding="{Binding DatabaseName}" ></DataGridTextColumn>
 </DataGrid.Columns>-->
