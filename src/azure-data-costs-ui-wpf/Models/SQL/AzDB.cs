@@ -45,6 +45,7 @@ namespace DataEstateOverview.Models.SQL
         public float AvgLogWritePc { get; set; }
         public float MaxWorkerPc { get; set; }
         public float MaxSessionPc { get; set; }
+        public bool HasRefreshed { get; set; }
 
         public List<DBPrincipal> DBPrincipals { get; set; } = new List<DBPrincipal>();
         public List<FireWallRule> DBFireWallRules { get; set; } = new List<FireWallRule>();
@@ -118,6 +119,7 @@ namespace DataEstateOverview.Models.SQL
                 Debug.WriteLine(ex.ToString());
             }
             IsQueryingDatabase = false;
+            HasRefreshed = true;
             Debug.WriteLine($"Finished Querying {DatabaseName}");
         }
 

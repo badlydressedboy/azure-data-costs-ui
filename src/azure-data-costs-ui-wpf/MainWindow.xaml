@@ -23,6 +23,13 @@
 
         <SolidColorBrush Color="#F3F4F6" x:Key="LightestGreyHighlight"/>
 
+        <Style TargetType="TextBlock" x:Key="WarningTextBlockStyle">
+            <Setter Property="Background" Value="Orange"/>
+            <Setter Property="Opacity" Value="0.8"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        
         <Style BasedOn="{StaticResource {x:Type DataGridRowHeader}}" TargetType="{x:Type DataGridRowHeader}">
             <Setter Property="Background" Value="White" />
             <Setter Property="Padding" Value="0" />
@@ -186,10 +193,15 @@
 
                         </StackPanel>
 
-                        <TextBlock Margin="2,39,2,0" Padding="4" Background="Orange" Text="{Binding TestLoginErrorMessage}" Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}, FallbackValue=Collapsed}" Grid.ColumnSpan="3"/>
+                        <TextBlock Margin="2,39,2,0" 
+                                   Style="{StaticResource WarningTextBlockStyle}" 
+                                   Text="{Binding TestLoginErrorMessage}" 
+                                   Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}, FallbackValue=Collapsed}" 
+                                   Grid.ColumnSpan="3"/>
 
                         <TextBox Padding="6" Grid.Row="2" BorderThickness="0"
-                        IsReadOnly="True" Margin="2,2,2,728" Text="{Binding RestErrorMessage}" MaxHeight="150" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Background="Orange" Grid.ColumnSpan="3" Grid.RowSpan="2"></TextBox>
+                            IsReadOnly="True" Margin="2,2,2,728" Text="{Binding RestErrorMessage}" MaxHeight="150" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" 
+                                 Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Background="Orange" Grid.ColumnSpan="3" Grid.RowSpan="2"></TextBox>
 
                         <DataGrid x:Name="RestDbDataGrid"
                                   Margin="0,39,0,0"                                                              
@@ -268,7 +280,7 @@
                                 <DataGridTextColumn Header="DB"  Binding="{Binding name}" >
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="DataGridCell">
-                                            <Setter Property="Foreground" Value="DarkBlue"></Setter>
+                                            
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter Property="Cursor" Value="Hand"></Setter>
@@ -426,7 +438,7 @@
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
 
-                                    <mah:MetroAnimatedSingleRowTabControl Name="DBTabControl" SelectionChanged="DBTabControl_SelectionChanged" IsVisibleChanged="Grid2_IsVisibleChanged">
+                                    <mah:MetroAnimatedSingleRowTabControl Name="DBTabControl" SelectionChanged="DBTabControl_SelectionChanged" >
 
                                         <mah:MetroTabItem Header="Useage" Name="TabDbUseage">
 
@@ -643,11 +655,10 @@
 
                                                         </StackPanel>
 
-                                                        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="2" Background="Orange" Visibility="{Binding AzDB.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                                                        <TextBlock Grid.Row="1" Margin="2" Style="{StaticResource WarningTextBlockStyle}" 
+                                                                   Visibility="{Binding AzDB.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"
+                                                                   Text="{Binding AzDB.ConnectivityError}" />
 
-                                                            <TextBlock Margin="1" Padding="5" Text="{Binding AzDB.ConnectivityError}"/>
-
-                                                        </StackPanel>
 
                                                         <Grid x:Name="ServerGrid" Grid.Row="2">
                                                             <Grid.RowDefinitions>
@@ -799,11 +810,9 @@
 
                                                         </StackPanel>
 
-                                                        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="2" Background="Orange" Visibility="{Binding AzDB.ParentAzServer.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
-
-                                                            <TextBlock Margin="1" Padding="5" Text="{Binding AzDB.ParentAzServer.ConnectivityError}"/>
-
-                                                        </StackPanel>
+                                                       <TextBlock Grid.Row="1" Margin="1" Style="{StaticResource WarningTextBlockStyle}" 
+                                                                       Text="{Binding AzDB.ParentAzServer.ConnectivityError}"
+                                                                       Visibility="{Binding AzDB.ParentAzServer.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"/>
 
                                                         <Grid x:Name="ServerGridA" Grid.Row="2">
                                                             <Grid.RowDefinitions>
@@ -1173,7 +1182,13 @@
                             <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalVNetCostsText}"></TextBlock>
                         </StackPanel>
 
-                        <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding VNetErrorMessage}" MaxHeight="150" ToolTip="{Binding VNetErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsVNetErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
+                        <TextBlock Grid.Row="1" Margin="2" 
+                                   Style="{StaticResource WarningTextBlockStyle}"
+                                   Text="{Binding VNetErrorMessage}" 
+                                   MaxHeight="150" 
+                                   ToolTip="{Binding VNetErrorMessage}" ToolTipService.InitialShowDelay="0" 
+                                   Visibility="{Binding IsVNetErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" 
+                                   ></TextBlock>
 
                         <DataGrid Grid.Row="2" x:Name="VNetDataGrid"
                               VirtualizingStackPanel.IsVirtualizing="true" 
@@ -1314,7 +1329,12 @@
 
                     </StackPanel>
 
-                    <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding VMErrorMessage}" MaxHeight="150" ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
+                    <TextBlock Grid.Row="1" Margin="2" 
+                               Style="{StaticResource WarningTextBlockStyle}" 
+                               Text="{Binding VMErrorMessage}" 
+                               MaxHeight="150" 
+                               ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" 
+                               Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"></TextBlock>
 
                     <busyIndicator:BusyMask Grid.Row="2" Name="VmBusyMask" IsBusy="{Binding IsVMQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
@@ -1532,7 +1552,14 @@
                             <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPurviewCostsText}"></TextBlock>
                         </StackPanel>
 
-                        <TextBlock Grid.Row="1" Padding="6" Margin="2,2,2,2" Text="{Binding VMErrorMessage}" MaxHeight="150" ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange" Grid.ColumnSpan="2"></TextBlock>
+                        <TextBlock Grid.Row="1" 
+                                   Margin="2,2,2,2" Grid.ColumnSpan="2" 
+                                   Style="{StaticResource WarningTextBlockStyle}"
+                                   Text="{Binding VMErrorMessage}" 
+                                   MaxHeight="150" 
+                                   ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" 
+                                   Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" 
+                                   ></TextBlock>
 
                         <DataGrid Grid.Row="2" x:Name="PurviewDataGrid"
                               VirtualizingStackPanel.IsVirtualizing="true" 
@@ -1649,12 +1676,15 @@
                                >You are logged in OK</TextBlock>
 
                     <StackPanel Grid.Row="2" Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}}" >
-                        <TextBlock Margin="2,2,2,0" Padding="4" Background="Orange"
+                        <TextBlock Margin="2,2,2,0" 
+                                   Style="{StaticResource WarningTextBlockStyle}"
                                
                         >You are NOT logged in. Either log in via visual studio OR use Azure CLI: az login</TextBlock>
 
                         <StackPanel Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}}" >
-                            <TextBlock Margin="2,0,2,0" Padding="4" Grid.Row="2" Background="Orange" Text="{Binding TestLoginErrorMessage}"
+                            <TextBlock Margin="2,0,2,0" Grid.Row="2" 
+                                       Style="{StaticResource WarningTextBlockStyle}" 
+                                       Text="{Binding TestLoginErrorMessage}"
                                
                         ></TextBlock>
 

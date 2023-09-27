@@ -64,7 +64,7 @@ namespace DataEstateOverview
         {
             //await RefreshData();
         }
-        private async Task SetAzDB(RestSqlDb selectedRestDb = null)
+        private async Task SetAndLoadAzDB(RestSqlDb selectedRestDb = null)
         {
             if (selectedRestDb == null)
             {
@@ -80,7 +80,11 @@ namespace DataEstateOverview
             vm.SelectedAzDB = selectedRestDb.AzDB;
             vm.SelectedAzServer = selectedRestDb.AzDB.ParentAzServer;
             //TabSql.IsSelected = true;
-            await LoadSelectedAzSqlDB();
+
+            if (!selectedRestDb.AzDB.HasRefreshed)
+            {
+                await LoadSelectedAzSqlDB();
+            }
         }
         private async Task LoadSelectedAzSqlDB()
         {
@@ -116,9 +120,8 @@ namespace DataEstateOverview
                 if (tb.DataContext is RestSqlDb)
                 {
                     var db = (RestSqlDb)tb.DataContext;
-                    SetAzDB(db);
-                    //if(ds != null && ds is entity )
-                    await LoadSelectedAzSqlDB();
+                    SetAndLoadAzDB(db);
+                    
                 }
             }
         }
@@ -127,7 +130,7 @@ namespace DataEstateOverview
         {
             var db = (RestSqlDb)e.Row.DataContext;
 
-            SetAzDB(db);    
+            SetAndLoadAzDB(db);    
             if (!db.GotMetricsHistory)
             {
                 GetDbMetrics();
@@ -570,19 +573,7 @@ namespace DataEstateOverview
 
         }
 
-        private void Grid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
 
-        }
-
-        private void Grid2_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            Debug.WriteLine(sender);
-            if(sender is RestSqlDb)
-            {
-                Debug.WriteLine("got db on change!");
-            }
-        }
     }
     public class ignoresubscriptionnames
     {
