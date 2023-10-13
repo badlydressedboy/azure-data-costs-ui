@@ -596,6 +596,20 @@ namespace DataEstateOverview
                 sub.ReadObjects = (bool)cb.IsChecked;
             }
         }
+
+        private void SubscriptionsGrid_SourceUpdated(object sender, DataTransferEventArgs e)
+        {
+            // maybe check boxes have changed so recalc all checked value
+            bool allObjects = true;
+            bool allCosts = true;
+            foreach (var sub in vm.DetectedSubscriptions)
+            {
+                if(!sub.ReadObjects) allObjects = false;
+                if (!sub.ReadCosts) allCosts = false;
+            }
+            
+
+        }
     }
     public class ignoresubscriptionnames
     {

@@ -1697,6 +1697,7 @@
 
                         <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="SubscriptionsGrid" 
                                   AutoGenerateColumns="False" 
+                                  SourceUpdated="SubscriptionsGrid_SourceUpdated"
                                   ItemsSource="{Binding DetectedSubscriptions}" 
                                   local:DataGridExtensions.SortDesc="True">
                             <DataGrid.Columns>
@@ -1710,7 +1711,7 @@
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Margin="1,1,4,1">Read Costs</TextBlock>
-                                                <CheckBox Checked="AllCostsCheckBox_CheckChanged" Unchecked="AllCostsCheckBox_CheckChanged"></CheckBox>
+                                                <CheckBox IsChecked="{Binding DataContext.ReadAllCostsCheck, RelativeSource={RelativeSource AncestorType=DataGrid}}" ></CheckBox>
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.HeaderTemplate>
@@ -1728,7 +1729,7 @@
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Margin="1,1,4,1">Read Objects</TextBlock>
-                                                <CheckBox Checked="AllObjectsCheckBox_CheckChanged" Unchecked="AllObjectsCheckBox_CheckChanged"></CheckBox>
+                                                <CheckBox IsChecked="{Binding DataContext.ReadAllObjectsCheck, RelativeSource={RelativeSource AncestorType=DataGrid}}" ></CheckBox>
                                             </StackPanel>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.HeaderTemplate>
