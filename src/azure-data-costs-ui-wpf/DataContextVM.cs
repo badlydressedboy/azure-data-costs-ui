@@ -30,6 +30,22 @@ namespace DataEstateOverview
         public ObservableCollection<Purview> PurviewList { get; private set; } = new ObservableCollection<Purview>();
         public ObservableCollection<VM> VMList { get; private set; } = new ObservableCollection<VM>();
 
+        public bool _readAllObjectsCheck { get; set; }
+        public bool ReadAllObjectsCheck
+        {
+            get { return _readAllObjectsCheck; }
+            set
+            {
+                _readAllObjectsCheck = value;
+                foreach (var sub in DetectedSubscriptions)
+                {
+                    sub.ReadObjects = value;
+                }
+
+                OnPropertyChanged("ReadAllObjectsCheck");
+            }
+        }
+
         private string? testLoginErrorMessage;
         public string? TestLoginErrorMessage
         {
@@ -335,6 +351,15 @@ namespace DataEstateOverview
             }
             App.SaveConfig();
             UpdateHttpAccessCountMessage();
+
+            // set the all checkbox properties if all or nothing
+            bool allObjects = true;
+            foreach (Subscription sub in DetectedSubscriptions)
+            {
+                if(!sub.ReadObjects) allObjects =false;
+
+            }
+            ReadAllObjectsCheck = allObjects;
         }
         // db/sql server data plus costs
         public async Task RefreshDatabases()

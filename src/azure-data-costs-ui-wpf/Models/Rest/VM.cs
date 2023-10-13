@@ -36,7 +36,7 @@ namespace DbMeta.Ui.Wpf.Models.Rest
                 OnPropertyChanged("IsRestQueryBusy");
             }
         }
-
+      
         public bool RequestMetricsHistory { get; set; } = false;
 
         public bool GotMetricsHistory { get; set; } = false;

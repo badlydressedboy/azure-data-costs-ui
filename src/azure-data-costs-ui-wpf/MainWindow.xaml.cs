@@ -573,7 +573,29 @@ namespace DataEstateOverview
 
         }
 
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
 
+        }
+
+        private void AllCostsCheckBox_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            var cb = (CheckBox)sender;
+          
+            foreach(var sub in vm.DetectedSubscriptions)
+            {
+                sub.ReadCosts = (bool)cb.IsChecked;
+            }
+        }
+
+        private void AllObjectsCheckBox_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            var cb = (CheckBox)sender;
+            foreach (var sub in vm.DetectedSubscriptions)
+            {
+                sub.ReadObjects = (bool)cb.IsChecked;
+            }
+        }
     }
     public class ignoresubscriptionnames
     {

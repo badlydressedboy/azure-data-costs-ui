@@ -637,30 +637,36 @@ namespace DataEstateOverview
                                 string metricName = metric.name.value;
                                 var pool = sqlDb.ElasticPool;
 
-                                switch (metricName)
+                                try
                                 {
-                                    case "dtu_consumption_percent":
-                                        pool.PerformanceMetricSeries.Clear();
 
-                                        //sqlDb.MaxDtuUsed = 0;
-                                        foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
-                                        {
-                                            pool.PerformanceMetricSeries.Add(d);
-                                            if (d.maximum > pool.MaxDtuUsed) pool.MaxDtuUsed = d.maximum;
-                                        }
+                                    switch (metricName)
+                                    {
+                                        case "dtu_consumption_percent":
+                                            pool.PerformanceMetricSeries.Clear();
 
-                                        break;
-                                    case "cpu_percent":
-                                        pool.PerformanceMetricSeries.Clear();
+                                            //sqlDb.MaxDtuUsed = 0;
+                                            foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                            {
+                                                pool.PerformanceMetricSeries.Add(d);
+                                                if (d.maximum > pool.MaxDtuUsed) pool.MaxDtuUsed = d.maximum;
+                                            }
 
-                                        //sqlDb.MaxDtuUsed = 0;
-                                        foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
-                                        {
-                                            pool.PerformanceMetricSeries.Add(d);
-                                            if (d.maximum > pool.MaxDtuUsed) pool.MaxDtuUsed = d.maximum;
-                                        }
+                                            break;
+                                        case "cpu_percent":
+                                            pool.PerformanceMetricSeries.Clear();
 
-                                        break;
+                                            //sqlDb.MaxDtuUsed = 0;
+                                            foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                            {
+                                                pool.PerformanceMetricSeries.Add(d);
+                                                if (d.maximum > pool.MaxDtuUsed) pool.MaxDtuUsed = d.maximum;
+                                            }
+
+                                            break;
+                                    }
+                                }catch(Exception ex) { 
+                                    Debug.WriteLine(ex.ToString()); 
                                 }
                             }
                         }

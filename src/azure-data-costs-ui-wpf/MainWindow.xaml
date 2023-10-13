@@ -143,7 +143,6 @@
 
             <mah:MetroTabItem Header="DB Summary" Name="TabRest">
 
-
                 <busyIndicator:BusyMask x:Name="BusyIndicator" IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -270,7 +269,7 @@
 
                             <DataGrid.RowHeaderTemplate>
                                 <DataTemplate>
-                                    <Expander VerticalAlignment="Top" Margin="0" Padding="0" Expanded="Expander_Process"  Collapsed="Expander_Process">
+                                    <Expander VerticalAlignment="Top" Margin="0" Padding="0" Expanded="Expander_Process"  Collapsed="Expander_Process" Cursor="Hand">
                                     </Expander>
                                 </DataTemplate>
                             </DataGrid.RowHeaderTemplate>
@@ -280,7 +279,7 @@
                                 <DataGridTextColumn Header="DB"  Binding="{Binding name}" >
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="DataGridCell">
-                                            
+
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter Property="Cursor" Value="Hand"></Setter>
@@ -639,7 +638,7 @@
                                         <mah:MetroTabItem Header="Live Status" Name="TabDbLiveStatus">
 
                                             <Grid Style="{StaticResource SubSectionGrid}" >
-                                                
+
                                                 <busyIndicator:BusyMask IsBusy="{Binding AzDB.IsQueryingDatabase, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
                                                     <Grid Width="1100" Height="500" HorizontalAlignment="Left">
                                                         <Grid.RowDefinitions>
@@ -810,7 +809,7 @@
 
                                                         </StackPanel>
 
-                                                       <TextBlock Grid.Row="1" Margin="1" Style="{StaticResource WarningTextBlockStyle}" 
+                                                        <TextBlock Grid.Row="1" Margin="1" Style="{StaticResource WarningTextBlockStyle}" 
                                                                        Text="{Binding AzDB.ParentAzServer.ConnectivityError}"
                                                                        Visibility="{Binding AzDB.ParentAzServer.HasConnectivityError, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}"/>
 
@@ -896,12 +895,6 @@
 
                     </Grid>
                 </busyIndicator:BusyMask>
-
-            </mah:MetroTabItem>
-
-            <mah:MetroTabItem Header="DB Details" Name="TabSql">
-
-
 
             </mah:MetroTabItem>
 
@@ -1702,13 +1695,26 @@
 
                         <TextBlock Margin="0,18,2,0" FontSize="13" Padding="6" Background="LightGray">Detected Subscriptions</TextBlock>
 
-                        <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="SubscriptionsGrid" AutoGenerateColumns="False" ItemsSource="{Binding DetectedSubscriptions}" local:DataGridExtensions.SortDesc="True">
+                        <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="SubscriptionsGrid" 
+                                  AutoGenerateColumns="False" 
+                                  ItemsSource="{Binding DetectedSubscriptions}" 
+                                  local:DataGridExtensions.SortDesc="True">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Subscription Name"  Binding="{Binding displayName}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Id"  Binding="{Binding subscriptionId}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="TenantId"  Binding="{Binding tenantId}" ></DataGridTextColumn>
 
                                 <DataGridTemplateColumn Header="Read Costs">
+
+                                    <DataGridTemplateColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Margin="1,1,4,1">Read Costs</TextBlock>
+                                                <CheckBox Checked="AllCostsCheckBox_CheckChanged" Unchecked="AllCostsCheckBox_CheckChanged"></CheckBox>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.HeaderTemplate>
+
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <CheckBox HorizontalAlignment="Center" IsChecked="{Binding ReadCosts, UpdateSourceTrigger=PropertyChanged}" Unchecked="IgnoreCheckBox_Checked" Checked="IgnoreCheckBox_Checked" />
@@ -1717,6 +1723,16 @@
                                 </DataGridTemplateColumn>
 
                                 <DataGridTemplateColumn Header="Read Objects">
+
+                                    <DataGridTemplateColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Margin="1,1,4,1">Read Objects</TextBlock>
+                                                <CheckBox Checked="AllObjectsCheckBox_CheckChanged" Unchecked="AllObjectsCheckBox_CheckChanged"></CheckBox>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.HeaderTemplate>
+
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <CheckBox HorizontalAlignment="Center" IsChecked="{Binding ReadObjects, UpdateSourceTrigger=PropertyChanged}" Unchecked="IgnoreCheckBox_Checked" Checked="IgnoreCheckBox_Checked" />
