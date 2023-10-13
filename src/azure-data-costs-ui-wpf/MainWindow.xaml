@@ -29,7 +29,7 @@
             <Setter Property="Padding" Value="5"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
-        
+
         <Style BasedOn="{StaticResource {x:Type DataGridRowHeader}}" TargetType="{x:Type DataGridRowHeader}">
             <Setter Property="Background" Value="White" />
             <Setter Property="Padding" Value="0" />
@@ -41,7 +41,7 @@
         <Style TargetType="TextBlock" x:Key="SubSectionGridHeader">
             <Setter Property="FontSize" Value="16"></Setter>
         </Style>
-        
+
         <Style TargetType="Expander">
             <Setter Property="Background" Value="{StaticResource LightestGreyHighlight}"/>
         </Style>
@@ -140,6 +140,109 @@
         </Grid.RowDefinitions>
 
         <mah:MetroAnimatedSingleRowTabControl Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged">
+
+            <mah:MetroTabItem Header="Subscriptions" Name="TabSettings">
+
+                <busyIndicator:BusyMask x:Name="IsGetSubscriptionsBusy" IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+
+                    <Grid Margin="4,2,4,2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Margin="2,8,2,8" FontSize="14" Padding="6" Background="LightGray">Test you are logged into Azure via CLI or Visual Studio</TextBlock>
+
+                        <StackPanel Orientation="Horizontal" Grid.Row="1">
+                            <Button Margin="2" VerticalAlignment="Center" Name="TestLoginButton" Click="TestLoginButton_Click">Test Security</Button>
+                        </StackPanel>
+
+                        <TextBlock Margin="2" Padding="6" Grid.Row="2" Background="LightGreen"
+                    Visibility="{Binding TestLoginErrorMessage, Converter={converters:InverseStringNullOrEmptyToVisibilityConverter}}"
+                    >You are logged in OK</TextBlock>
+
+                        <StackPanel Grid.Row="2" Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}}" >
+                            <TextBlock Margin="2,2,2,0" 
+                        Style="{StaticResource WarningTextBlockStyle}"
+                    
+             >You are NOT logged in. Either log in via visual studio OR use Azure CLI: az login</TextBlock>
+
+                            <StackPanel Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}}" >
+                                <TextBlock Margin="2,0,2,0" Grid.Row="2" 
+                            Style="{StaticResource WarningTextBlockStyle}" 
+                            Text="{Binding TestLoginErrorMessage}"
+                    
+             ></TextBlock>
+
+                            </StackPanel>
+                        </StackPanel>
+
+
+                        <Grid Grid.Row="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Margin="0,18,2,0" FontSize="13" Padding="6" Background="LightGray">Detected Subscriptions</TextBlock>
+
+                            <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="SubscriptionsGrid" 
+                       AutoGenerateColumns="False" 
+                       ItemsSource="{Binding DetectedSubscriptions}" 
+                       local:DataGridExtensions.SortDesc="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Subscription Name"  Binding="{Binding displayName}" ></DataGridTextColumn>
+                                    <DataGridTextColumn Header="Id"  Binding="{Binding subscriptionId}" ></DataGridTextColumn>
+                                    <DataGridTextColumn Header="TenantId"  Binding="{Binding tenantId}" ></DataGridTextColumn>
+
+                                    <DataGridTemplateColumn Header="Read Objects">
+
+                                        <DataGridTemplateColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Margin="1,1,4,1">Read Objects</TextBlock>
+                                                    <CheckBox IsChecked="{Binding DataContext.ReadAllObjectsCheck, RelativeSource={RelativeSource AncestorType=DataGrid}}" ></CheckBox>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.HeaderTemplate>
+
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox HorizontalAlignment="Center" IsChecked="{Binding ReadObjects, UpdateSourceTrigger=PropertyChanged}" Unchecked="IgnoreCheckBox_Checked" Checked="IgnoreCheckBox_Checked" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    
+                                    <DataGridTemplateColumn Header="Read Costs">
+
+                                        <DataGridTemplateColumn.HeaderTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Margin="1,1,4,1">Read Costs</TextBlock>
+                                                    <CheckBox IsChecked="{Binding DataContext.ReadAllCostsCheck, RelativeSource={RelativeSource AncestorType=DataGrid}}" ></CheckBox>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.HeaderTemplate>
+
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox HorizontalAlignment="Center" IsChecked="{Binding ReadCosts, UpdateSourceTrigger=PropertyChanged}" Unchecked="IgnoreCheckBox_Checked" Checked="IgnoreCheckBox_Checked" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                        </Grid>
+
+                    </Grid>
+                </busyIndicator:BusyMask>
+            </mah:MetroTabItem>
 
             <mah:MetroTabItem Header="DB Summary" Name="TabRest">
 
@@ -1648,107 +1751,7 @@
 
             </mah:MetroTabItem>
 
-            <mah:MetroTabItem Header="Settings" Name="TabSettings">
-
-                <Grid Margin="4,2,4,2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Margin="2,8,2,8" FontSize="14" Padding="6" Background="LightGray">Test you are logged into Azure via CLI or Visual Studio</TextBlock>
-
-                    <StackPanel Orientation="Horizontal" Grid.Row="1">
-                        <Button Margin="2" VerticalAlignment="Center" Name="TestLoginButton" Click="TestLoginButton_Click">Test Security</Button>
-                    </StackPanel>
-
-                    <TextBlock Margin="2" Padding="6" Grid.Row="2" Background="LightGreen"
-                               Visibility="{Binding TestLoginErrorMessage, Converter={converters:InverseStringNullOrEmptyToVisibilityConverter}}"
-                               >You are logged in OK</TextBlock>
-
-                    <StackPanel Grid.Row="2" Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}}" >
-                        <TextBlock Margin="2,2,2,0" 
-                                   Style="{StaticResource WarningTextBlockStyle}"
-                               
-                        >You are NOT logged in. Either log in via visual studio OR use Azure CLI: az login</TextBlock>
-
-                        <StackPanel Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}}" >
-                            <TextBlock Margin="2,0,2,0" Grid.Row="2" 
-                                       Style="{StaticResource WarningTextBlockStyle}" 
-                                       Text="{Binding TestLoginErrorMessage}"
-                               
-                        ></TextBlock>
-
-                        </StackPanel>
-                    </StackPanel>
-
-
-                    <Grid Grid.Row="3">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Margin="0,18,2,0" FontSize="13" Padding="6" Background="LightGray">Detected Subscriptions</TextBlock>
-
-                        <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="SubscriptionsGrid" 
-                                  AutoGenerateColumns="False" 
-                                  SourceUpdated="SubscriptionsGrid_SourceUpdated"
-                                  ItemsSource="{Binding DetectedSubscriptions}" 
-                                  local:DataGridExtensions.SortDesc="True">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Subscription Name"  Binding="{Binding displayName}" ></DataGridTextColumn>
-                                <DataGridTextColumn Header="Id"  Binding="{Binding subscriptionId}" ></DataGridTextColumn>
-                                <DataGridTextColumn Header="TenantId"  Binding="{Binding tenantId}" ></DataGridTextColumn>
-
-                                <DataGridTemplateColumn Header="Read Costs">
-
-                                    <DataGridTemplateColumn.HeaderTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Margin="1,1,4,1">Read Costs</TextBlock>
-                                                <CheckBox IsChecked="{Binding DataContext.ReadAllCostsCheck, RelativeSource={RelativeSource AncestorType=DataGrid}}" ></CheckBox>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.HeaderTemplate>
-
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding ReadCosts, UpdateSourceTrigger=PropertyChanged}" Unchecked="IgnoreCheckBox_Checked" Checked="IgnoreCheckBox_Checked" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <DataGridTemplateColumn Header="Read Objects">
-
-                                    <DataGridTemplateColumn.HeaderTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Margin="1,1,4,1">Read Objects</TextBlock>
-                                                <CheckBox IsChecked="{Binding DataContext.ReadAllObjectsCheck, RelativeSource={RelativeSource AncestorType=DataGrid}}" ></CheckBox>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.HeaderTemplate>
-
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox HorizontalAlignment="Center" IsChecked="{Binding ReadObjects, UpdateSourceTrigger=PropertyChanged}" Unchecked="IgnoreCheckBox_Checked" Checked="IgnoreCheckBox_Checked" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                            </DataGrid.Columns>
-                        </DataGrid>
-
-                    </Grid>
-
-                </Grid>
-
-            </mah:MetroTabItem>
+           
 
         </mah:MetroAnimatedSingleRowTabControl>
 

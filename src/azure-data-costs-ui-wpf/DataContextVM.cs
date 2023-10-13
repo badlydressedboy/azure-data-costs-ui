@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using System.Windows.Threading;
 
 namespace DataEstateOverview
@@ -36,6 +37,8 @@ namespace DataEstateOverview
             get { return _readAllObjectsCheck; }
             set
             {
+                if (_readAllObjectsCheck == value) return;
+
                 _readAllObjectsCheck = value;
                 foreach (var sub in DetectedSubscriptions)
                 {
@@ -51,6 +54,8 @@ namespace DataEstateOverview
             get { return _readAllCostsCheck; }
             set
             {
+                if (_readAllCostsCheck == value) return;
+
                 _readAllCostsCheck = value;
                 foreach (var sub in DetectedSubscriptions)
                 {
@@ -142,6 +147,16 @@ namespace DataEstateOverview
                 SetProperty(ref isRestQueryBusy, value);
             }
         }
+        private bool isGetSubscriptionsBusy;
+        public bool IsGetSubscriptionsBusy
+        {
+            get => isGetSubscriptionsBusy;
+            set
+            {
+                SetProperty(ref isGetSubscriptionsBusy, value);
+            }
+        }
+
         private bool isStorageQueryBusy;
         public bool IsStorageQueryBusy
         {
@@ -335,46 +350,58 @@ namespace DataEstateOverview
         }
         public async Task GetSubscriptions()
         {
-            Subscriptions.Clear();
-            DetectedSubscriptions.Clear();
+            if (IsGetSubscriptionsBusy) return;
+            IsGetSubscriptionsBusy = true;
 
-            var subsList = await APIAccess.GetSubscriptions();
-
-            if(subsList == null)
+            try
             {
-                Debug.WriteLine("No subscriptions! Are you logged into Azure?");
-                RestErrorMessage = "No subscriptions! Are you logged into Azure?";
-                return;
-            }
+                Subscriptions.Clear();
+                DetectedSubscriptions.Clear();
 
-            foreach (Subscription sub in subsList)
-            {
-                DetectedSubscriptions.Add(sub);
-                
-                var existing = App.Config.Subscriptions.FirstOrDefault(x => x.Name == sub.displayName);
-                if(existing != null)
+                var subsList = await APIAccess.GetSubscriptions();
+
+                if (subsList == null)
                 {
-                    sub.ReadObjects = existing.ReadObjects;
-                    sub.ReadCosts = existing.ReadCosts;
-                }
-                else
-                {
-                    App.Config.Subscriptions.Add(new DbMeta.Ui.Wpf.Config.ConfigSubscription() { Name = sub.displayName });
+                    Debug.WriteLine("No subscriptions! Are you logged into Azure?");
+                    RestErrorMessage = "No subscriptions! Are you logged into Azure?";
+                    return;
                 }
 
-                if (sub.ReadObjects) Subscriptions.Add(sub);
-            }
-            App.SaveConfig();
-            UpdateHttpAccessCountMessage();
+                foreach (Subscription sub in subsList)
+                {
+                    DetectedSubscriptions.Add(sub);
 
-            // set the all checkbox properties if all or nothing
-            bool allObjects = true;
-            foreach (Subscription sub in DetectedSubscriptions)
-            {
-                if(!sub.ReadObjects) allObjects =false;
+                    var existing = App.Config.Subscriptions.FirstOrDefault(x => x.Name == sub.displayName);
+                    if (existing != null)
+                    {
+                        sub.ReadObjects = existing.ReadObjects;
+                        sub.ReadCosts = existing.ReadCosts;
+                    }
+                    else
+                    {
+                        App.Config.Subscriptions.Add(new DbMeta.Ui.Wpf.Config.ConfigSubscription() { Name = sub.displayName });
+                    }
 
+                    if (sub.ReadObjects) Subscriptions.Add(sub);
+                }
+                App.SaveConfig();
+                UpdateHttpAccessCountMessage();
+
+                // set the all checkbox properties if all or nothing
+                bool allObjects = true;
+                bool allCosts = true;
+                foreach (Subscription sub in DetectedSubscriptions)
+                {
+                    if (!sub.ReadObjects) allObjects = false;
+                    if (!sub.ReadCosts) allCosts = false;
+                }
+                ReadAllObjectsCheck = allObjects;
+                ReadAllCostsCheck = allCosts;
             }
-            ReadAllObjectsCheck = allObjects;
+            catch (Exception ex) { 
+                Debug.WriteLine(ex.ToString()); 
+            }
+            IsGetSubscriptionsBusy = false;
         }
         // db/sql server data plus costs
         public async Task RefreshDatabases()
@@ -399,7 +426,9 @@ namespace DataEstateOverview
                 // on ui thread
                 foreach (var sub in Subscriptions)
                 {
-                    if(!sub.ReadObjects) continue; // ignore this subscription
+                    //if(!sub.ReadObjects) continue; // ignore this subscription
+                    // we are working off subscriptions which are a subset of detectedsubscriptions anyway
+
                     if(sub.ResourceCosts.Count == 0)
                     {
                         Debug.WriteLine($"No costs for sub: {sub.displayName}");
@@ -615,14 +644,16 @@ namespace DataEstateOverview
 
                 decimal totalPurviewCosts = 0;
 
-                await Parallel.ForEachAsync(Subscriptions
+
+                var subsCopy = Subscriptions.ToList();
+                await Parallel.ForEachAsync(subsCopy
                         , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                         , async (sub, y) =>
                         {
                             await APIAccess.GetPurviews(sub);
                         });
 
-                foreach (var sub in Subscriptions)
+                foreach (var sub in subsCopy)
                 {
                     if (!sub.ReadObjects) continue; // ignore this subscription
                     foreach (var purv in sub.Purviews)

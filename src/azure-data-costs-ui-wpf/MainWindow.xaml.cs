@@ -89,7 +89,6 @@ namespace DataEstateOverview
         private async Task LoadSelectedAzSqlDB()
         {
          
-            Cursor = Cursors.Wait;
             try
             {
              
@@ -97,7 +96,7 @@ namespace DataEstateOverview
 
             }
             catch (Exception ex) { }
-            Cursor = Cursors.Arrow;
+           
         }
 
         private void ConfigButton_Click(object sender, RoutedEventArgs e)
@@ -151,22 +150,18 @@ namespace DataEstateOverview
         {
             // testing api access            
             await vm.TestLogin();
-            await RefreshDBs();
+            await vm.GetSubscriptions();
         }
 
         private async Task RefreshDBs()
         {            
-            Cursor = Cursors.Wait;
-
             try
             {
-                await vm.GetSubscriptions();
                 await vm.RefreshDatabases(); 
             }catch(Exception ex)
             {
                 Debug.WriteLine(ex);
             }
-            Cursor = Cursors.Arrow;
         }
 
         private async void DBRefreshButton_Click(object sender, RoutedEventArgs e)
@@ -386,16 +381,6 @@ namespace DataEstateOverview
 
         }
 
-        private void DataGrid_MouseEnter(object sender, MouseEventArgs e)
-        {
-            Cursor = Cursors.Hand;
-        }
-
-        private void DataGrid_MouseLeave(object sender, MouseEventArgs e)
-        {
-            Cursor = Cursors.Arrow;
-        }
-
         private void RefreshDbStatsButton_Click(object sender, RoutedEventArgs e)
         {
             GetDbMetrics();
@@ -578,38 +563,6 @@ namespace DataEstateOverview
 
         }
 
-        private void AllCostsCheckBox_CheckChanged(object sender, RoutedEventArgs e)
-        {
-            var cb = (CheckBox)sender;
-          
-            foreach(var sub in vm.DetectedSubscriptions)
-            {
-                sub.ReadCosts = (bool)cb.IsChecked;
-            }
-        }
-
-        private void AllObjectsCheckBox_CheckChanged(object sender, RoutedEventArgs e)
-        {
-            var cb = (CheckBox)sender;
-            foreach (var sub in vm.DetectedSubscriptions)
-            {
-                sub.ReadObjects = (bool)cb.IsChecked;
-            }
-        }
-
-        private void SubscriptionsGrid_SourceUpdated(object sender, DataTransferEventArgs e)
-        {
-            // maybe check boxes have changed so recalc all checked value
-            bool allObjects = true;
-            bool allCosts = true;
-            foreach (var sub in vm.DetectedSubscriptions)
-            {
-                if(!sub.ReadObjects) allObjects = false;
-                if (!sub.ReadCosts) allCosts = false;
-            }
-            
-
-        }
     }
     public class ignoresubscriptionnames
     {
