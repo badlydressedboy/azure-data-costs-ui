@@ -132,7 +132,7 @@ namespace DataEstateOverview
             SetAndLoadAzDB(db);    
             if (!db.GotMetricsHistory)
             {
-                GetDbMetrics();
+                GetDbMetrics(db);
             }
         }
         private void RestDbDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -388,10 +388,13 @@ namespace DataEstateOverview
             GetDbMetrics();
         }
 
-        private async void GetDbMetrics()
+        private async void GetDbMetrics(RestSqlDb db  = null)
         {
-            if (RestDbDataGrid.CurrentItem == null) return;            
-            var db = (RestSqlDb)RestDbDataGrid.CurrentItem;
+            if (db == null)
+            {
+                if (RestDbDataGrid.CurrentItem == null) return;
+                db = (RestSqlDb)RestDbDataGrid.CurrentItem;
+            }
             
             await APIAccess.GetDbMetrics(db); // no minutes param passed so sqlDb.MetricsHistoryDays is used            
         }
