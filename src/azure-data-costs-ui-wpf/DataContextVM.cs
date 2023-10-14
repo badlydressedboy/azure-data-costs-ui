@@ -147,6 +147,15 @@ namespace DataEstateOverview
                 SetProperty(ref isRestQueryBusy, value);
             }
         }
+        private bool isGetSqlServersBusy;
+        public bool IsGetSqlServersBusy
+        {
+            get => isGetSqlServersBusy;
+            set
+            {
+                SetProperty(ref isGetSqlServersBusy, value);
+            }
+        }
         private bool isGetSubscriptionsBusy;
         public bool IsGetSubscriptionsBusy
         {
@@ -411,9 +420,11 @@ namespace DataEstateOverview
         // db/sql server data plus costs
         public async Task RefreshDatabases()
         {
-            if (IsRestQueryBusy) return;
+            if (IsGetSqlServersBusy) return;
 
-            IsRestQueryBusy = true;
+            IsGetSqlServersBusy = true;
+            Debug.WriteLine("IsGetSqlServersBusy = true...");
+
             RestSqlDbList.Clear();
             RestErrorMessage = "";
             decimal totalSqlDbCosts = 0;
@@ -437,7 +448,8 @@ namespace DataEstateOverview
                     if(sub.ResourceCosts.Count == 0)
                     {
                         Debug.WriteLine($"No costs for sub: {sub.displayName}");
-                        continue;
+                        sub.CostsErrorMessage = "No costs found.";
+                        //continue;
                     }
                     foreach (var s in sub.SqlServers)
                     {
@@ -462,7 +474,8 @@ namespace DataEstateOverview
             {
                 Debug.WriteLine(ex);
             }
-            IsRestQueryBusy = false;
+            IsGetSqlServersBusy = false;
+            Debug.WriteLine("IsGetSqlServersBusy = false");
             UpdateHttpAccessCountMessage();
         }
 

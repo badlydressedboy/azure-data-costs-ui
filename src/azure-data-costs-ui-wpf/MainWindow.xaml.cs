@@ -425,6 +425,14 @@ namespace DataEstateOverview
                     break;
                     case(1):
                     // db details
+                    // have any subscriptions never had sql servers queried?
+                    if (vm.Subscriptions.Any(x => !x.HasEverGotSqlServers))
+                    {
+                        // shouldnt need this BUT the db summary busyindicator wont fire on first activation
+                        Cursor = Cursors.Wait;
+                        await vm.RefreshDatabases();
+                        Cursor = Cursors.Arrow;
+                    }   
                     break;
 
                     case(2):
@@ -563,6 +571,16 @@ namespace DataEstateOverview
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void BusyIndicatorSql_SourceUpdated(object sender, DataTransferEventArgs e)
+        {
+            Debug.WriteLine("BusyIndicatorSql_SourceUpdated");
+        }
+
+        private void BusyIndicatorSql_TargetUpdated(object sender, DataTransferEventArgs e)
+        {
+            Debug.WriteLine("BusyIndicatorSql_TargetUpdated");
         }
 
     }

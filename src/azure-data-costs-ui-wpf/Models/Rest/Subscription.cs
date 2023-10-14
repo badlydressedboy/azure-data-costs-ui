@@ -43,7 +43,7 @@ namespace DbMeta.Ui.Wpf.Models.Rest
             set => SetProperty(ref readObjects, value);
         }
 
-
+        public bool HasEverGotSqlServers { get; set; }  
         public List<RestSqlServer> SqlServers { get; set; } = new List<RestSqlServer>();
         public List<DataFactory> DataFactories { get; set; } = new List<DataFactory>();
         public List<ResourceCost> ResourceCosts { get; set; } = new List<ResourceCost>();

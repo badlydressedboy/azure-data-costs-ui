@@ -216,7 +216,7 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    
+
                                     <DataGridTemplateColumn Header="Read Costs">
 
                                         <DataGridTemplateColumn.HeaderTemplate>
@@ -246,12 +246,13 @@
 
             <mah:MetroTabItem Header="DB Summary" Name="TabRest">
 
-                <busyIndicator:BusyMask x:Name="BusyIndicator" IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                <busyIndicator:BusyMask TargetUpdated="BusyIndicatorSql_TargetUpdated" SourceUpdated="BusyIndicatorSql_SourceUpdated" x:Name="BusyIndicatorSql" IsBusy="{Binding IsGetSqlServersBusy}" IndicatorType="Cogs"  BusyContent="Please wait..." >
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="86*"/>
                             <ColumnDefinition Width="11*"/>
-                            <ColumnDefinition Width="1104*"/>
+                            <ColumnDefinition Width="150*"/>
+                            <ColumnDefinition Width="953*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -260,7 +261,7 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <StackPanel Orientation="Horizontal" Margin="4,4,4,4" Grid.ColumnSpan="3">
+                        <StackPanel Orientation="Horizontal" Margin="4,4,4,4" Grid.ColumnSpan="4">
 
                             <TextBlock Margin="6,2,2,2" Text="Filter:" VerticalAlignment="Center"></TextBlock>
                             <TextBox Margin="4,2,2,2" Width="180" Name="RestDbFilterText" VerticalAlignment="Center" KeyUp="RestDbFilterText_KeyUp" TextChanged="RestDbFilterText_TextChanged"></TextBox>
@@ -299,11 +300,11 @@
                                    Style="{StaticResource WarningTextBlockStyle}" 
                                    Text="{Binding TestLoginErrorMessage}" 
                                    Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}, FallbackValue=Collapsed}" 
-                                   Grid.ColumnSpan="3"/>
+                                   Grid.ColumnSpan="4"/>
 
                         <TextBox Padding="6" Grid.Row="2" BorderThickness="0"
-                            IsReadOnly="True" Margin="2,2,2,728" Text="{Binding RestErrorMessage}" MaxHeight="150" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" 
-                                 Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Background="Orange" Grid.ColumnSpan="3" Grid.RowSpan="2"></TextBox>
+                            IsReadOnly="True" Margin="2,2,2,702" Text="{Binding RestErrorMessage}" MaxHeight="150" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" 
+                                 Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Background="Orange" Grid.ColumnSpan="4" Grid.RowSpan="2"></TextBox>
 
                         <DataGrid x:Name="RestDbDataGrid"
                                   Margin="0,39,0,0"                                                              
@@ -311,7 +312,7 @@
                                   FrozenColumnCount ="1"
                                   MouseUp="RestDbDataGrid_MouseUp"
                                   KeyDown="RestDbDataGrid_KeyDown"
-                                  Grid.ColumnSpan="3"  
+                                  Grid.ColumnSpan="4"  
                                   Grid.RowSpan="4"
                                   ClipboardCopyMode="IncludeHeader"   
                                   SelectionChanged="RestDbDataGrid_SelectionChanged"
@@ -1751,7 +1752,7 @@
 
             </mah:MetroTabItem>
 
-           
+
 
         </mah:MetroAnimatedSingleRowTabControl>
 

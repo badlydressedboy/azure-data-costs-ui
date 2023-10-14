@@ -215,6 +215,7 @@ namespace DataEstateOverview
                     restSql.AzServer = new Models.SQL.AzServer(restSql.name);
                 }
                 subscription.SqlServers = servers.value.ToList();
+                subscription.HasEverGotSqlServers = true;
 
                 await Parallel.ForEachAsync(subscription.SqlServers
                     , new ParallelOptions() { MaxDegreeOfParallelism = 50 }
