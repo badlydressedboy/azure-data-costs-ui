@@ -360,7 +360,7 @@ namespace DataEstateOverview
 
                 var subsList = await APIAccess.GetSubscriptions();
 
-                if (subsList == null)
+                if (subsList == null || subsList.Count == 0)
                 {
                     Debug.WriteLine("No subscriptions! Are you logged into Azure?");
                     RestErrorMessage = "No subscriptions! Are you logged into Azure?";
@@ -386,23 +386,28 @@ namespace DataEstateOverview
                 }
                 App.SaveConfig();
                 UpdateHttpAccessCountMessage();
-
-                // set the all checkbox properties if all or nothing
-                bool allObjects = true;
-                bool allCosts = true;
-                foreach (Subscription sub in DetectedSubscriptions)
-                {
-                    if (!sub.ReadObjects) allObjects = false;
-                    if (!sub.ReadCosts) allCosts = false;
-                }
-                ReadAllObjectsCheck = allObjects;
-                ReadAllCostsCheck = allCosts;
+                UpdateAllSubsChecks();
             }
             catch (Exception ex) { 
                 Debug.WriteLine(ex.ToString()); 
             }
             IsGetSubscriptionsBusy = false;
         }
+
+        public void UpdateAllSubsChecks()
+        {
+            // set the all checkbox properties if all or nothing
+            bool allObjects = true;
+            bool allCosts = true;
+            foreach (Subscription sub in DetectedSubscriptions)
+            {
+                if (!sub.ReadObjects) allObjects = false;
+                if (!sub.ReadCosts) allCosts = false;
+            }
+            ReadAllObjectsCheck = allObjects;
+            ReadAllCostsCheck = allCosts;
+        }
+
         // db/sql server data plus costs
         public async Task RefreshDatabases()
         {

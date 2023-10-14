@@ -24,7 +24,17 @@ namespace DbMeta.Ui.Wpf.Models.Rest
         public bool ReadCosts
         {
             get => readCosts;
-            set => SetProperty(ref readCosts, value);
+            set
+            {
+                SetProperty(ref readCosts, value);
+
+                // costs can only be read if the corresponding objects are read too
+                if (readCosts)
+                {
+                    readObjects = true;
+                    OnPropertyChanged(nameof(ReadObjects));
+                }
+            }
         }
         private bool readObjects;
         public bool ReadObjects

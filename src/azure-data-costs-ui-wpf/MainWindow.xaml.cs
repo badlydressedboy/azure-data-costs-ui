@@ -312,6 +312,8 @@ namespace DataEstateOverview
                 configSub.ReadCosts = clickedSub.ReadCosts;
 
                 App.SaveConfig();
+
+                vm.UpdateAllSubsChecks();
             }
             //Debug.WriteLine("gdg");
         }
