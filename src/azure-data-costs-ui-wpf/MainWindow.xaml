@@ -248,20 +248,15 @@
 
                 <busyIndicator:BusyMask TargetUpdated="BusyIndicatorSql_TargetUpdated" SourceUpdated="BusyIndicatorSql_SourceUpdated" x:Name="BusyIndicatorSql" IsBusy="{Binding IsGetSqlServersBusy}" IndicatorType="Cogs"  BusyContent="Please wait..." >
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="86*"/>
-                            <ColumnDefinition Width="11*"/>
-                            <ColumnDefinition Width="150*"/>
-                            <ColumnDefinition Width="953*"/>
-                        </Grid.ColumnDefinitions>
+                        
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" MaxHeight="40"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <StackPanel Orientation="Horizontal" Margin="4,4,4,4" Grid.ColumnSpan="4">
+                        <StackPanel Orientation="Horizontal" Margin="4,6,4,6">
 
                             <TextBlock Margin="6,2,2,2" Text="Filter:" VerticalAlignment="Center"></TextBlock>
                             <TextBox Margin="4,2,2,2" Width="180" Name="RestDbFilterText" VerticalAlignment="Center" KeyUp="RestDbFilterText_KeyUp" TextChanged="RestDbFilterText_TextChanged"></TextBox>
@@ -269,51 +264,60 @@
                             <TextBlock Margin="22,2,2,2" Text="Cost Days:" VerticalAlignment="Center"></TextBlock>
                             <TextBox Margin="4,2,2,2" Width="40" Name="CostDaysText" VerticalAlignment="Center" PreviewTextInput="CostDaysText_PreviewTextInput" ></TextBox>
 
-                            <Button Margin="22,2,2,2" VerticalAlignment="Center" Name="GroupButton" Click="GroupButton_Click">Group</Button>
+                            <Button Margin="22,2,2,2" VerticalAlignment="Center" Name="GroupButton" Click="GroupButton_Click" IsEnabled="{Binding IsGetSqlServersBusy, Converter={StaticResource InverseBooleanConverter}}">Group</Button>
 
                             <!--<Button x:Name="RestConfigButton" Margin="12,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="RestConfigButton_Click">Configure</Button>-->
 
-                            <Button x:Name="RestRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DBRefreshButton_Click">Refresh</Button>
+                            <Button x:Name="RestRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DBRefreshButton_Click" IsEnabled="{Binding IsGetSqlServersBusy, Converter={StaticResource InverseBooleanConverter}}">Refresh</Button>
 
-                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total SQL DB Costs:</TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4,6,4,6">
+
+                            <TextBlock Margin="8,2,2,2" FontSize="14" VerticalAlignment="Center">Total SQL DB Costs:</TextBlock>
                             <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalSqlDbCostsText}"></TextBlock>
 
                             <Button x:Name="DBAnalyseSpendButton" Margin="28,2,2,2" Padding="8,1,8,1" Click="DBAnalyseSpendButton_Click" Content="Analyse Spend"/>
 
 
                             <Image gif:ImageBehavior.AnimatedSource="/Images/loading.gif" 
-                               Margin="8,0,0,0" 
-                               Style="{StaticResource LoadingGifStyle}"
-                               Visibility="{Binding IsDbSpendAnalysisBusy,Converter={StaticResource BooleanToVisibilityConverter}}">
+                                Margin="8,0,0,0" 
+                                Style="{StaticResource LoadingGifStyle}"
+                                Visibility="{Binding IsDbSpendAnalysisBusy,Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Image.LayoutTransform>
                                     <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
                                 </Image.LayoutTransform>
                             </Image>
 
-                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total Potential Saving:</TextBlock>
-                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialDbSavingAmount, StringFormat=N0}"></TextBlock>
-
+                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center" Visibility="{Binding HasDbSpendAnalysisBeenPerformed, Converter={StaticResource BooleanToVisibilityConverter}}">Total Potential Saving:</TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialDbSavingAmount, StringFormat=N0}" Visibility="{Binding HasDbSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}"></TextBlock>
 
                         </StackPanel>
 
-                        <TextBlock Margin="2,39,2,0" 
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="4,4,4,4" Visibility="Collapsed">
+                              
+                            <TextBlock Margin="2,39,2,0" 
                                    Style="{StaticResource WarningTextBlockStyle}" 
                                    Text="{Binding TestLoginErrorMessage}" 
                                    Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}, FallbackValue=Collapsed}" 
-                                   Grid.ColumnSpan="4"/>
+                                   />
 
-                        <TextBox Padding="6" Grid.Row="2" BorderThickness="0"
+                            <TextBox Padding="6" Grid.Row="2" BorderThickness="0"
                             IsReadOnly="True" Margin="2,2,2,702" Text="{Binding RestErrorMessage}" MaxHeight="150" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" 
                                  Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Background="Orange" Grid.ColumnSpan="4" Grid.RowSpan="2"></TextBox>
+                        
+                        </StackPanel>
+
+                          
 
                         <DataGrid x:Name="RestDbDataGrid"
-                                  Margin="0,39,0,0"                                                              
+                                  Grid.Row="3"
+                                  Margin="0,8,0,0" 
                                   ItemsSource="{Binding Source={StaticResource RestDbDataGridViewSource}}" 
                                   FrozenColumnCount ="1"
                                   MouseUp="RestDbDataGrid_MouseUp"
                                   KeyDown="RestDbDataGrid_KeyDown"
-                                  Grid.ColumnSpan="4"  
-                                  Grid.RowSpan="4"
+                                  Background="AliceBlue"
                                   ClipboardCopyMode="IncludeHeader"   
                                   SelectionChanged="RestDbDataGrid_SelectionChanged"
                                   LoadingRowDetails="RestDbDataGrid_LoadingRowDetails"
@@ -1421,8 +1425,8 @@
                             </Image.LayoutTransform>
                         </Image>
 
-                        <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total Potential Saving:</TextBlock>
-                        <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialVmSavingAmount, StringFormat=N0}"></TextBlock>
+                        <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center" Visibility="{Binding HasVmSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}">Total Potential Saving:</TextBlock>
+                        <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialVmSavingAmount, StringFormat=N0}" Visibility="{Binding HasVmSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}"></TextBlock>
 
                     </StackPanel>
 

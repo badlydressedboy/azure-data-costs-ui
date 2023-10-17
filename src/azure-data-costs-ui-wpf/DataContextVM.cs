@@ -229,6 +229,15 @@ namespace DataEstateOverview
                 SetProperty(ref isDbSpendAnalysisBusy, value);
             }
         }
+        private bool hasDbSpendAnalysisBeenPerformed;
+        public bool HasDbSpendAnalysisBeenPerformed
+        {
+            get => hasDbSpendAnalysisBeenPerformed;
+            set
+            {
+                SetProperty(ref hasDbSpendAnalysisBeenPerformed, value);
+            }
+        }
         private bool isVmSpendAnalysisBusy;
         public bool IsVmSpendAnalysisBusy
         {
@@ -236,6 +245,15 @@ namespace DataEstateOverview
             set
             {
                 SetProperty(ref isVmSpendAnalysisBusy, value);
+            }
+        }
+        private bool hasVmSpendAnalysisBeenPerformed;
+        public bool HasVmSpendAnalysisBeenPerformed
+        {
+            get => hasVmSpendAnalysisBeenPerformed;
+            set
+            {
+                SetProperty(ref hasVmSpendAnalysisBeenPerformed, value);
             }
         }
         private decimal _totalPotentialDbSavingAmount;
@@ -919,6 +937,7 @@ namespace DataEstateOverview
                 Debug.WriteLine(ex);
             }
             IsDbSpendAnalysisBusy = false;
+            HasDbSpendAnalysisBeenPerformed = true;
             UpdateHttpAccessCountMessage();
             TotalPotentialDbSavingAmount = RestSqlDbList.Sum(x => x.PotentialSavingAmount);
         }
@@ -948,6 +967,7 @@ namespace DataEstateOverview
                 Debug.WriteLine(ex);
             }
             IsVmSpendAnalysisBusy = false;
+            HasVmSpendAnalysisBeenPerformed = true;
             UpdateHttpAccessCountMessage();
             TotalPotentialVmSavingAmount = VMList.Sum(x => x.PotentialSavingAmount);
         }
