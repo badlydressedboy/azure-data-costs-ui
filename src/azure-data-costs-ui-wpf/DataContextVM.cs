@@ -460,7 +460,7 @@ namespace DataEstateOverview
                     , async (sub, y) =>
                 {                    
                     await APIAccess.GetSqlServers(sub);
-                    if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
+                    if (sub.SqlServers.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.SqlDatabase);
                 });
 
                 // on ui thread
@@ -520,7 +520,7 @@ namespace DataEstateOverview
                         , async (sub, y) =>
                         {
                             await APIAccess.GetStorageAccounts(sub);
-                            if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
+                            if (sub.StorageAccounts.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Storage);
                         });
 
                 foreach (var sub in SelectedSubscriptions)
@@ -564,7 +564,7 @@ namespace DataEstateOverview
                     , async (sub, y) =>
                     {
                         await APIAccess.GetDataFactories(sub);
-                        if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
+                        if (sub.DataFactories.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.DataFactory);
                     });
 
                 foreach (var sub in SelectedSubscriptions)
@@ -608,7 +608,7 @@ namespace DataEstateOverview
                         , async (sub, y) =>
                         {
                             await APIAccess.GetVirtualNetworks(sub);
-                            if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
+                            if (sub.VNets.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.VNet);
                         });
 
                 foreach (var sub in SelectedSubscriptions)
@@ -658,7 +658,7 @@ namespace DataEstateOverview
                         {
                             await APIAccess.GetVirtualMachines(sub);
 
-                            if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
+                            if (sub.VMs.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.VM);
                         });
 
                 foreach (var sub in SelectedSubscriptions)
@@ -705,7 +705,7 @@ namespace DataEstateOverview
                         , async (sub, y) =>
                         {
                             await APIAccess.GetPurviews(sub);
-                            if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
+                            if (sub.Purviews.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Purview);
                         });
 
                 foreach (var sub in subsCopy)
@@ -782,11 +782,6 @@ namespace DataEstateOverview
 
                     df.Costs.Add(cost);
                     found = true;
-
-                    if(df.name == "ot-dev-mi-adf-we-02")
-                    {
-                        Debug.WriteLine($"found our boy");
-                    }
                 }
             }
             if (!found)
@@ -865,14 +860,10 @@ namespace DataEstateOverview
                     if (!cost.ResourceId.Contains(@"virtualmachines/")) continue;
                     string costVmName = cost.ResourceId.Substring(cost.ResourceId.IndexOf("virtualmachines/") + 16);
 
-                    if(vm.name.ToUpper().Contains("OCT-ENG-VD1-69"))
-                    {
-                        Debug.WriteLine("OCT-ENG-VD1-69");
-                    }
-
-                    if (costVmName.ToUpper().Contains("DEV-DWH-ETL02")){
-                        Debug.WriteLine("DEV-DWH-ETL02");
-                    }
+                    //if(vm.name.ToUpper().Contains("OCT-ENG-VD1-69"))
+                    //{
+                    //    Debug.WriteLine("OCT-ENG-VD1-69");
+                    //}
 
                     if (costVmName.ToLower() == vm.name.ToLower())
                     {
@@ -909,7 +900,7 @@ namespace DataEstateOverview
                     && (!cost.ResourceId.Contains(@"purview/accounts/"))
                     && (!cost.ServiceName.Contains("purview")))
                 {
-                    Debug.WriteLine(cost.ResourceId);
+                    //Debug.WriteLine(cost.ResourceId);
                     continue;
                 }
 

@@ -235,6 +235,8 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
+                                    <DataGridTextColumn Header="Errors" Binding="{Binding CostsErrorMessage}"></DataGridTextColumn>
+                                    
                                 </DataGrid.Columns>
                             </DataGrid>
 

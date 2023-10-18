@@ -148,7 +148,7 @@ namespace DataEstateOverview
                     });
                     tasks[1] = Task.Run(async () =>
                     {
-                        await GetSubscriptionCosts(subscription);
+                        await GetSubscriptionCosts(subscription, CostRequestType.SqlDatabase);
                     });
                     tasks[2] = Task.Run(async () =>
                     {
@@ -975,8 +975,16 @@ namespace DataEstateOverview
             }
 
         }
-
-        public static async Task GetSubscriptionCosts(Subscription subscription)
+        public enum CostRequestType
+        {
+            Purview
+                , SqlDatabase
+                , DataFactory
+                , Storage
+                , VNet
+                , VM
+        }
+        public static async Task GetSubscriptionCosts(Subscription subscription, CostRequestType costType)
         {
             /* How this authentication works:
              * https://learn.microsoft.com/en-gb/dotnet/api/overview/azure/service-to-service-authentication?view=azure-dotnet
@@ -1008,10 +1016,34 @@ namespace DataEstateOverview
 
                 // TheLastMonth, MonthToDate
                 // filter: https://learn.microsoft.com/en-us/rest/api/cost-management/query/usage?tabs=HTTP#queryfilter
-                
+
                 // *** for available service names look at the costs analysis page in the portal and group by service name ***
 
-                
+                // todo - work out how to break up subscription costs from 1 list into a list for each of these
+                string typeClause = "";
+                switch (costType)
+                {
+                    case CostRequestType.Purview:
+                        typeClause = @"""Bandwidth"",""Purview"",""Storage""";
+                        break;
+                    case CostRequestType.SqlDatabase:
+                        typeClause = @"""SQL Database"",""SQL Server"", ""Advanced Threat Protection"",""Storage"", ""Synapse SQL Pool"", ""Azure Synapse Analytics"", ""Power BI Embedded"", ""Bandwidth""";
+                        break;
+                    case CostRequestType.DataFactory:
+                        typeClause = @"""Azure Data Factory v2"",""Storage"", ""Bandwidth""";
+                        break; 
+                    case CostRequestType.Storage:
+                        typeClause = @""""",""Bandwidth"",""Storage""";
+                        break;
+                    case CostRequestType.VNet:
+                        typeClause = @"""Virtual Network"",""Bandwidth"",""Storage""";
+                        break;
+                    case CostRequestType.VM:
+                        typeClause = @"""Virtual machines"", ""Virtual Network"", ""Bandwidth"",""Storage""";
+                        break;                    
+                }
+                //" + typeClause + @"
+
                 payload = @"{""type"":""ActualCost""
                    
                             ,""timeframe"": ""Custom""
@@ -1023,9 +1055,10 @@ namespace DataEstateOverview
                                     ""dimensions"": {
                                         ""name"": ""serviceName""
                                         ,""operator"": ""In""
-                                        ,""values"": [     
-                      
-                                                 ""Azure Data Factory v2""
+                                        ,""values"": [  
+
+
+                                            ""Azure Data Factory v2""
                                             ,""SQL Database""
                                             ,""SQL Server""
                                             ,""Storage""

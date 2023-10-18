@@ -53,7 +53,13 @@ namespace DbMeta.Ui.Wpf.Models.Rest
         public List<Purview> Purviews { get; set; } = new List<Purview>();
 
         public DateTime LastCostGetDate { get; set; }
-        public string CostsErrorMessage { get; set; }
+       
+        private string costsErrorMessage;
+        public string CostsErrorMessage
+        {
+            get => costsErrorMessage;
+            set => SetProperty(ref costsErrorMessage, value);
+        }
         public bool NeedsNewCosts()
         {
             if (LastCostGetDate < DateTime.Now.AddHours(-1))
