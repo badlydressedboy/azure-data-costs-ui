@@ -429,7 +429,7 @@ namespace DataEstateOverview
                     case(1):
                     // db details
                     // have any subscriptions never had sql servers queried?
-                    if (vm.Subscriptions.Any(x => !x.HasEverGotSqlServers))
+                    if (vm.SelectedSubscriptions.Any(x => !x.HasEverGotSqlServers))
                     {
                         // shouldnt need this BUT the db summary busyindicator wont fire on first activation
                         Cursor = Cursors.Wait;
@@ -586,6 +586,15 @@ namespace DataEstateOverview
             Debug.WriteLine("BusyIndicatorSql_TargetUpdated");
         }
 
+        private void Popup_Opened(object sender, EventArgs e)
+        {
+            Debug.WriteLine("Popup_Opened - what field?");
+        }
+
+        private void FilterPopupOkButton_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Popup_ok_clicked - update filter");
+        }
     }
     public class ignoresubscriptionnames
     {

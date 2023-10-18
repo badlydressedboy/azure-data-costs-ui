@@ -21,7 +21,7 @@ namespace DataEstateOverview
     {
 
         #region vars
-        public List<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+        public List<Subscription> SelectedSubscriptions { get; set; } = new List<Subscription>();
         public ObservableCollection<Subscription> DetectedSubscriptions { get; set; } = new ObservableCollection<Subscription>();
 
         public ObservableCollection<RestSqlDb> RestSqlDbList { get; private set; } = new ObservableCollection<RestSqlDb>();
@@ -358,8 +358,8 @@ namespace DataEstateOverview
 
         public DataContextVM(){
 
-            Subscriptions.Add(new Subscription("a5be5e3e-da5c-45f5-abe9-9591a51fccfa"));//, this
-            Subscriptions.Add(new Subscription("151b40b6-6164-4053-9884-58a8d3151fe6"));//, this
+            //Subscriptions.Add(new Subscription("a5be5e3e-da5c-45f5-abe9-9591a51fccfa"));//, this
+            //Subscriptions.Add(new Subscription("151b40b6-6164-4053-9884-58a8d3151fe6"));//, this
             IsRestErrorMessageVisible = false;            
         }
         public async Task TestLogin()
@@ -382,7 +382,7 @@ namespace DataEstateOverview
 
             try
             {
-                Subscriptions.Clear();
+                SelectedSubscriptions.Clear();
                 DetectedSubscriptions.Clear();
 
                 var subsList = await APIAccess.GetSubscriptions();
@@ -409,7 +409,7 @@ namespace DataEstateOverview
                         App.Config.Subscriptions.Add(new DbMeta.Ui.Wpf.Config.ConfigSubscription() { Name = sub.displayName });
                     }
 
-                    if (sub.ReadObjects) Subscriptions.Add(sub);
+                    if (sub.ReadObjects) SelectedSubscriptions.Add(sub);
                 }
                 App.SaveConfig();
                 UpdateHttpAccessCountMessage();
@@ -435,6 +435,11 @@ namespace DataEstateOverview
             ReadAllCostsCheck = allCosts;
         }
 
+        private void SyncSelectedSubs()
+        {
+            SelectedSubscriptions = DetectedSubscriptions.Where(x => x.ReadObjects).ToList();   
+        }
+
         // db/sql server data plus costs
         public async Task RefreshDatabases()
         {
@@ -448,17 +453,18 @@ namespace DataEstateOverview
             decimal totalSqlDbCosts = 0;
            
             try
-            {            
-                await Parallel.ForEachAsync(Subscriptions
+            {
+                SyncSelectedSubs();
+                await Parallel.ForEachAsync(SelectedSubscriptions
                     , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                     , async (sub, y) =>
-                {
-                    await APIAccess.GetSubscriptionCosts(sub);
+                {                    
                     await APIAccess.GetSqlServers(sub);
+                    if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
                 });
 
                 // on ui thread
-                foreach (var sub in Subscriptions)
+                foreach (var sub in SelectedSubscriptions)
                 {
                     //if(!sub.ReadObjects) continue; // ignore this subscription
                     // we are working off subscriptions which are a subset of detectedsubscriptions anyway
@@ -504,18 +510,20 @@ namespace DataEstateOverview
 
             try
             {
+                SyncSelectedSubs();
                 StorageList.Clear();
 
                 decimal totalStorageCosts = 0;
 
-                await Parallel.ForEachAsync(Subscriptions
+                await Parallel.ForEachAsync(SelectedSubscriptions
                         , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                         , async (sub, y) =>
                         {
                             await APIAccess.GetStorageAccounts(sub);
+                            if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
                         });
 
-                foreach (var sub in Subscriptions)
+                foreach (var sub in SelectedSubscriptions)
                 {
                     if (!sub.ReadObjects) continue; // ignore this subscription
                     foreach (var sa in sub.StorageAccounts)
@@ -546,19 +554,20 @@ namespace DataEstateOverview
 
             try
             {
-
+                SyncSelectedSubs();
                 DataFactoryList.Clear();
 
             decimal totalADFCosts = 0;
 
-            await Parallel.ForEachAsync(Subscriptions
+            await Parallel.ForEachAsync(SelectedSubscriptions
                     , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                     , async (sub, y) =>
                     {
                         await APIAccess.GetDataFactories(sub);
+                        if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
                     });
 
-                foreach (var sub in Subscriptions)
+                foreach (var sub in SelectedSubscriptions)
                 {
                     if (!sub.ReadObjects) continue; // ignore this subscription
                     foreach (var df in sub.DataFactories)
@@ -588,18 +597,21 @@ namespace DataEstateOverview
 
             try
             {
+                SyncSelectedSubs();
+
                 StorageList.Clear();
 
                 decimal totalVNetCosts = 0;
 
-                await Parallel.ForEachAsync(Subscriptions
+                await Parallel.ForEachAsync(SelectedSubscriptions
                         , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                         , async (sub, y) =>
                         {
                             await APIAccess.GetVirtualNetworks(sub);
+                            if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
                         });
 
-                foreach (var sub in Subscriptions)
+                foreach (var sub in SelectedSubscriptions)
                 {
                     if (!sub.ReadObjects) continue; // ignore this subscription
                     foreach (var vnet in sub.VNets)
@@ -634,18 +646,22 @@ namespace DataEstateOverview
            
             try
             {
+                SyncSelectedSubs();
+
                 VMList.Clear();
 
                 decimal totalVMCosts = 0;
 
-                await Parallel.ForEachAsync(Subscriptions
+                await Parallel.ForEachAsync(SelectedSubscriptions
                         , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                         , async (sub, y) =>
                         {
                             await APIAccess.GetVirtualMachines(sub);
+
+                            if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
                         });
 
-                foreach (var sub in Subscriptions)
+                foreach (var sub in SelectedSubscriptions)
                 {
                     if (!sub.ReadObjects) continue; // ignore this subscription
                     foreach (var vm in sub.VMs)
@@ -676,17 +692,20 @@ namespace DataEstateOverview
 
             try
             {
+                SyncSelectedSubs();
+
                 PurviewList.Clear();
 
                 decimal totalPurviewCosts = 0;
 
 
-                var subsCopy = Subscriptions.ToList();
+                var subsCopy = SelectedSubscriptions.ToList();
                 await Parallel.ForEachAsync(subsCopy
                         , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                         , async (sub, y) =>
                         {
                             await APIAccess.GetPurviews(sub);
+                            if (sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub);
                         });
 
                 foreach (var sub in subsCopy)
@@ -694,7 +713,7 @@ namespace DataEstateOverview
                     if (!sub.ReadObjects) continue; // ignore this subscription
                     foreach (var purv in sub.Purviews)
                     {
-                        MapCostToVM(purv, sub.ResourceCosts);
+                        MapCostToPurview(purv, sub.ResourceCosts);
                         PurviewList.Add(purv);
 
                         foreach (var c in purv.Costs)
@@ -846,9 +865,9 @@ namespace DataEstateOverview
                     if (!cost.ResourceId.Contains(@"virtualmachines/")) continue;
                     string costVmName = cost.ResourceId.Substring(cost.ResourceId.IndexOf("virtualmachines/") + 16);
 
-                    if(vm.name.ToUpper() == "DEV-DWH-ETL02")
+                    if(vm.name.ToUpper().Contains("OCT-ENG-VD1-69"))
                     {
-                        Debug.WriteLine("DEV-DWH-ETL02");
+                        Debug.WriteLine("OCT-ENG-VD1-69");
                     }
 
                     if (costVmName.ToUpper().Contains("DEV-DWH-ETL02")){
@@ -877,7 +896,7 @@ namespace DataEstateOverview
             }
         }
 
-        private static void MapCostToVM(Purview purv, List<ResourceCost> costs)
+        private static void MapCostToPurview(Purview purv, List<ResourceCost> costs)
         {
             bool found = false;
             purv.Costs.Clear();
@@ -957,7 +976,9 @@ namespace DataEstateOverview
                     {
                         vm.SpendAnalysisStatus = "Analysing...";
                         vm.OverSpendFromMaxPcString = "?";
+                        
                         await APIAccess.GetVmMetrics(vm);
+                        
 
                         vm.SpendAnalysisStatus = "Complete";
                     });

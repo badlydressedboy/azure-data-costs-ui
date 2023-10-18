@@ -1295,8 +1295,7 @@ namespace DataEstateOverview
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine("got purv acc");
-
+                
                 RootPurview root = await response.Content.ReadFromJsonAsync<RootPurview>();
                 if (root?.value == null) return;
 

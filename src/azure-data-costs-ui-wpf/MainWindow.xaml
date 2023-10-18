@@ -317,13 +317,43 @@
                                   FrozenColumnCount ="1"
                                   MouseUp="RestDbDataGrid_MouseUp"
                                   KeyDown="RestDbDataGrid_KeyDown"
-                                  Background="AliceBlue"
                                   ClipboardCopyMode="IncludeHeader"   
                                   SelectionChanged="RestDbDataGrid_SelectionChanged"
                                   LoadingRowDetails="RestDbDataGrid_LoadingRowDetails"
                                 local:DataGridExtensions.SortDesc="True"
                             >
 
+                            <DataGrid.Resources>
+                                <DataTemplate x:Key="HeaderTemplate">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <ContentControl Content="{Binding}" VerticalAlignment="Center"/>
+                                        <ToggleButton Name="FilterButton" Grid.Column="1" Content="▼" Margin="2, 1, 1, 1" Padding="1, 0"/>
+                                        <Popup IsOpen="{Binding ElementName=FilterButton, Path=IsChecked}" PlacementTarget="{Binding ElementName=FilterButton}" StaysOpen="False" Opened="Popup_Opened">
+                                            <Border Background="White" Padding="3">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    
+                                                    <TextBlock>Some Filters Here</TextBlock>
+
+                                                    <Button x:Name="FilterPopupOkButton" Margin="2" Click="FilterPopupOkButton_Click"/>
+                                                </Grid>
+                                                
+                                            </Border>
+                                        </Popup>
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGrid.Resources>
+
+                            
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
@@ -401,7 +431,7 @@
                                 </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Server"  Binding="{Binding serverName}" ></DataGridTextColumn>
-                                <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Subscription"  HeaderTemplate="{StaticResource HeaderTemplate}" Binding="{Binding Subscription.displayName}" ></DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Service Objective"  Binding="{Binding properties.currentServiceObjectiveName}" ></DataGridTextColumn>
 
@@ -1397,8 +1427,6 @@
 
             <mah:MetroTabItem Header="VMs" Name="TabVMs">
 
-
-
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -1414,7 +1442,12 @@
                         <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VM Costs:</TextBlock>
                         <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalVMCostsText}"></TextBlock>
 
-                        <Button x:Name="VMAnalyseSpendButton" Margin="28,2,2,2" Padding="8,1,8,1" Click="VMAnalyseSpendButton_Click" Content="Analyse Spend"/>
+                        
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="4" Grid.Row="1">
+                       
+                        <Button x:Name="VMAnalyseSpendButton" Margin="10,2,2,2" Padding="8,1,8,1" Click="VMAnalyseSpendButton_Click" Content="Analyse Spend"/>
 
                         <Image gif:ImageBehavior.AnimatedSource="/Images/loading.gif" 
                                Margin="8,0,0,0" 
@@ -1428,16 +1461,17 @@
                         <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center" Visibility="{Binding HasVmSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}">Total Potential Saving:</TextBlock>
                         <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialVmSavingAmount, StringFormat=N0}" Visibility="{Binding HasVmSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}"></TextBlock>
 
+                        
                     </StackPanel>
 
-                    <TextBlock Grid.Row="1" Margin="2" 
+                        <TextBlock Grid.Row="2" Margin="2" 
                                Style="{StaticResource WarningTextBlockStyle}" 
                                Text="{Binding VMErrorMessage}" 
                                MaxHeight="150" 
                                ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" 
                                Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"></TextBlock>
 
-                    <busyIndicator:BusyMask Grid.Row="2" Name="VmBusyMask" IsBusy="{Binding IsVMQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                    <busyIndicator:BusyMask Grid.Row="3" Name="VmBusyMask" IsBusy="{Binding IsVMQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
                         <DataGrid x:Name="VMDataGrid"                              
                               ItemsSource="{Binding Source={StaticResource VMDataGridViewSource}}"                               
