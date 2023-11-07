@@ -444,7 +444,7 @@ namespace DataEstateOverview
         public void SyncSelectedSubs()
         {
             SelectedSubscriptions = DetectedSubscriptions.Where(x => x.ReadObjects).ToList();
-            SelectSubscriptionsCountMessage = SelectedSubscriptions.Count + " Selected Subscritions";
+            SelectSubscriptionsCountMessage = SelectedSubscriptions.Count + " Selected Subscriptions";
         }
 
         // db/sql server data plus costs

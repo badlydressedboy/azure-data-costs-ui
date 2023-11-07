@@ -596,6 +596,14 @@ namespace DataEstateOverview
         {
             Debug.WriteLine("Popup_ok_clicked - update filter");
         }
+
+        private void RestDbDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            // this doesnt need to do anything as double click expands row anyway - keeping here for convenience of how to get row
+            //var row = ItemsControl.ContainerFromElement((DataGrid)sender,
+            //                            e.OriginalSource as DependencyObject) as DataGridRow;
+
+        }
     }
     public class ignoresubscriptionnames
     {

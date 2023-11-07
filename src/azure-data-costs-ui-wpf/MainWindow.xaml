@@ -319,6 +319,7 @@
                                   FrozenColumnCount ="1"
                                   MouseUp="RestDbDataGrid_MouseUp"
                                   KeyDown="RestDbDataGrid_KeyDown"
+                                  MouseDoubleClick="RestDbDataGrid_MouseDoubleClick"
                                   ClipboardCopyMode="IncludeHeader"   
                                   SelectionChanged="RestDbDataGrid_SelectionChanged"
                                   LoadingRowDetails="RestDbDataGrid_LoadingRowDetails"
@@ -417,7 +418,7 @@
                             <DataGrid.Columns>
 
                                 <DataGridTextColumn Header="DB"  Binding="{Binding name}" >
-                                    <DataGridTextColumn.CellStyle>
+                                    <!--<DataGridTextColumn.CellStyle>
                                         <Style TargetType="DataGridCell">
 
                                             <Style.Triggers>
@@ -429,11 +430,11 @@
 
                                             </Style.Triggers>
                                         </Style>
-                                    </DataGridTextColumn.CellStyle>
+                                    </DataGridTextColumn.CellStyle>-->
                                 </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Server"  Binding="{Binding serverName}" ></DataGridTextColumn>
-                                <DataGridTextColumn Header="Subscription"  HeaderTemplate="{StaticResource HeaderTemplate}" Binding="{Binding Subscription.displayName}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}" ></DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Service Objective"  Binding="{Binding properties.currentServiceObjectiveName}" ></DataGridTextColumn>
 
