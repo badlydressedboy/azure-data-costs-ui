@@ -31,8 +31,7 @@ namespace DbMeta.Ui.Wpf.Models.Rest
                 // costs can only be read if the corresponding objects are read too
                 if (readCosts)
                 {
-                    readObjects = true;
-                    OnPropertyChanged(nameof(ReadObjects));
+                    ReadObjects = true;
                 }
             }
         }
@@ -40,7 +39,17 @@ namespace DbMeta.Ui.Wpf.Models.Rest
         public bool ReadObjects
         {
             get => readObjects;
-            set => SetProperty(ref readObjects, value);
+            set
+            {
+                SetProperty(ref readObjects, value);
+
+                // costs can only be read if the corresponding objects are read too
+
+                if (value == false)
+                {
+                    ReadCosts = false;
+                }
+            }
         }
 
         public bool HasEverGotSqlServers { get; set; }  

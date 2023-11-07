@@ -313,7 +313,7 @@ namespace DataEstateOverview
 
                 App.SaveConfig();
 
-                vm.UpdateAllSubsChecks();
+                //vm.UpdateAllSubsChecks(); // creates weird single box unchecking - todo fix if very bored
             }
             //Debug.WriteLine("gdg");
         }
