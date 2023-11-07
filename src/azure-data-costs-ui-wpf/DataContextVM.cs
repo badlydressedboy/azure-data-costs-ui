@@ -354,6 +354,12 @@ namespace DataEstateOverview
             set => SetProperty(ref httpAccessCountMessage, value);
         }
 
+        private string? selectSubscriptionsCountMessage;
+        public string? SelectSubscriptionsCountMessage
+        {
+            get => selectSubscriptionsCountMessage;
+            set => SetProperty(ref selectSubscriptionsCountMessage, value);
+        }
         #endregion
 
         public DataContextVM(){
@@ -435,9 +441,10 @@ namespace DataEstateOverview
             ReadAllCostsCheck = allCosts;
         }
 
-        private void SyncSelectedSubs()
+        public void SyncSelectedSubs()
         {
-            SelectedSubscriptions = DetectedSubscriptions.Where(x => x.ReadObjects).ToList();   
+            SelectedSubscriptions = DetectedSubscriptions.Where(x => x.ReadObjects).ToList();
+            SelectSubscriptionsCountMessage = SelectedSubscriptions.Count + " Selected Subscritions";
         }
 
         // db/sql server data plus costs

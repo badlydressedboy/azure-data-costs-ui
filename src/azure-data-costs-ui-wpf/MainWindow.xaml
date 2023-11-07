@@ -1797,13 +1797,20 @@
         </mah:MetroAnimatedSingleRowTabControl>
 
 
-        <StatusBar Grid.Row="1" Background="LightGray" Foreground="Gray">
+        <StatusBar Grid.Row="1" Background="LightGray" Foreground="DimGray">
             <StatusBarItem>
                 <TextBlock Margin="2" Text="{Binding HttpAccessCountMessage}"></TextBlock>
             </StatusBarItem>
 
             <StatusBarItem>
                 <TextBlock Margin="12,2,2,2">Limit: 12,000 per subscription/user/hour</TextBlock>
+            </StatusBarItem>
+
+            <Separator Width="1" Background="Gray" Margin="10,3,10,3"></Separator>
+            
+            <StatusBarItem>
+                
+                <TextBlock Margin="2" Text="{Binding SelectSubscriptionsCountMessage}"></TextBlock>
             </StatusBarItem>
 
         </StatusBar>
