@@ -159,7 +159,7 @@
                             <Button Margin="2" VerticalAlignment="Center" Name="TestLoginButton" Click="TestLoginButton_Click">Test Security</Button>
                         </StackPanel>
 
-                        <TextBlock Margin="2" Padding="6" Grid.Row="2" Background="LightGreen"
+                        <TextBlock Margin="2" Padding="6" Grid.Row="2" Background="GhostWhite" Opacity=".8"
                     Visibility="{Binding TestLoginErrorMessage, Converter={converters:InverseStringNullOrEmptyToVisibilityConverter}}"
                     >You are logged in OK</TextBlock>
 
@@ -236,7 +236,7 @@
                                     </DataGridTemplateColumn>
 
                                     <DataGridTextColumn Header="Errors" Binding="{Binding CostsErrorMessage}"></DataGridTextColumn>
-                                    
+
                                 </DataGrid.Columns>
                             </DataGrid>
 
@@ -250,7 +250,7 @@
 
                 <busyIndicator:BusyMask TargetUpdated="BusyIndicatorSql_TargetUpdated" SourceUpdated="BusyIndicatorSql_SourceUpdated" x:Name="BusyIndicatorSql" IsBusy="{Binding IsGetSqlServersBusy}" IndicatorType="Cogs"  BusyContent="Please wait..." >
                     <Grid>
-                        
+
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -297,7 +297,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="4,4,4,4" Visibility="Collapsed">
-                              
+
                             <TextBlock Margin="2,39,2,0" 
                                    Style="{StaticResource WarningTextBlockStyle}" 
                                    Text="{Binding TestLoginErrorMessage}" 
@@ -307,10 +307,10 @@
                             <TextBox Padding="6" Grid.Row="2" BorderThickness="0"
                             IsReadOnly="True" Margin="2,2,2,702" Text="{Binding RestErrorMessage}" MaxHeight="150" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" 
                                  Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Background="Orange" Grid.ColumnSpan="4" Grid.RowSpan="2"></TextBox>
-                        
+
                         </StackPanel>
 
-                          
+
 
                         <DataGrid x:Name="RestDbDataGrid"
                                   Grid.Row="3"
@@ -344,19 +344,19 @@
                                                         <RowDefinition Height="Auto"/>
                                                         <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
-                                                    
+
                                                     <TextBlock>Some Filters Here</TextBlock>
 
                                                     <Button x:Name="FilterPopupOkButton" Margin="2" Click="FilterPopupOkButton_Click"/>
                                                 </Grid>
-                                                
+
                                             </Border>
                                         </Popup>
                                     </Grid>
                                 </DataTemplate>
                             </DataGrid.Resources>
 
-                            
+
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
@@ -1445,11 +1445,11 @@
                         <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VM Costs:</TextBlock>
                         <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalVMCostsText}"></TextBlock>
 
-                        
+
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Margin="4" Grid.Row="1">
-                       
+
                         <Button x:Name="VMAnalyseSpendButton" Margin="10,2,2,2" Padding="8,1,8,1" Click="VMAnalyseSpendButton_Click" Content="Analyse Spend"/>
 
                         <Image gif:ImageBehavior.AnimatedSource="/Images/loading.gif" 
@@ -1464,10 +1464,10 @@
                         <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center" Visibility="{Binding HasVmSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}">Total Potential Saving:</TextBlock>
                         <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialVmSavingAmount, StringFormat=N0}" Visibility="{Binding HasVmSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}"></TextBlock>
 
-                        
+
                     </StackPanel>
 
-                        <TextBlock Grid.Row="2" Margin="2" 
+                    <TextBlock Grid.Row="2" Margin="2" 
                                Style="{StaticResource WarningTextBlockStyle}" 
                                Text="{Binding VMErrorMessage}" 
                                MaxHeight="150" 
@@ -1808,9 +1808,9 @@
             </StatusBarItem>
 
             <Separator Width="1" Background="Gray" Margin="10,3,10,3"></Separator>
-            
+
             <StatusBarItem>
-                
+
                 <TextBlock Margin="2" Text="{Binding SelectSubscriptionsCountMessage}"></TextBlock>
             </StatusBarItem>
 

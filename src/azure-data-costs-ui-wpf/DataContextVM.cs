@@ -467,6 +467,7 @@ namespace DataEstateOverview
                     , async (sub, y) =>
                 {                    
                     await APIAccess.GetSqlServers(sub);
+
                     if (sub.SqlServers.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.SqlDatabase);
                 });
 
@@ -476,9 +477,9 @@ namespace DataEstateOverview
                     //if(!sub.ReadObjects) continue; // ignore this subscription
                     // we are working off subscriptions which are a subset of detectedsubscriptions anyway
 
-                    if(sub.ResourceCosts.Count == 0)
+                    if(sub.ResourceCosts.Count == 0 && sub.ReadCosts) // only an error if we actually asked for costs
                     {
-                        Debug.WriteLine($"No costs for sub: {sub.displayName}");
+                        Debug.WriteLine($"No costs found for sub: {sub.displayName}");
                         sub.CostsErrorMessage = "No costs found.";
                         //continue;
                     }

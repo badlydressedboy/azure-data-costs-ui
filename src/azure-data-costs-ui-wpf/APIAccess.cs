@@ -1152,8 +1152,15 @@ namespace DataEstateOverview
                                                     "application/json");//CONTENT-TYPE header
 
                 HttpResponseMessage response = await client.SendAsync(request);// client.PostAsync(url, new StringContent(payload));
+
+                if (response.StatusCode == HttpStatusCode.TooManyRequests)
+                {
+                    Debug.WriteLine(response.Content);
+                }
+
                 if (!response.IsSuccessStatusCode)
                 {
+                    
                     subscription.CostsErrorMessage = $@"Subscription '{subscription.displayName}' costs query {response.ReasonPhrase}";
                     return;
                 }
