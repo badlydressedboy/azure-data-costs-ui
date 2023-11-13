@@ -31,6 +31,8 @@ namespace DataEstateOverview
         public ObservableCollection<Purview> PurviewList { get; private set; } = new ObservableCollection<Purview>();
         public ObservableCollection<VM> VMList { get; private set; } = new ObservableCollection<VM>();
 
+        public static string PortalUrl;
+
         public bool _readAllObjectsCheck { get; set; }
         public bool ReadAllObjectsCheck
         {
@@ -392,6 +394,7 @@ namespace DataEstateOverview
                 DetectedSubscriptions.Clear();
 
                 var subsList = await APIAccess.GetSubscriptions();
+                PortalUrl = $@"https://portal.azure.com/#@{APIAccess.DefaultDomain}/resource/subscriptions/";
 
                 if (subsList == null || subsList.Count == 0)
                 {

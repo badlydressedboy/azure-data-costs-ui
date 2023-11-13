@@ -34,6 +34,7 @@ namespace DataEstateOverview
         public static MyHttpClient HttpClient;        
         private static string _accessToken;
         public static int CostDays { get; set; } = 30;
+        public static string DefaultDomain;
 
         public static HttpClient GetHttpClient(string baseAddress, int timeoutSecs)
         {
@@ -99,10 +100,29 @@ namespace DataEstateOverview
 
                 //HttpResponseMessage response = await GetHttpClientAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
 
+                
+
                 HttpResponseMessage response = await GetHttpClientAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");// httpClient.GetAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
 
                 var json = await response.Content.ReadAsStringAsync();
                 RootSubscription subscriptions = await response?.Content?.ReadFromJsonAsync<RootSubscription>();
+
+                // if we have 1 more more subscriptions we can ask for tenanta, including tenant name/domain which we dont know
+                if (subscriptions.value.Count > 0)
+                {
+                    var sub = subscriptions.value[0];
+                    var requestUrl = $@"https://management.azure.com/tenants?api-version=2022-12-01";
+
+                    HttpResponseMessage tenantResponse = await GetHttpClientAsync(requestUrl);
+
+                    var tenantjson = await tenantResponse.Content.ReadAsStringAsync();
+                    RootTenant tenants = await tenantResponse?.Content?.ReadFromJsonAsync<RootTenant>();
+
+                    DefaultDomain = tenants.value[0].defaultDomain;
+
+                    Debug.WriteLine(tenantjson);
+                }
+
                 return subscriptions.value;
                 
             }
