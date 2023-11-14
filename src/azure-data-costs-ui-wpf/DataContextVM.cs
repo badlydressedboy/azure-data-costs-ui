@@ -378,6 +378,7 @@ namespace DataEstateOverview
             TestLoginErrorMessage = "";
 
             TestLoginErrorMessage = await APIAccess.TestLogin();
+            PortalUrl = $@"https://portal.azure.com/#@{APIAccess.DefaultDomain}/resource/subscriptions/";
 
             IsTestLoginBusy = false;
             IsRestQueryBusy = false;
@@ -394,8 +395,7 @@ namespace DataEstateOverview
                 DetectedSubscriptions.Clear();
 
                 var subsList = await APIAccess.GetSubscriptions();
-                PortalUrl = $@"https://portal.azure.com/#@{APIAccess.DefaultDomain}/resource/subscriptions/";
-
+                
                 if (subsList == null || subsList.Count == 0)
                 {
                     Debug.WriteLine("No subscriptions! Are you logged into Azure?");

@@ -65,13 +65,18 @@ namespace DataEstateOverview
         {
             try
             {
-                
-                //var httpClient = GetHttpClient("https://management.azure.com/subscriptions/", 5);
-                HttpResponseMessage response = await GetHttpClientAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");// httpClient.GetAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
-                if (!response.IsSuccessStatusCode)
+                // get tenants as a test
+                HttpResponseMessage tenantResponse = await GetHttpClientAsync("https://management.azure.com/tenants?api-version=2022-12-01");
+                if (!tenantResponse.IsSuccessStatusCode)
                 {
-                    return response.ReasonPhrase;
-                }                
+                    return tenantResponse.ReasonPhrase;
+                } 
+                var tenantjson = await tenantResponse.Content.ReadAsStringAsync();
+                RootTenant tenants = await tenantResponse?.Content?.ReadFromJsonAsync<RootTenant>();
+                if (tenants.value.Count > 0)
+                {
+                    DefaultDomain = tenants.value[0].defaultDomain;
+                }              
             }
             catch (Exception ex)
             {
@@ -84,47 +89,12 @@ namespace DataEstateOverview
         {
             try
             {
-                //AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
-                //_accessToken = azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/").Result;
-                //Debug.WriteLine(_accessToken);
-
-                //_httpClient = new HttpClient
-                //{
-                //    BaseAddress = new Uri("https://management.azure.com/subscriptions/")
-                //    ,
-                //    Timeout = TimeSpan.FromSeconds(30)
-                //};
-
-                //_httpClient.DefaultRequestHeaders.Remove("Authorization");
-                //_httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + _accessToken);
-
-                //HttpResponseMessage response = await GetHttpClientAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
-
-                
-
                 HttpResponseMessage response = await GetHttpClientAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");// httpClient.GetAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
 
                 var json = await response.Content.ReadAsStringAsync();
                 RootSubscription subscriptions = await response?.Content?.ReadFromJsonAsync<RootSubscription>();
 
-                // if we have 1 more more subscriptions we can ask for tenanta, including tenant name/domain which we dont know
-                if (subscriptions.value.Count > 0)
-                {
-                    var sub = subscriptions.value[0];
-                    var requestUrl = $@"https://management.azure.com/tenants?api-version=2022-12-01";
-
-                    HttpResponseMessage tenantResponse = await GetHttpClientAsync(requestUrl);
-
-                    var tenantjson = await tenantResponse.Content.ReadAsStringAsync();
-                    RootTenant tenants = await tenantResponse?.Content?.ReadFromJsonAsync<RootTenant>();
-
-                    DefaultDomain = tenants.value[0].defaultDomain;
-
-                    Debug.WriteLine(tenantjson);
-                }
-
-                return subscriptions.value;
-                
+                return subscriptions.value; 
             }
             catch (Exception ex)
             {
