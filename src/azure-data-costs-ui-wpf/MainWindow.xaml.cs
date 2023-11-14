@@ -29,6 +29,7 @@ using System.IO;
 using Path = System.IO.Path;
 using Microsoft.Identity.Client;
 using System.Windows.Controls.Primitives;
+using System.Security.Policy;
 
 namespace DataEstateOverview
 {
@@ -603,6 +604,17 @@ namespace DataEstateOverview
             //var row = ItemsControl.ContainerFromElement((DataGrid)sender,
             //                            e.OriginalSource as DependencyObject) as DataGridRow;
 
+        }
+
+        private void ViewPortalDbButton_Click(object sender, RoutedEventArgs e)
+        {
+            RestSqlDb db = (RestSqlDb)((Button)sender).DataContext;
+            
+            // dotnet core
+            Process.Start(new ProcessStartInfo { FileName = db.PortalResourceUrl, UseShellExecute = true });
+            
+            // dotnet framework
+            //Process.Start(db.PortalResourceUrl);
         }
     }
     public class ignoresubscriptionnames

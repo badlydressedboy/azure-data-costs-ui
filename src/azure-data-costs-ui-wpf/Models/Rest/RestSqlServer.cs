@@ -13,7 +13,7 @@ namespace DataEstateOverview.Models.Rest
     {
         public string id { get; set; }
         public string name { get; set; }
-
+        public string PortalResourceUrl { get; set; }
         //public string subscriptionid { get; set; }
         public Subscription Subscription { get; set; }
 

@@ -35,7 +35,8 @@ namespace DataEstateOverview
         private static string _accessToken;
         public static int CostDays { get; set; } = 30;
         public static string DefaultDomain;
-
+        public static string BasePortalUrl;
+        
         public static HttpClient GetHttpClient(string baseAddress, int timeoutSecs)
         {
             var httpClient = new HttpClient
@@ -76,7 +77,8 @@ namespace DataEstateOverview
                 if (tenants.value.Count > 0)
                 {
                     DefaultDomain = tenants.value[0].defaultDomain;
-                }              
+                    BasePortalUrl = $@"https://portal.azure.com/#@{DefaultDomain}/resource/subscriptions/";
+                }
             }
             catch (Exception ex)
             {
@@ -203,6 +205,9 @@ namespace DataEstateOverview
                     restSql.Subscription = subscription;// = sub.Substring(0, sub.IndexOf("/"));
 
                     restSql.AzServer = new Models.SQL.AzServer(restSql.name);
+
+                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/7a77c7dc-4158-4e23-8b34-adb5bd59db5b/resourceGroups/oct-oi-dev-uks-rg-corp-epool/providers/Microsoft.Sql/servers/oct-oi-dev-uks-sql-corp-epool/overview
+                    restSql.PortalResourceUrl = $@"{BasePortalUrl}subscription.subscriptionId/resourceGroups/{restSql.resourceGroup}/providers/Microsoft.Sql/servers/{restSql.name}/overview";// ends subscriptions/
                 }
                 subscription.SqlServers = servers.value.ToList();
                 subscription.HasEverGotSqlServers = true;
@@ -286,6 +291,9 @@ namespace DataEstateOverview
 
                     db.AzDB.DatabaseName = db.name;
                     db.AzDB.SetParent(sqlServer.AzServer);
+
+                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/7a77c7dc-4158-4e23-8b34-adb5bd59db5b/resourceGroups/oct-oi-dev-uks-rg-corp-epool/providers/Microsoft.Sql/servers/oct-oi-dev-uks-sql-corp-epool/databases/oct-oi-dev-uks-sqldb-corp-amlkyc-api/overview
+                    db.PortalResourceUrl = $@"{BasePortalUrl}{db.Subscription.subscriptionId}/resourceGroups/{db.resourceGroup}/providers/Microsoft.Sql/servers/{db.serverName}/databases/{db.name}/overview";// ends subscriptions/
 
                     if (db.properties.elasticPoolId != null)
                     {                        
@@ -1240,8 +1248,9 @@ namespace DataEstateOverview
                 Debug.WriteLine("got storage acc");
 
                 RootStorageAccount root = await response.Content.ReadFromJsonAsync<RootStorageAccount>();
+                if (root?.value == null) return;
 
-                foreach(var account in root.value)
+                foreach(var account in root?.value)
                 {
                     Debug.WriteLine($"Got storage acc {account.name}");
                     account.Subscription = subscription;

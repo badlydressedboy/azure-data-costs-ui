@@ -128,6 +128,8 @@ namespace DataEstateOverview.Models.SQL
             ParentAzServer = parentServer;
             ServerName = parentServer.Name;
             ConnString = parentServer.ConnString.Replace("master", DatabaseName);
+
+            
         }
     }
 }
