@@ -347,6 +347,8 @@ namespace DataEstateOverview
 
         public void UpdateHttpAccessCountMessage()
         {
+            if (APIAccess.HttpClient == null) return;
+
             HttpAccessCountMessage = $"Total Rest Calls: {APIAccess.HttpClient.HttpCallCount}";
         }
         private string? httpAccessCountMessage;
