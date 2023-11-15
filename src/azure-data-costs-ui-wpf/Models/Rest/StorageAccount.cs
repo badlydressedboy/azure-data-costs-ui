@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataEstateOverview.Models.Rest;
 
 namespace DbMeta.Ui.Wpf.Models.Rest
 {
@@ -10,8 +11,9 @@ namespace DbMeta.Ui.Wpf.Models.Rest
     {
         public List<StorageAccount> value { get; set; }
     }
-    public class StorageAccount
+    public class StorageAccount : PortalResource
     {
+        
         public StorageAccountSku sku { get; set; }  
         public StorageAccountProperties properties { get; set; }  
         public string kind { get; set; }

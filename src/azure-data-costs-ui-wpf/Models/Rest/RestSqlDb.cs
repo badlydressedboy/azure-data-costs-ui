@@ -18,8 +18,11 @@ namespace DataEstateOverview.Models.Rest
     {
         public RestSqlDb[] value { get; set; }
     }
-
-    public class RestSqlDb : INotifyPropertyChanged
+    public abstract class PortalResource
+    {
+        public string PortalResourceUrl { get; set; }
+    }
+    public class RestSqlDb : PortalResource, INotifyPropertyChanged
     {
         // rest is king and sql is its child that uses queries to get low level meta data
         public AzDB AzDB { get; set; } = new AzDB();
@@ -27,7 +30,7 @@ namespace DataEstateOverview.Models.Rest
         public string name { get; set; }
         public string location { get; set; }
         public string serverName { get; set; }
-        public string PortalResourceUrl { get; set; }
+        
         //public string subscriptionid { get; set; }
         public Subscription Subscription { get; set; }
         public ElasticPool ElasticPool { get; set; }    

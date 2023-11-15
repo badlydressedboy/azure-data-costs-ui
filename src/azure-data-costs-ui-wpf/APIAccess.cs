@@ -1229,6 +1229,9 @@ namespace DataEstateOverview
 
                     string sub = factory.id.Substring(factory.id.IndexOf("subscription") + 14);
                     factory.Subscription = subscription;
+
+                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/a67ef237-9226-4df4-ad57-da1088b0f830/resourceGroups/dwh-dev-adf/providers/Microsoft.DataFactory/factories/dwh-dev-adf-crm/overview
+                    factory.PortalResourceUrl = $@"{BasePortalUrl}{factory.Subscription.subscriptionId}/resourceGroups/{factory.resourceGroup}/providers/Microsoft.DataFactory/factories/{factory.name}/overview";// ends subscriptions/                    
                 }
                 subscription.DataFactories = factories.value.ToList();
             }
@@ -1257,6 +1260,9 @@ namespace DataEstateOverview
 
                     string rg = account.id.Substring(account.id.IndexOf("resourceGroup") + 15);
                     account.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
+
+                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/4fc5f060-33b6-4e2b-be23-3f3fd7533c28/resourceGroups/oct-louis-mantas-openai-comparison/providers/Microsoft.Storage/storageAccounts/airegulatoryinputdata/overview
+                    account.PortalResourceUrl = $@"{BasePortalUrl}{account.Subscription.subscriptionId}/resourceGroups/{account.resourceGroup}/providers/Microsoft.Storage/storageAccounts/{account.name}/overview";// ends subscriptions/
 
                 }
                 subscription.StorageAccounts = root.value.ToList();
@@ -1288,6 +1294,9 @@ namespace DataEstateOverview
                     string rg = vnet.id.Substring(vnet.id.IndexOf("resourceGroup") + 15);
                     vnet.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
 
+                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/a67ef237-9226-4df4-ad57-da1088b0f830/resourceGroups/dwh-dev/providers/Microsoft.Network/virtualNetworks/a67ef237-9226-4df4-ad57-da1088b0f830/overview
+                    vnet.PortalResourceUrl = $@"{BasePortalUrl}{vnet.Subscription.subscriptionId}/resourceGroups/{vnet.resourceGroup}/providers/Microsoft.Network/virtualNetworks/{vnet.name}/overview";// ends subscriptions/
+
                 }
                 subscription.VNets = root.value.ToList();
             }
@@ -1317,6 +1326,10 @@ namespace DataEstateOverview
 
                     string rg = vm.id.Substring(vm.id.IndexOf("resourceGroup") + 15);
                     vm.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
+
+                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/2bf1d00a-8f74-425c-91ad-40a06372912a/resourceGroups/Devops-Tools/providers/Microsoft.Compute/virtualMachines/AzurePipelineAgent01/overview
+                    vm.PortalResourceUrl = $@"{BasePortalUrl}{vm.Subscription.subscriptionId}/resourceGroups/{vm.resourceGroup}/providers/Microsoft.Compute/virtualMachines/{vm.name}/overview";// ends subscriptions/
+
                 }
                 subscription.VMs = root.value.ToList();
             }
@@ -1345,6 +1358,10 @@ namespace DataEstateOverview
 
                     string rg = purv.id.Substring(purv.id.IndexOf("resourceGroup") + 15);
                     purv.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
+
+                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/7a43fe5a-5ffe-4895-afbf-274567203678/resourceGroups/oct-grp-prd-uks-rg007-purview/providers/Microsoft.Purview/accounts/oct-purview/overview
+                    purv.PortalResourceUrl = $@"{BasePortalUrl}{purv.Subscription.subscriptionId}/resourceGroups/{purv.resourceGroup}/providers/Microsoft.Purview/accounts/{purv.name}/overview";
+
                 }
                 subscription.Purviews = root.value.ToList();
             }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataEstateOverview.Models.Rest;
 
 namespace DbMeta.Ui.Wpf.Models.Rest
 {
@@ -21,15 +22,14 @@ namespace DbMeta.Ui.Wpf.Models.Rest
     {
         public List<DataFactory> value { get; set; }    
     }
-    public class DataFactory
+    public class DataFactory : PortalResource
     {
         public string id { get; set; }
         public string name { get; set; }
         public string location { get; set; }
         public string resourceGroup { get; set; }
         //public string subscriptionid { get; set; }
-        public Subscription Subscription { get; set; }
-
+        public Subscription Subscription { get; set; }        
         public DateTime createdTime { get; set; }
         public DateTime changedTime { get; set; }
 

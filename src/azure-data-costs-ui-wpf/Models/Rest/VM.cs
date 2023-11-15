@@ -14,8 +14,8 @@ namespace DbMeta.Ui.Wpf.Models.Rest
     {
         public List<VM> value { get; set; } 
     }
-    public class VM : INotifyPropertyChanged
-    {
+    public class VM : PortalResource, INotifyPropertyChanged
+    {        
         public VMProperties properties { get; set; }
         public string kind { get; set; }
         public string id { get; set; }

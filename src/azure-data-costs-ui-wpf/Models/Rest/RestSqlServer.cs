@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace DataEstateOverview.Models.Rest
 {
-    public class RestSqlServer
+    public class RestSqlServer : PortalResource
     {
         public string id { get; set; }
         public string name { get; set; }
-        public string PortalResourceUrl { get; set; }
+        
         //public string subscriptionid { get; set; }
         public Subscription Subscription { get; set; }
 

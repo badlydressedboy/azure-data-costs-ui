@@ -608,10 +608,10 @@ namespace DataEstateOverview
 
         private void ViewPortalDbButton_Click(object sender, RoutedEventArgs e)
         {
-            RestSqlDb db = (RestSqlDb)((Button)sender).DataContext;
+            PortalResource pr = (PortalResource)((Button)sender).DataContext;
             
             // dotnet core
-            Process.Start(new ProcessStartInfo { FileName = db.PortalResourceUrl, UseShellExecute = true });
+            Process.Start(new ProcessStartInfo { FileName = pr.PortalResourceUrl, UseShellExecute = true });
             
             // dotnet framework
             //Process.Start(db.PortalResourceUrl);

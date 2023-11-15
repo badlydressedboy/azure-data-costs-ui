@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataEstateOverview.Models.Rest;
 using DbMeta.Ui.Wpf.Models.Rest;
 
 namespace DbMeta.Ui.Wpf.Models.Rest
@@ -12,7 +13,8 @@ namespace DbMeta.Ui.Wpf.Models.Rest
         public List<Purview> value { get; set; }
 
     }
-    public class Purview
+        
+    public class Purview : PortalResource
     {
         public string name { get; set; }
         public string location { get; set; }

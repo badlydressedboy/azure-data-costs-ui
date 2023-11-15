@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataEstateOverview.Models.Rest;
 
 namespace DbMeta.Ui.Wpf.Models.Rest
 {
@@ -12,8 +13,8 @@ namespace DbMeta.Ui.Wpf.Models.Rest
 
     }
 
-    public class VNet
-    {
+    public class VNet : PortalResource
+    {        
         public VNetProperties properties { get; set; }
         public string kind { get; set; }
         public string id { get; set; }
