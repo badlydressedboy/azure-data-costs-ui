@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Navigation;
@@ -529,12 +530,32 @@ namespace DataEstateOverview
                 decimal totalStorageCosts = 0;
 
                 await Parallel.ForEachAsync(SelectedSubscriptions
-                        , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                        , new ParallelOptions() { MaxDegreeOfParallelism = 20 }
                         , async (sub, y) =>
                         {
                             await APIAccess.GetStorageAccounts(sub);
-                            if (sub.StorageAccounts.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Storage);
+                            if (sub.StorageAccounts.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts)
+                            {
+                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Storage);
+
+                                int costRetryCount = 0;
+                                while (!string.IsNullOrEmpty(sub.CostsErrorMessage))
+                                {
+                                    // seems to be 16 cost calls then wait 1 minute
+                                    costRetryCount++;
+                                    Thread.Sleep(5000);
+                                    Debug.WriteLine($"Retrying sub {sub.displayName} costs {costRetryCount}...");
+                                    await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Storage);
+                                }
+                            }
                         });
+
+                //foreach (var sub in SelectedSubscriptions)
+                //{
+                //    //await APIAccess.GetStorageAccounts(sub);
+                //    if (sub.StorageAccounts.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Storage);
+                //    Thread.Sleep(100);  // this stops too many requests error
+                //}
 
                 foreach (var sub in SelectedSubscriptions)
                 {
@@ -807,7 +828,7 @@ namespace DataEstateOverview
             bool found = false;
             sa.Costs.Clear();
             sa.TotalCostBilling = 0;
-
+            
             foreach (ResourceCost cost in costs)
             {
                 if (cost.ResourceId.Contains(sa.name) && cost.ResourceId.Contains(sa.resourceGroup))
@@ -820,7 +841,7 @@ namespace DataEstateOverview
             }
             if (!found)
             {
-                Debug.WriteLine($"why no cost for storage {sa.name}?");
+                Debug.WriteLine($"why no cost for storage {sa.name}? Sub costs error: {sa.Subscription.CostsErrorMessage}");
             }
         }
 

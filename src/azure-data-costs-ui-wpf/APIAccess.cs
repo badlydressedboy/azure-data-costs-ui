@@ -26,6 +26,7 @@ using System.Security.Policy;
 using CsvHelper;
 using Azure.Costs.Ui.Wpf.Models.Rest;
 using Azure.Costs.Ui.Wpf;
+using Polly;
 
 namespace DataEstateOverview
 {
@@ -1053,23 +1054,7 @@ namespace DataEstateOverview
                                     ""dimensions"": {
                                         ""name"": ""serviceName""
                                         ,""operator"": ""In""
-                                        ,""values"": [  
-
-
-                                            ""Azure Data Factory v2""
-                                            ,""SQL Database""
-                                            ,""SQL Server""
-                                            ,""Storage""
-                                            ,""Virtual machines""
-                                            ,""Bandwidth""
-                                            ,""Virtual Network""
-                                            ,""Advanced Threat Protection""
-                                            ,""Purview""
-                                            ,""Azure Purview""
-                                            ,""Power BI Embedded""
-                                            ,""Azure Synapse Analytics""
-                                            ,""Synapse SQL Pool""
-                                        ]
+                                        ,""values"": [" +  typeClause + @"]
                                     }
                                 }
 
@@ -1141,7 +1126,9 @@ namespace DataEstateOverview
 
                 client.DefaultRequestHeaders.Remove("Authorization");
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + _accessToken);
-                client.DefaultRequestHeaders.Add("Connection", "keep-alive");                
+                client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+                client.DefaultRequestHeaders.Add("ClientType", "MetaToolType");
+                
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header               
 
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
@@ -1149,17 +1136,13 @@ namespace DataEstateOverview
                                                     Encoding.UTF8,
                                                     "application/json");//CONTENT-TYPE header
 
-                HttpResponseMessage response = await client.SendAsync(request);// client.PostAsync(url, new StringContent(payload));
-
-                if (response.StatusCode == HttpStatusCode.TooManyRequests)
-                {
-                    Debug.WriteLine(response.Content);
-                }
+                HttpResponseMessage response = await SendThrottledRequest(client, request);
 
                 if (!response.IsSuccessStatusCode)
                 {
                     
                     subscription.CostsErrorMessage = $@"Subscription '{subscription.displayName}' costs query {response.ReasonPhrase}";
+                    Debug.WriteLine($"Couldnt get costs for subscription: {subscription.displayName}; {response.ReasonPhrase}");
                     return;
                 }
                 var json = await response.Content.ReadAsStringAsync();
@@ -1207,9 +1190,54 @@ namespace DataEstateOverview
             {
                 Debug.WriteLine(ex);
                 subscription.CostsErrorMessage = ex.Message;
-            }            
+            }
+            Debug.WriteLine($"** GOT COSTS OK for {subscription.displayName}");
         }
+        private static async Task<HttpResponseMessage> SendThrottledRequest(HttpClient client, HttpRequestMessage request)
+        {
+            HttpResponseMessage response = null;
+            try
+            {
+                var p = Policy
+                    .Handle<HttpRequestException>()
+                    .WaitAndRetry(new[]
+                    {
+                        TimeSpan.FromMilliseconds(1000),
+                        TimeSpan.FromMilliseconds(2000),
+                        TimeSpan.FromMilliseconds(3000)
+                    });
+                int _maxRetryAttempts = 2;
+                TimeSpan _pauseBetweenFailures = TimeSpan.FromSeconds(2);
 
+
+        //var retryPolicy = Policy
+        //.HandleResult<HttpResponseMessage<T>>(x => !x.IsSuccessful)
+        //.WaitAndRetryAsync(_maxRetryAttempts, x => _pauseBetweenFailures, (iRestResponse, timeSpan, retryCount, context) =>
+        //{
+        //    _logger.LogWarning($"The request failed. HttpStatusCode={iRestResponse.Result.StatusCode}. Waiting {timeSpan} seconds before retry. Number attempt {retryCount}. Uri={iRestResponse.Result.ResponseUri}; RequestResponse={iRestResponse.Result.Content}");
+        //});
+
+                await p.Execute(async () => response = await client.SendAsync(request));
+
+                if (response.StatusCode == HttpStatusCode.TooManyRequests)
+                {
+                    //Debug.WriteLine(response.Content);
+
+                    //Thread.Sleep(1000);
+
+                    //// hard coded twice only - no stack overflows on my watch
+                    //response = await client.SendAsync(request);
+                    //if (response.StatusCode == HttpStatusCode.TooManyRequests)
+                    //{
+                    //    Debug.WriteLine("!FLOODED REQUEST AFTER SLEEP!");
+                    //}
+                }
+            }catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            return response;
+        }
         public static async Task GetDataFactories(Subscription subscription)
         {
             try
