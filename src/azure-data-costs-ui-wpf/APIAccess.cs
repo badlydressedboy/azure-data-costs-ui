@@ -1056,7 +1056,23 @@ namespace DataEstateOverview
                                     ""dimensions"": {
                                         ""name"": ""serviceName""
                                         ,""operator"": ""In""
-                                        ,""values"": [" +  typeClause + @"]
+                                        ,""values"": [  
+
+
+                                            ""Azure Data Factory v2""
+                                            ,""SQL Database""
+                                            ,""SQL Server""
+                                            ,""Storage""
+                                            ,""Virtual machines""
+                                            ,""Bandwidth""
+                                            ,""Virtual Network""
+                                            ,""Advanced Threat Protection""
+                                            ,""Purview""
+                                            ,""Azure Purview""
+                                            ,""Power BI Embedded""
+                                            ,""Azure Synapse Analytics""
+                                            ,""Synapse SQL Pool""
+                                        ]
                                     }
                                 }
 
@@ -1323,14 +1339,13 @@ namespace DataEstateOverview
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine("got vnet");
-
+                
                 RootVNet root = await response.Content.ReadFromJsonAsync<RootVNet>();
                 if (root?.value == null) return;
 
                 foreach (var vnet in root.value)
                 {
-                    Debug.WriteLine($"Got storage acc {vnet.name}");
+                    Debug.WriteLine($"Got vnet {vnet.name}");
                     vnet.Subscription = subscription;
 
                     string rg = vnet.id.Substring(vnet.id.IndexOf("resourceGroup") + 15);
@@ -1356,14 +1371,13 @@ namespace DataEstateOverview
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
                 var json = await response.Content.ReadAsStringAsync();
-                Debug.WriteLine("got vnet");
-
+               
                 RootVM root = await response.Content.ReadFromJsonAsync<RootVM>();
                 if (root?.value == null) return;
 
                 foreach (var vm in root.value)
                 {
-                    Debug.WriteLine($"Got storage acc {vm.name}");
+                    Debug.WriteLine($"Got VM {vm.name}");
                     vm.Subscription = subscription;
 
                     string rg = vm.id.Substring(vm.id.IndexOf("resourceGroup") + 15);

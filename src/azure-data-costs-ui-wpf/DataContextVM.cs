@@ -633,7 +633,7 @@ namespace DataEstateOverview
             {
                 SyncSelectedSubs();
 
-                StorageList.Clear();
+                VNetList.Clear();
 
                 decimal totalVNetCosts = 0;
 
