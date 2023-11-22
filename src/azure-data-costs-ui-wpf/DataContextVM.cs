@@ -483,10 +483,10 @@ namespace DataEstateOverview
                     //if(!sub.ReadObjects) continue; // ignore this subscription
                     // we are working off subscriptions which are a subset of detectedsubscriptions anyway
 
-                    if(sub.ResourceCosts.Count == 0 && sub.ReadCosts) // only an error if we actually asked for costs
+                    if(sub.ResourceCosts.Count == 0 && sub.ReadCosts && sub.SqlServers.Count > 0) // only an error if we actually asked for costs
                     {
-                        Debug.WriteLine($"No costs found for sub: {sub.displayName}");
-                        sub.CostsErrorMessage = "No costs found.";
+                        Debug.WriteLine($"No expected DB costs found for sub: {sub.displayName}");
+                        sub.CostsErrorMessage = "No expected DB costs found.";
                         //continue;
                     }
                     foreach (var s in sub.SqlServers)
@@ -692,7 +692,10 @@ namespace DataEstateOverview
                         {
                             await APIAccess.GetVirtualMachines(sub);
 
-                            if (sub.VMs.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.VM);
+                            if (sub.VMs.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts)
+                            {
+                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.VM);
+                            }
                         });
 
                 foreach (var sub in SelectedSubscriptions)

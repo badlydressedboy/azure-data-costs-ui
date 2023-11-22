@@ -27,6 +27,8 @@ using CsvHelper;
 using Azure.Costs.Ui.Wpf.Models.Rest;
 using Azure.Costs.Ui.Wpf;
 using Polly;
+using System.Reflection.PortableExecutable;
+using Azure;
 
 namespace DataEstateOverview
 {
@@ -1138,6 +1140,9 @@ namespace DataEstateOverview
 
                 HttpResponseMessage response = await SendThrottledRequest(client, request);
 
+                var remainingReads = GetHeaderValue(response, "x-ms-ratelimit-remaining-subscription-reads");
+                if (remainingReads != null) Debug.WriteLine("Remaing reads: " + remainingReads.ToString());
+               
                 if (!response.IsSuccessStatusCode)
                 {
                     
@@ -1192,6 +1197,15 @@ namespace DataEstateOverview
                 subscription.CostsErrorMessage = ex.Message;
             }
             Debug.WriteLine($"** GOT COSTS OK for {subscription.displayName}");
+        }
+        private static string GetHeaderValue(HttpResponseMessage response, string headerName)
+        {
+            IEnumerable<string> values;
+            if (response.Headers.TryGetValues(headerName, out values))
+            {
+                return values.First();
+            }
+            return "";
         }
         private static async Task<HttpResponseMessage> SendThrottledRequest(HttpClient client, HttpRequestMessage request)
         {
