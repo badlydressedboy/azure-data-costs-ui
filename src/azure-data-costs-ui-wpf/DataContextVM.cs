@@ -540,43 +540,34 @@ namespace DataEstateOverview
                         , async (sub, y) =>
                         {
                             await APIAccess.GetStorageAccounts(sub);
+
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                sub.StorageAccounts.ForEach(sa =>
+                                {
+                                    StorageList.Add(sa);
+                                });
+                            });
+
                             if (sub.StorageAccounts.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts)
                             {
                                 await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Storage);
-
-                                int costRetryCount = 0;
-                                while (!string.IsNullOrEmpty(sub.CostsErrorMessage))
-                                {
-                                    // seems to be 16 cost calls then wait 1 minute
-                                    costRetryCount++;
-                                    Thread.Sleep(5000);
-                                    Debug.WriteLine($"Retrying sub {sub.displayName} costs {costRetryCount}...");
-                                    await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Storage);
-                                }
                             }
+
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                foreach (var sa in sub.StorageAccounts)
+                                {
+                                    MapCostToStorage(sa, sub.ResourceCosts);
+
+                                    foreach (var c in sa.Costs)
+                                    {
+                                        totalStorageCosts += c.Cost;
+                                    }
+                                }
+                            });
                         });
 
-                //foreach (var sub in SelectedSubscriptions)
-                //{
-                //    //await APIAccess.GetStorageAccounts(sub);
-                //    if (sub.StorageAccounts.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Storage);
-                //    Thread.Sleep(100);  // this stops too many requests error
-                //}
-
-                foreach (var sub in SelectedSubscriptions)
-                {
-                    if (!sub.ReadObjects) continue; // ignore this subscription
-                    foreach (var sa in sub.StorageAccounts)
-                    {
-                        MapCostToStorage(sa, sub.ResourceCosts);
-                        StorageList.Add(sa);
-
-                        foreach (var c in sa.Costs)
-                        {
-                            totalStorageCosts += c.Cost;
-                        }
-                    }
-                }
                 TotalStorageCostsText = totalStorageCosts.ToString("N2");
             }
             catch(Exception ex)
