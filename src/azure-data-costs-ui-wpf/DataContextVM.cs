@@ -474,38 +474,44 @@ namespace DataEstateOverview
                 {                    
                     await APIAccess.GetSqlServers(sub);
 
+                    // add servers to ui quickly, dont wait for costs
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        sub.SqlServers.ForEach(s =>
+                        {
+                            s.Dbs.ForEach(db => RestSqlDbList.Add(db));
+                        });
+                    });
+
                     if (sub.SqlServers.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.SqlDatabase);
+
+                    // on ui thread
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (sub.ResourceCosts.Count == 0 && sub.ReadCosts && sub.SqlServers.Count > 0) // only an error if we actually asked for costs
+                        {
+                            Debug.WriteLine($"No expected DB costs found for sub: {sub.displayName}");
+                            sub.CostsErrorMessage = "No expected DB costs found.";
+                            //continue;
+                        }
+                        foreach (var s in sub.SqlServers)
+                        {
+                            foreach (var db in s.Dbs)
+                            {
+                                MapCostToDb(db, sub.ResourceCosts);
+
+                                totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool
+                            }
+                        }
+
+                        if (!string.IsNullOrEmpty(sub.CostsErrorMessage))
+                        {
+                            if (!string.IsNullOrEmpty(RestErrorMessage)) RestErrorMessage += "\n";
+                            RestErrorMessage += sub.CostsErrorMessage;
+                        }
+                    });
                 });
 
-                // on ui thread
-                foreach (var sub in SelectedSubscriptions)
-                {
-                    //if(!sub.ReadObjects) continue; // ignore this subscription
-                    // we are working off subscriptions which are a subset of detectedsubscriptions anyway
-
-                    if(sub.ResourceCosts.Count == 0 && sub.ReadCosts && sub.SqlServers.Count > 0) // only an error if we actually asked for costs
-                    {
-                        Debug.WriteLine($"No expected DB costs found for sub: {sub.displayName}");
-                        sub.CostsErrorMessage = "No expected DB costs found.";
-                        //continue;
-                    }
-                    foreach (var s in sub.SqlServers)
-                    {
-                        foreach (var db in s.Dbs)
-                        {
-                            MapCostToDb(db, sub.ResourceCosts);
-                            RestSqlDbList.Add(db);
-
-                            totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool
-                        }
-                    }
-
-                    if (!string.IsNullOrEmpty(sub.CostsErrorMessage))
-                    {
-                        if(!string.IsNullOrEmpty(RestErrorMessage)) RestErrorMessage += "\n";
-                        RestErrorMessage += sub.CostsErrorMessage;
-                    }
-                }
                 TotalSqlDbCostsText = totalSqlDbCosts.ToString("N2");
             }
             catch (Exception ex)

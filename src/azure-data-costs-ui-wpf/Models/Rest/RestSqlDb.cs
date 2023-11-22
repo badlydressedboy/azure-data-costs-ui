@@ -211,7 +211,15 @@ namespace DataEstateOverview.Models.Rest
 
         public List<ResourceCost> Costs { get; set; } = new List<ResourceCost>();
 
-        public decimal TotalCostBilling { get; set; }
+        private decimal _totalCostBilling;
+        public decimal TotalCostBilling { 
+            get { return _totalCostBilling; }
+            set
+            {
+                _totalCostBilling = value;
+                OnPropertyChanged("TotalCostBilling");
+            }
+        }
 
         public DateTime MetricsFromTime { get; set; }
         public DateTime MetricsToTime { get; set; }
