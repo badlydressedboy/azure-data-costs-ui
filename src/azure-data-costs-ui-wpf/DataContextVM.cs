@@ -638,24 +638,31 @@ namespace DataEstateOverview
                         , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                         , async (sub, y) =>
                         {
+                            if (!sub.ReadObjects) return; // ignore this subscription
+
                             await APIAccess.GetVirtualNetworks(sub);
+
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                sub.VNets.ForEach(vnet => { VNetList.Add(vnet); });
+                            });
+
                             if (sub.VNets.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.VNet);
+
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                foreach (var vnet in sub.VNets)
+                                {
+                                    MapCostToVNet(vnet, sub.ResourceCosts);
+                                   
+                                    foreach (var c in vnet.Costs)
+                                    {
+                                        totalVNetCosts += c.Cost;
+                                    }
+                                }
+                            });
                         });
 
-                foreach (var sub in SelectedSubscriptions)
-                {
-                    if (!sub.ReadObjects) continue; // ignore this subscription
-                    foreach (var vnet in sub.VNets)
-                    {
-                        MapCostToVNet(vnet, sub.ResourceCosts);
-                        VNetList.Add(vnet);
-
-                        foreach (var c in vnet.Costs)
-                        {
-                            totalVNetCosts += c.Cost;
-                        }
-                    }
-                }
                 TotalVNetCostsText = totalVNetCosts.ToString("N2");
             }
             catch (Exception ex)
@@ -687,28 +694,35 @@ namespace DataEstateOverview
                         , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                         , async (sub, y) =>
                         {
+                            if (!sub.ReadObjects) return; // ignore this subscription
+
                             await APIAccess.GetVirtualMachines(sub);
+
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                sub.VMs.ForEach(vm => { VMList.Add(vm); });
+                            });
 
                             if (sub.VMs.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts)
                             {
                                 await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.VM);
                             }
+
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                foreach (var vm in sub.VMs)
+                                {
+                                    MapCostToVM(vm, sub.ResourceCosts);
+                        
+                                    foreach (var c in vm.Costs)
+                                    {
+                                        totalVMCosts += c.Cost;
+                                    }
+                                }
+                            });
                         });
 
-                foreach (var sub in SelectedSubscriptions)
-                {
-                    if (!sub.ReadObjects) continue; // ignore this subscription
-                    foreach (var vm in sub.VMs)
-                    {
-                        MapCostToVM(vm, sub.ResourceCosts);
-                        VMList.Add(vm);
-
-                        foreach (var c in vm.Costs)
-                        {
-                            totalVMCosts += c.Cost;
-                        }
-                    }
-                }
+               
                 TotalVMCostsText = totalVMCosts.ToString("N2");
             }
             catch (Exception ex)
