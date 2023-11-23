@@ -294,9 +294,6 @@
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center" Visibility="{Binding HasDbSpendAnalysisBeenPerformed, Converter={StaticResource BooleanToVisibilityConverter}}">Total Potential Saving:</TextBlock>
                             <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialDbSavingAmount, StringFormat=N0}" Visibility="{Binding HasDbSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}"></TextBlock>
 
-
-                            <Button x:Name="DBAnalyseAllSpendButton" Margin="48,2,2,2" Padding="8,1,8,1" Click="DBAnalyseAllSpendButton_Click" Content="Analyse all DB Spend"/>
-
                         </StackPanel>
 
                         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="4,4,4,4" Visibility="Collapsed">

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using DataEstateOverview.Models.Rest;
@@ -14,7 +16,7 @@ namespace DbMeta.Ui.Wpf.Models.Rest
 
     }
         
-    public class Purview : PortalResource
+    public class Purview : PortalResource, INotifyPropertyChanged
     {
         public string name { get; set; }
         public string location { get; set; }
@@ -22,10 +24,25 @@ namespace DbMeta.Ui.Wpf.Models.Rest
         public string resourceGroup { get; set; }
         public PurviewProperties properties { get; set; }
         public Subscription Subscription { get; set; }
-        public decimal TotalCostBilling { get; set; }
+        private decimal _totalCostBilling;
+        public decimal TotalCostBilling
+        {
+            get { return _totalCostBilling; }
+            set
+            {
+                _totalCostBilling = value;
+                OnPropertyChanged("TotalCostBilling");
+            }
+        }
         public List<ResourceCost> Costs { get; set; } = new List<ResourceCost>();
 
         public PurviewSku sku { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 
     public class PurviewProperties

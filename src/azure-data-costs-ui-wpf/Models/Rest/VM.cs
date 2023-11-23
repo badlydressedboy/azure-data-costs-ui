@@ -23,7 +23,16 @@ namespace DbMeta.Ui.Wpf.Models.Rest
         public string resourceGroup { get; set; }
         public string location { get; set; }
         public Subscription Subscription { get; set; }
-        public decimal TotalCostBilling { get; set; }
+        
+        private decimal _totalCostBilling;
+        public decimal TotalCostBilling {
+            get { return _totalCostBilling; }
+            set
+            {
+                _totalCostBilling = value;
+                OnPropertyChanged("TotalCostBilling");
+            }
+        }
         public List<ResourceCost> Costs { get; set; } = new List<ResourceCost>();
 
         public bool _isRestQueryBusy { get; set; }

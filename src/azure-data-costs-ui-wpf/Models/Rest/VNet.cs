@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using DataEstateOverview.Models.Rest;
@@ -13,7 +15,7 @@ namespace DbMeta.Ui.Wpf.Models.Rest
 
     }
 
-    public class VNet : PortalResource
+    public class VNet : PortalResource, INotifyPropertyChanged
     {        
         public VNetProperties properties { get; set; }
         public string kind { get; set; }
@@ -22,8 +24,23 @@ namespace DbMeta.Ui.Wpf.Models.Rest
         public string resourceGroup { get; set; }
         public string location { get; set; }
         public Subscription Subscription { get; set; }
-        public decimal TotalCostBilling { get; set; }
+        private decimal _totalCostBilling;
+        public decimal TotalCostBilling
+        {
+            get { return _totalCostBilling; }
+            set
+            {
+                _totalCostBilling = value;
+                OnPropertyChanged("TotalCostBilling");
+            }
+        }
         public List<ResourceCost> Costs { get; set; } = new List<ResourceCost>();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 
     public class VNetProperties

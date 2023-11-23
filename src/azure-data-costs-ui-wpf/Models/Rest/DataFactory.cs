@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using DataEstateOverview.Models.Rest;
@@ -22,7 +24,7 @@ namespace DbMeta.Ui.Wpf.Models.Rest
     {
         public List<DataFactory> value { get; set; }    
     }
-    public class DataFactory : PortalResource
+    public class DataFactory : PortalResource, INotifyPropertyChanged
     {
         public string id { get; set; }
         public string name { get; set; }
@@ -33,8 +35,22 @@ namespace DbMeta.Ui.Wpf.Models.Rest
         public DateTime createdTime { get; set; }
         public DateTime changedTime { get; set; }
 
-        public decimal TotalCostBilling { get; set; }
+        private decimal _totalCostBilling;
+        public decimal TotalCostBilling
+        {
+            get { return _totalCostBilling; }
+            set
+            {
+                _totalCostBilling = value;
+                OnPropertyChanged("TotalCostBilling");
+            }
+        }
         public List<ResourceCost> Costs { get; set; } = new List<ResourceCost>();
 
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 }

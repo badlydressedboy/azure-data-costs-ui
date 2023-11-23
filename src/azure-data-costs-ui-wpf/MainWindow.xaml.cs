@@ -617,14 +617,6 @@ namespace DataEstateOverview
             //Process.Start(db.PortalResourceUrl);
         }
 
-        private void DBAnalyseAllSpendButton_Click(object sender, RoutedEventArgs e)
-        {
-            // carefully get costs for subscriptions ONLY if they contain DBs
-            // 16 sub costs requests per minute allowed
-            // if too many requests a wait for x seconds is contained in response header
-
-
-        }
     }
     public class ignoresubscriptionnames
     {
