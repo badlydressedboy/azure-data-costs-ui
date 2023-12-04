@@ -5,10 +5,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using DataEstateOverview.Models.Rest;
-using DbMeta.Ui.Wpf.Models.Rest;
 
-namespace DbMeta.Ui.Wpf.Models.Rest
+
+
+namespace Azure.Costs.Common.Models.Rest
 {
     public class RootPurview
     {

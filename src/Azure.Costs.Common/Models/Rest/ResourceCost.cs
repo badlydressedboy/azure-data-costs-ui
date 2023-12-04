@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DbMeta.Ui.Wpf.Models.Rest
+namespace Azure.Costs.Common.Models.Rest
 {
     public class ResourceCostQuery
     {

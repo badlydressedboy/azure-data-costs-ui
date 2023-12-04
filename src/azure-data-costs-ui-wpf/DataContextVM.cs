@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using DataEstateOverview.Models.Rest;
+
 using DataEstateOverview.Models.SQL;
-using DbMeta.Ui.Wpf.Models.Rest;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

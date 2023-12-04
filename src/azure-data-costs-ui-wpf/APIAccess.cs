@@ -12,7 +12,7 @@ using System.Net.Http;
 using System.Windows.Markup;
 using DataEstateOverview.Models;
 using System.Net.Http.Json;
-using DataEstateOverview.Models.Rest;
+
 using System.Diagnostics.Metrics;
 using System.Windows.Documents;
 using DataEstateOverview.Models.UI;
@@ -20,11 +20,11 @@ using System.Net.Http.Headers;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
-using DbMeta.Ui.Wpf.Models.Rest;
+
 using System.Globalization;
 using System.Security.Policy;
 using CsvHelper;
-using Azure.Costs.Ui.Wpf.Models.Rest;
+using Azure.Costs.Common.Models.Rest;
 using Azure.Costs.Ui.Wpf;
 using Polly;
 using System.Reflection.PortableExecutable;

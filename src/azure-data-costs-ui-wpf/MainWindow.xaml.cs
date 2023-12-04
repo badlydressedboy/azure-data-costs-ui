@@ -16,12 +16,12 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using DataEstateOverview.Models.SQL;
-using DataEstateOverview.Models.Rest;
+
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
-using DbMeta.Ui.Wpf.Models.Rest;
+
 using DbMeta.Ui.Wpf.Config;
 using System.Text.Json.Serialization;
 using System.Text.Json;

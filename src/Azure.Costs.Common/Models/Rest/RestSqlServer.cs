@@ -1,13 +1,11 @@
-﻿using Azure.Costs.Ui.Wpf.Models.Rest;
-using DataEstateOverview.Models.SQL;
-using DbMeta.Ui.Wpf.Models.Rest;
+﻿using DataEstateOverview.Models.SQL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataEstateOverview.Models.Rest
+namespace Azure.Costs.Common.Models.Rest
 {
     public class RestSqlServer : PortalResource
     {

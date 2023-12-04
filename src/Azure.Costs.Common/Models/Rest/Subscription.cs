@@ -1,13 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DataEstateOverview;
-using DataEstateOverview.Models.Rest;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DbMeta.Ui.Wpf.Models.Rest
+namespace Azure.Costs.Common.Models.Rest
 {
     public class RootSubscription
     {

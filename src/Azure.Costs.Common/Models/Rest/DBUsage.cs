@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataEstateOverview.Models.Rest
+namespace Azure.Costs.Common.Models.Rest
 {
     public class DBUsageRoot
     {

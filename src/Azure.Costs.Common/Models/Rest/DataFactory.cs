@@ -5,9 +5,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using DataEstateOverview.Models.Rest;
+using Azure.Costs.Common.Models.Rest;
 
-namespace DbMeta.Ui.Wpf.Models.Rest
+namespace Azure.Costs.Common.Models.Rest
 {
     /* {"id":"/subscriptions/a5be5e3e-da5c-45f5-abe9-9591a51fccfa/resourceGroups/ot-dev-mi-rg-02/providers/Microsoft.DataFactory/factories/ot-dev-mi-adf-we-02"
      * ,"name":"ot-dev-mi-adf-we-02"
