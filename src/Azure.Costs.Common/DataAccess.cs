@@ -7,11 +7,11 @@ using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
-using DataEstateOverview.Models.SQL;
+using Azure.Costs.Common.Models.SQL;
 using Azure.Core;
 using Microsoft.Azure.Services.AppAuthentication;
 
-namespace DataEstateOverview
+namespace Azure.Costs.Common
 {
 
     public static class DataAccess
@@ -79,7 +79,7 @@ namespace DataEstateOverview
                 from [sys].event_log
                 order by start_time desc
              ";
-            return await GetQueryResult<Models.SQL.EventLogEntry>(sql, connString);
+            return await GetQueryResult<EventLogEntry>(sql, connString);
         }
 
         private static async Task<DataResult> GetQueryResult<T>(string sql, string connString, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "")

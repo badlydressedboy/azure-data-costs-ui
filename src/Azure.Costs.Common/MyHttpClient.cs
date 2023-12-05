@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Azure.Core;
 
-namespace Azure.Costs.Ui.Wpf
+namespace Azure.Costs.Common
 {
     public class MyHttpClient //: HttpClient
     {

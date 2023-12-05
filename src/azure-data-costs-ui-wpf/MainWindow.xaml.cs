@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
-using DataEstateOverview.Models.SQL;
+using Azure.Costs.Common.Models.SQL;
 
 using System.ComponentModel;
 using System.Text.RegularExpressions;
@@ -30,8 +30,11 @@ using Path = System.IO.Path;
 using Microsoft.Identity.Client;
 using System.Windows.Controls.Primitives;
 using System.Security.Policy;
+using Azure.Costs.Common.Models.Rest;
+using Azure.Costs.Common;
+using DataEstateOverview;
 
-namespace DataEstateOverview
+namespace Azure.Costs.Ui.Wpf
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

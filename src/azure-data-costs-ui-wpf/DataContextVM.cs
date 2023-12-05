@@ -1,7 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
-using DataEstateOverview.Models.SQL;
-
+﻿using Azure.Costs.Common;
+using Azure.Costs.Common.Models.Rest;
+using Azure.Costs.Common.Models.SQL;
+using CommunityToolkit.Mvvm.ComponentModel;
+using DataEstateOverview;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,7 +17,7 @@ using System.Windows.Input;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 
-namespace DataEstateOverview
+namespace Azure.Costs.Ui.Wpf
 {
     public class DataContextVM : ObservableObject
     {
@@ -398,8 +399,8 @@ namespace DataEstateOverview
                 DetectedSubscriptions.Clear();
 
                 var subsList = await APIAccess.GetSubscriptions();
-                
-                if (subsList == null || subsList.Count == 0)
+                //if (subsList.co) { }
+                if (subsList == null )//|| subsList.Count == 0
                 {
                     Debug.WriteLine("No subscriptions! Are you logged into Azure?");
                     RestErrorMessage = "No subscriptions! Are you logged into Azure?";

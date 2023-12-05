@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataEstateOverview.Models.SQL
+namespace Azure.Costs.Common.Models.SQL
 {
     public class ServerGroup
     {

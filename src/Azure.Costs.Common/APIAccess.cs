@@ -10,12 +10,12 @@ using Azure.Identity;
 using Microsoft.Azure.Services.AppAuthentication;
 using System.Net.Http;
 using System.Windows.Markup;
-using DataEstateOverview.Models;
+using Azure.Costs.Common.Models;
 using System.Net.Http.Json;
 
 using System.Diagnostics.Metrics;
-using System.Windows.Documents;
-using DataEstateOverview.Models.UI;
+//using System.Windows.Documents;
+using Azure.Costs.Common.Models.UI;
 using System.Net.Http.Headers;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
@@ -23,14 +23,14 @@ using System.Net.Security;
 
 using System.Globalization;
 using System.Security.Policy;
-using CsvHelper;
+//using CsvHelper;
 using Azure.Costs.Common.Models.Rest;
-using Azure.Costs.Ui.Wpf;
-using Polly;
 using System.Reflection.PortableExecutable;
 using Azure;
+using Azure.Costs.Common.Models.SQL;
+using Polly;
 
-namespace DataEstateOverview
+namespace Azure.Costs.Common
 {
     public static class APIAccess
     {
@@ -207,7 +207,7 @@ namespace DataEstateOverview
                     string sub = restSql.id.Substring(restSql.id.IndexOf("subscription") + 14);
                     restSql.Subscription = subscription;// = sub.Substring(0, sub.IndexOf("/"));
 
-                    restSql.AzServer = new Models.SQL.AzServer(restSql.name);
+                    restSql.AzServer = new AzServer(restSql.name);
 
                     // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/7a77c7dc-4158-4e23-8b34-adb5bd59db5b/resourceGroups/oct-oi-dev-uks-rg-corp-epool/providers/Microsoft.Sql/servers/oct-oi-dev-uks-sql-corp-epool/overview
                     restSql.PortalResourceUrl = $@"{BasePortalUrl}subscription.subscriptionId/resourceGroups/{restSql.resourceGroup}/providers/Microsoft.Sql/servers/{restSql.name}/overview";// ends subscriptions/
@@ -701,8 +701,9 @@ namespace DataEstateOverview
                 var json = await response.Content.ReadAsStringAsync();
                 var metrics = await response?.Content?.ReadFromJsonAsync<RootMetric>();
 
-                App.Current.Dispatcher.Invoke(new Action(() =>
-                {
+                // todo common after refactor - ui needs to handle this bit
+                //App.Current.Dispatcher.Invoke(new Action(() =>
+                //{
 
                     if (metrics?.value != null)
                     {
@@ -838,7 +839,7 @@ namespace DataEstateOverview
                             sqlDb.CalcPotentialSaving();
                         }
                     }
-                }));
+                //}));
 
                 //Debug.WriteLine($"finished getting {sqlDb.name} metrics");
             }

@@ -1,4 +1,4 @@
-﻿using DataEstateOverview.Models.SQL;
+﻿using Azure.Costs.Common.Models.SQL;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

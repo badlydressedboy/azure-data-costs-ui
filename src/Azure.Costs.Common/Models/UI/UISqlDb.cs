@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataEstateOverview.Models.UI
+namespace Azure.Costs.Common.Models.UI
 {
     public class UISqlDb
     {
