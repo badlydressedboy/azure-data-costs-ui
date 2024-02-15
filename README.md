@@ -11,11 +11,17 @@ Data access is via REST API and models are custom as Azure official helper class
 
 You need to be logged into azure either via CLI or Visual Studio in order to access REST API. No login or credential functionality is needed/offered in the app.
 
+
 SQL Database Summary
 ![image](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/51c8a885-56bd-4641-b27c-f4cbd6ceb203)
 
+
 SQL DB Cost Savings Analysis
 ![az-costs-analyze](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/2dcf6641-c031-4671-84b4-34d8b5e69f61)
+
+
+SQL DB Live Status (sessions etc)
+![az-db-status](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/60c345fd-398a-456d-bdd9-2586b580373d)
 
 
 Storage costs drilled into:
