@@ -14,6 +14,9 @@ You need to be logged into azure either via CLI or Visual Studio in order to acc
 SQL Database Summary
 ![image](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/51c8a885-56bd-4641-b27c-f4cbd6ceb203)
 
+SQL DB Cost Savings Analysis
+![az-costs-analyze](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/2dcf6641-c031-4671-84b4-34d8b5e69f61)
+
 
 Storage costs drilled into:
 ![image](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/b8a51d8f-51c1-4e00-a518-7be9d1d2056c)
