@@ -28,3 +28,12 @@ Storage costs drilled into:
 ![image](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/b8a51d8f-51c1-4e00-a518-7be9d1d2056c)
 
 
+## How to run
+1. Download/install .Net (version 7 or above)
+2. Create a local git folder where you want to put the folder containing the code. I use C:⧵git
+3. Start a powershell or command prompt then navigate to folder you just created
+4. Run: `git clone https://github.com/badlydressedboy/azure-data-costs-ui.git`
+5. Change folder to C:\git\azure-data-costs-ui\src\azure-data-costs-ui-wpf
+6. Run: `dotnet build .\Azure.Costs.Ui.Wpf.csproj`
+7. Run: `dotnet run .\Azure.Costs.Ui.Wpf.csproj`
+8. Make sure you have logged into azure through AZ CLI using: `AZ LOGIN` command
