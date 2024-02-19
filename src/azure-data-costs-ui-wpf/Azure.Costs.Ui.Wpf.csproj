@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>azure.ico</ApplicationIcon>
+	<PublishSingleFile>true</PublishSingleFile>
+	<DebugType>embedded</DebugType>
+	<StartupObject>DataEstateOverview.App</StartupObject>
+	<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>

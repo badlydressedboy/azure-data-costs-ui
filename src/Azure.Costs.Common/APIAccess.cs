@@ -209,7 +209,6 @@ namespace Azure.Costs.Common
 
                     restSql.AzServer = new AzServer(restSql.name);
 
-                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/7a77c7dc-4158-4e23-8b34-adb5bd59db5b/resourceGroups/oct-oi-dev-uks-rg-corp-epool/providers/Microsoft.Sql/servers/oct-oi-dev-uks-sql-corp-epool/overview
                     restSql.PortalResourceUrl = $@"{BasePortalUrl}subscription.subscriptionId/resourceGroups/{restSql.resourceGroup}/providers/Microsoft.Sql/servers/{restSql.name}/overview";// ends subscriptions/
                 }
                 subscription.SqlServers = servers.value.ToList();
@@ -295,7 +294,6 @@ namespace Azure.Costs.Common
                     db.AzDB.DatabaseName = db.name;
                     db.AzDB.SetParent(sqlServer.AzServer);
 
-                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/7a77c7dc-4158-4e23-8b34-adb5bd59db5b/resourceGroups/oct-oi-dev-uks-rg-corp-epool/providers/Microsoft.Sql/servers/oct-oi-dev-uks-sql-corp-epool/databases/oct-oi-dev-uks-sqldb-corp-amlkyc-api/overview
                     db.PortalResourceUrl = $@"{BasePortalUrl}{db.Subscription.subscriptionId}/resourceGroups/{db.resourceGroup}/providers/Microsoft.Sql/servers/{db.serverName}/databases/{db.name}/overview";// ends subscriptions/
 
                     if (db.properties.elasticPoolId != null)
@@ -1289,7 +1287,6 @@ namespace Azure.Costs.Common
                     string sub = factory.id.Substring(factory.id.IndexOf("subscription") + 14);
                     factory.Subscription = subscription;
 
-                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/a67ef237-9226-4df4-ad57-da1088b0f830/resourceGroups/dwh-dev-adf/providers/Microsoft.DataFactory/factories/dwh-dev-adf-crm/overview
                     factory.PortalResourceUrl = $@"{BasePortalUrl}{factory.Subscription.subscriptionId}/resourceGroups/{factory.resourceGroup}/providers/Microsoft.DataFactory/factories/{factory.name}/overview";// ends subscriptions/                    
                 }
                 subscription.DataFactories = factories.value.ToList();
@@ -1320,7 +1317,6 @@ namespace Azure.Costs.Common
                     string rg = account.id.Substring(account.id.IndexOf("resourceGroup") + 15);
                     account.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
 
-                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/4fc5f060-33b6-4e2b-be23-3f3fd7533c28/resourceGroups/oct-louis-mantas-openai-comparison/providers/Microsoft.Storage/storageAccounts/airegulatoryinputdata/overview
                     account.PortalResourceUrl = $@"{BasePortalUrl}{account.Subscription.subscriptionId}/resourceGroups/{account.resourceGroup}/providers/Microsoft.Storage/storageAccounts/{account.name}/overview";// ends subscriptions/
 
                 }
@@ -1352,7 +1348,6 @@ namespace Azure.Costs.Common
                     string rg = vnet.id.Substring(vnet.id.IndexOf("resourceGroup") + 15);
                     vnet.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
 
-                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/a67ef237-9226-4df4-ad57-da1088b0f830/resourceGroups/dwh-dev/providers/Microsoft.Network/virtualNetworks/a67ef237-9226-4df4-ad57-da1088b0f830/overview
                     vnet.PortalResourceUrl = $@"{BasePortalUrl}{vnet.Subscription.subscriptionId}/resourceGroups/{vnet.resourceGroup}/providers/Microsoft.Network/virtualNetworks/{vnet.name}/overview";// ends subscriptions/
 
                 }
@@ -1384,7 +1379,6 @@ namespace Azure.Costs.Common
                     string rg = vm.id.Substring(vm.id.IndexOf("resourceGroup") + 15);
                     vm.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
 
-                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/2bf1d00a-8f74-425c-91ad-40a06372912a/resourceGroups/Devops-Tools/providers/Microsoft.Compute/virtualMachines/AzurePipelineAgent01/overview
                     vm.PortalResourceUrl = $@"{BasePortalUrl}{vm.Subscription.subscriptionId}/resourceGroups/{vm.resourceGroup}/providers/Microsoft.Compute/virtualMachines/{vm.name}/overview";// ends subscriptions/
 
                 }
@@ -1416,7 +1410,6 @@ namespace Azure.Costs.Common
                     string rg = purv.id.Substring(purv.id.IndexOf("resourceGroup") + 15);
                     purv.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
 
-                    // https://portal.azure.com/#@octopusinvestmentsuk.onmicrosoft.com/resource/subscriptions/7a43fe5a-5ffe-4895-afbf-274567203678/resourceGroups/oct-grp-prd-uks-rg007-purview/providers/Microsoft.Purview/accounts/oct-purview/overview
                     purv.PortalResourceUrl = $@"{BasePortalUrl}{purv.Subscription.subscriptionId}/resourceGroups/{purv.resourceGroup}/providers/Microsoft.Purview/accounts/{purv.name}/overview";
 
                 }
