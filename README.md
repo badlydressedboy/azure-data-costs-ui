@@ -29,6 +29,9 @@ Storage costs drilled into:
 
 
 ## How to run
+
+Either download the exe from the latest release on the right of the main repo page (requires .net 7 or above) or checkout the code to compile/change it youself by following these steps:
+
 1. Download/install .Net (version 7 or above)
 2. Create a local git folder where you want to put the folder containing the code. I use C:⧵git
 3. Start a powershell or command prompt then navigate to folder you just created
