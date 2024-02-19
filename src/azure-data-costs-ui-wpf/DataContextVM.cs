@@ -797,13 +797,16 @@ namespace Azure.Costs.Ui.Wpf
                     db.TotalCostBilling += cost.Cost;
                     found = true;
                 }
-                if (db.ElasticPool != null && cost.ResourceId.Contains(db.ElasticPool.name))
+                if (db.ElasticPool != null && cost.ResourceId.Contains(db.ElasticPool.name.ToLower()))
                 {                                                           
                     db.Costs.Add(cost);
                     db.TotalCostBilling += cost.Cost/db.ElasticPool.dbList.Count;
                     found = true;
                 }
-                if (cost.Meter.Contains("Elastic") || cost.MeterSubCategory.Contains("Elastic") || cost.Product.Contains("Elastic") || cost.ServiceName.Contains("Elastic"))
+                if (cost.Meter.Contains("Elastic") 
+                    || cost.MeterSubCategory.Contains("Elastic") 
+                    //|| cost.Product.Contains("Elastic") 
+                    || cost.ServiceName.Contains("Elastic"))
                 {
                     elasticCosts.Add(cost);
                 }
@@ -825,7 +828,7 @@ namespace Azure.Costs.Ui.Wpf
 
             foreach (ResourceCost cost in costs)
             {
-                if (cost.ResourceId.Contains(df.name) && cost.ResourceId.Contains(df.resourceGroup))
+                if (cost.ResourceId.Contains(df.name.ToLower()) && cost.ResourceId.Contains(df.resourceGroup.ToLower()))
                 {
                     df.TotalCostBilling += cost.Cost;
 
@@ -846,7 +849,7 @@ namespace Azure.Costs.Ui.Wpf
             
             foreach (ResourceCost cost in costs)
             {
-                if (cost.ResourceId.Contains(sa.name) && cost.ResourceId.Contains(sa.resourceGroup))
+                if (cost.ResourceId.EndsWith(sa.name.ToLower()) && cost.ResourceId.Contains(sa.resourceGroup.ToLower()))
                 {
                     sa.TotalCostBilling += cost.Cost;
 
@@ -868,7 +871,7 @@ namespace Azure.Costs.Ui.Wpf
 
             foreach (ResourceCost cost in costs)
             {
-                if (cost.ResourceId.Contains(vnet.resourceGroup))
+                if (cost.ResourceId.Contains(vnet.resourceGroup.ToLower()))
                 {
                     // todo - get component name from end of resourceId
                     if (!cost.ResourceId.Contains(@"network/")) continue;
@@ -914,7 +917,7 @@ namespace Azure.Costs.Ui.Wpf
                     //    Debug.WriteLine("OCT-ENG-VD1-69");
                     //}
 
-                    if (costVmName.ToLower() == vm.name.ToLower())
+                    if ((costVmName.ToLower() == vm.name.ToLower()) && cost.ResourceId.Contains(vm.resourceGroup.ToLower()))
                     {
                         if (cost.ServiceName == "Virtual Machines" || cost.ServiceName == "Bandwidth" || cost.ServiceName == "Virtual Network")
                         {
@@ -955,7 +958,7 @@ namespace Azure.Costs.Ui.Wpf
 
                 string costPurvName = cost.ResourceId.Substring(cost.ResourceId.IndexOf("purview/accounts/") + 17);
 
-                if (costPurvName == purv.name || cost.ResourceId.Contains(purv.properties.managedResourceGroupName))
+                if (costPurvName == purv.name || cost.ResourceId.Contains(purv.properties.managedResourceGroupName.ToLower()))
                 {
                     purv.TotalCostBilling += cost.Cost;
 

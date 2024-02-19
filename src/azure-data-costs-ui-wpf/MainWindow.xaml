@@ -23,6 +23,10 @@
 
         <SolidColorBrush Color="#F3F4F6" x:Key="LightestGreyHighlight"/>
 
+        <Style TargetType="Image" x:Key="ButtonImageStyle">
+            <Setter Property="Width" Value="18"/>
+        </Style>
+
         <Style TargetType="TextBlock" x:Key="WarningTextBlockStyle">
             <Setter Property="Background" Value="Orange"/>
             <Setter Property="Opacity" Value="0.8"/>
@@ -246,7 +250,7 @@
                 </busyIndicator:BusyMask>
             </mah:MetroTabItem>
 
-            <mah:MetroTabItem Header="DB Summary" Name="TabRest">
+            <mah:MetroTabItem Header="SQL Databases" Name="TabRest">
 
                 <busyIndicator:BusyMask TargetUpdated="BusyIndicatorSql_TargetUpdated" SourceUpdated="BusyIndicatorSql_SourceUpdated" x:Name="BusyIndicatorSql" IsBusy="{Binding IsGetSqlServersBusy}" IndicatorType="Cogs"  BusyContent="Please wait..." >
                     <Grid>
@@ -266,12 +270,18 @@
                             <TextBlock Margin="22,2,2,2" Text="Cost Days:" VerticalAlignment="Center"></TextBlock>
                             <TextBox Margin="4,2,2,2" Width="40" Name="CostDaysText" VerticalAlignment="Center" PreviewTextInput="CostDaysText_PreviewTextInput" ></TextBox>
 
-                            <Button Margin="22,2,2,2" VerticalAlignment="Center" Name="GroupButton" Click="GroupButton_Click" IsEnabled="{Binding IsGetSqlServersBusy, Converter={StaticResource InverseBooleanConverter}}">Group</Button>
+                            <!--<Button Margin="22,2,2,2" VerticalAlignment="Center" Name="GroupButton" Click="GroupButton_Click" IsEnabled="{Binding IsGetSqlServersBusy, Converter={StaticResource InverseBooleanConverter}}">Group</Button>-->
 
                             <!--<Button x:Name="RestConfigButton" Margin="12,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="RestConfigButton_Click">Configure</Button>-->
 
-                            <Button x:Name="RestRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DBRefreshButton_Click" IsEnabled="{Binding IsGetSqlServersBusy, Converter={StaticResource InverseBooleanConverter}}">Refresh</Button>
+                            <Button x:Name="RestRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DBRefreshButton_Click" IsEnabled="{Binding IsGetSqlServersBusy, Converter={StaticResource InverseBooleanConverter}}">
+                                <StackPanel Orientation="Horizontal" >
 
+                                    <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
+                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                                </StackPanel>
+                            </Button>
+                            
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4,6,4,6">
@@ -279,8 +289,43 @@
                             <TextBlock Margin="8,2,2,2" FontSize="14" VerticalAlignment="Center">Total SQL DB Costs:</TextBlock>
                             <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalSqlDbCostsText}"></TextBlock>
 
-                            <Button x:Name="DBAnalyseSpendButton" Margin="28,2,2,2" Padding="8,1,8,1" Click="DBAnalyseSpendButton_Click" Content="Analyse Spend"/>
+                            <Button x:Name="DBAnalyseSpendButton" Margin="28,2,2,2" Padding="8,1,8,1" Click="DBAnalyseSpendButton_Click" >
+                                <StackPanel Orientation="Horizontal" >
 
+                                    <Image Source="/AzureDataCosts;component/Images/zoom.png" Style="{StaticResource ButtonImageStyle}"/>
+                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">ANALYSE SPEND</TextBlock>
+                                </StackPanel>
+                            </Button>
+
+                            <Image Margin="2,2,8,2">
+                                <Image.Style>
+                                    <Style TargetType="Image" BasedOn="{StaticResource HelpImageStyle}">
+
+                                        <Setter Property="ToolTip">
+                                            <Setter.Value>
+                                                <StackPanel>
+                                                    <TextBlock FontWeight="Bold" FontStyle="Italic">Spend Analysis</TextBlock>
+
+                                                    <TextBlock Margin="1,4,1,0">  
+        <LineBreak/>
+        Maximum DTU or VCore usage over the previous x days (set in box above) is found.
+        <LineBreak/><LineBreak/>
+        This is used to calculate by what % a database is over provisioned.
+        <LineBreak/><LineBreak/>                                                                
+        This % is used to calculate if the database can be downgraded to a lower service tier.
+        <LineBreak/><LineBreak/>
+        Finally the financial saving of lowering service tier is calculated.
+        <LineBreak/><LineBreak/>
+        Look at the 'Over Provision%' and 'Potential Saving' columns for details.
+
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Setter.Value>
+                                        </Setter>
+
+                                    </Style>
+                                </Image.Style>
+                            </Image>
 
                             <Image gif:ImageBehavior.AnimatedSource="/Images/loading.gif" 
                                 Margin="8,0,0,0" 
@@ -565,10 +610,22 @@
                                                     <TextBox Height="22" Width="30" VerticalContentAlignment="Center" Padding="0" VerticalAlignment="Center" Margin="6,2,2,2" Text="{Binding MetricsHistoryDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                                     <TextBlock Margin="4,2,2,2" Text="Days" VerticalAlignment="Center"></TextBlock>
 
-                                                    <Button x:Name="RefreshDbStatsButton" Margin="8,2,2,2" Click="RefreshDbStatsButton_Click">Refresh</Button>
+                                                    <Button x:Name="RefreshDbStatsButton" Margin="8,2,2,2" Click="RefreshDbStatsButton_Click" >
+                                                        <StackPanel Orientation="Horizontal" >
 
-                                                    <Button x:Name="ViewPortalDbButton" Margin="8,2,2,2" Click="ViewPortalDbButton_Click">Azure Portal</Button>
-                                                                                                        
+                                                            <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                            <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                                                        </StackPanel>
+                                                    </Button>
+                                                    
+                                                    <Button x:Name="ViewPortalDbButton" Margin="8,2,2,2" Click="ViewPortalDbButton_Click" >
+                                                        <StackPanel Orientation="Horizontal" >
+
+                                                            <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                            <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">AZURE PORTAL</TextBlock>
+                                                        </StackPanel>
+                                                    </Button>
+
                                                 </StackPanel>
 
                                                 <Grid Grid.Row="1">
@@ -762,7 +819,13 @@
 
                                                         <StackPanel Orientation="Horizontal" Margin="6">
 
-                                                            <Button x:Name="SQLDBRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBRefreshButton_Click" IsEnabled="{Binding AzDB.IsQueryingDatabase, Converter={StaticResource InverseBooleanConverter}}">Refresh</Button>
+                                                            <Button x:Name="SQLDBRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBRefreshButton_Click" IsEnabled="{Binding AzDB.IsQueryingDatabase, Converter={StaticResource InverseBooleanConverter}}">
+                                                                <StackPanel Orientation="Horizontal" >
+
+                                                                    <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                                                                </StackPanel>
+                                                            </Button>
 
                                                         </StackPanel>
 
@@ -917,8 +980,14 @@
 
                                                         <StackPanel Orientation="Horizontal" Margin="6">
 
-                                                            <Button  Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBRefreshButton_Click" IsEnabled="{Binding AzDB.IsQueryingDatabase, Converter={StaticResource InverseBooleanConverter}}">Refresh</Button>
 
+                                                            <Button  Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="SQLDBRefreshButton_Click" IsEnabled="{Binding AzDB.IsQueryingDatabase, Converter={StaticResource InverseBooleanConverter}}">
+                                                                <StackPanel Orientation="Horizontal" >
+
+                                                                    <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                                                                </StackPanel>
+                                                            </Button>
                                                         </StackPanel>
 
                                                         <TextBlock Grid.Row="1" Margin="1" Style="{StaticResource WarningTextBlockStyle}" 
@@ -1027,7 +1096,15 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Orientation="Horizontal" Margin="4,4,4,4" Grid.ColumnSpan="3">
-                            <Button x:Name="DataFactoriesRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesRefreshButton_Click">Refresh</Button>
+                          
+                            <Button x:Name="DataFactoriesRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesRefreshButton_Click">
+                                <StackPanel Orientation="Horizontal" >
+
+                                    <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
+                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                                </StackPanel>
+                            </Button>
+
 
                             <Button x:Name="DataFactoriesCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
@@ -1114,7 +1191,12 @@
 
                                         <StackPanel Orientation="Horizontal">
 
-                                            <Button Margin="8,4,2,4" Click="ViewPortalDbButton_Click">Azure Portal</Button>
+                                            <Button x:Name="ViewPortalDbButton" Margin="8,4,2,4" Click="ViewPortalDbButton_Click" >
+                                                <StackPanel Orientation="Horizontal" >
+                                                    <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
+                                                </StackPanel>
+                                            </Button>
 
                                         </StackPanel>
 
@@ -1166,8 +1248,15 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Orientation="Horizontal" Margin="4">
-                            <Button x:Name="StorageRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="StorageRefreshButton_Click">Refresh</Button>
+                           
+                            <Button x:Name="StorageRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="StorageRefreshButton_Click">
+                                <StackPanel Orientation="Horizontal" >
 
+                                    <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
+                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                                </StackPanel>
+                            </Button>
+                            
                             <Button x:Name="StorageCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="StorageCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total Storage Costs:</TextBlock>
@@ -1257,8 +1346,13 @@
 
                                         <StackPanel Orientation="Horizontal">
 
-                                            <Button Margin="8,4,2,4" Click="ViewPortalDbButton_Click">Azure Portal</Button>
-
+                                            <Button x:Name="ViewPortalDbButton" Margin="8,4,2,4" Click="ViewPortalDbButton_Click" >
+                                                <StackPanel Orientation="Horizontal" >
+                                                    <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
+                                                </StackPanel>
+                                            </Button>
+                                            
                                         </StackPanel>
 
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
@@ -1311,8 +1405,15 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Orientation="Horizontal" Margin="4">
-                            <Button x:Name="VNetRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VNetsRefreshButton_Click">Refresh</Button>
+                           
+                            <Button x:Name="VNetRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VNetsRefreshButton_Click">
+                                <StackPanel Orientation="Horizontal" >
 
+                                    <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
+                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                                </StackPanel>
+                            </Button>
+                            
                             <Button x:Name="VNetCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VNetCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VNet Costs:</TextBlock>
@@ -1405,8 +1506,12 @@
 
                                         <StackPanel Orientation="Horizontal">
 
-                                            <Button Margin="8,4,2,4" Click="ViewPortalDbButton_Click">Azure Portal</Button>
-
+                                            <Button x:Name="ViewPortalDbButton" Margin="8,4,2,4" Click="ViewPortalDbButton_Click" >
+                                                <StackPanel Orientation="Horizontal" >
+                                                    <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
+                                                </StackPanel>
+                                            </Button>
                                         </StackPanel>
 
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
@@ -1457,8 +1562,15 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Orientation="Horizontal" Margin="4">
-                        <Button x:Name="VMRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VMsRefreshButton_Click">Refresh</Button>
+                        
+                        <Button x:Name="VMRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VMsRefreshButton_Click">
+                            <StackPanel Orientation="Horizontal" >
 
+                                <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
+                                <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        
                         <Button x:Name="VMCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VMCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
                         <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VM Costs:</TextBlock>
@@ -1590,10 +1702,21 @@
                                                 <TextBox Height="22" Width="30" VerticalContentAlignment="Center" Padding="0" VerticalAlignment="Center" Margin="10,2,2,2" Text="{Binding MetricsHistoryDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                                                 <TextBlock Margin="4,2,2,2" Text="Days" VerticalAlignment="Center"></TextBlock>
 
-                                                <Button x:Name="RefreshVmStatsButton" Margin="8,2,2,2" Click="RefreshVmStatsButton_Click">Refresh</Button>
+                                                <Button x:Name="RefreshVmStatsButton" Margin="8,2,2,2" Click="RefreshVmStatsButton_Click">
+                                                    <StackPanel Orientation="Horizontal" >
 
-                                                <Button Margin="8,4,2,4" Click="ViewPortalDbButton_Click">Azure Portal</Button>
-                                                
+                                                        <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                        <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                                                    </StackPanel>
+                                                </Button>
+
+                                                <Button x:Name="ViewPortalDbButton" Margin="8,4,2,4" Click="ViewPortalDbButton_Click" >
+                                                    <StackPanel Orientation="Horizontal" >
+                                                        <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                        <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
+                                                    </StackPanel>
+                                                </Button>
+
                                             </StackPanel>
 
 
@@ -1702,7 +1825,14 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Orientation="Horizontal" Margin="4,4,4,4" Grid.ColumnSpan="2">
-                            <Button x:Name="PurviewRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="PurviewRefreshButton_Click">Refresh</Button>
+                           
+                            <Button x:Name="PurviewRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="PurviewRefreshButton_Click">
+                                <StackPanel Orientation="Horizontal" >
+
+                                    <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
+                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                                </StackPanel>
+                            </Button>
 
                             <Button x:Name="PurviewCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="PurviewCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
@@ -1784,7 +1914,12 @@
 
                                         <StackPanel Orientation="Horizontal">
 
-                                            <Button Margin="8,4,2,4" Click="ViewPortalDbButton_Click">Azure Portal</Button>
+                                            <Button x:Name="ViewPortalDbButton" Margin="8,4,2,4" Click="ViewPortalDbButton_Click" >
+                                                <StackPanel Orientation="Horizontal" >
+                                                    <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
+                                                </StackPanel>
+                                            </Button>
                                             
                                         </StackPanel>
                                         
