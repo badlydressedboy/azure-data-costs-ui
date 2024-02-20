@@ -39,7 +39,9 @@ namespace Azure.Costs.Common
         public static int CostDays { get; set; } = 30;
         public static string DefaultDomain;
         public static string BasePortalUrl;
-        
+
+        private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
         public static HttpClient GetHttpClient(string baseAddress, int timeoutSecs)
         {
             var httpClient = new HttpClient
@@ -69,12 +71,16 @@ namespace Azure.Costs.Common
         {
             try
             {
+                _logger.Info("Testing login...");
+
                 // get tenants as a test
                 HttpResponseMessage tenantResponse = await GetHttpClientAsync("https://management.azure.com/tenants?api-version=2022-12-01");
                 if (!tenantResponse.IsSuccessStatusCode)
                 {
                     return tenantResponse.ReasonPhrase;
-                } 
+                }
+                _logger.Info("Login OK.");
+
                 var tenantjson = await tenantResponse.Content.ReadAsStringAsync();
                 RootTenant tenants = await tenantResponse?.Content?.ReadFromJsonAsync<RootTenant>();
                 if (tenants.value.Count > 0)
@@ -92,12 +98,16 @@ namespace Azure.Costs.Common
 
         public static async Task<List<Subscription>> GetSubscriptions()
         {
+            _logger.Info("Getting subscriptions...");
+
             try
             {
                 HttpResponseMessage response = await GetHttpClientAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");// httpClient.GetAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
 
                 var json = await response.Content.ReadAsStringAsync();
                 RootSubscription subscriptions = await response?.Content?.ReadFromJsonAsync<RootSubscription>();
+
+                _logger.Info("Got subscriptions OK.");
 
                 return subscriptions.value; 
             }
@@ -116,7 +126,8 @@ namespace Azure.Costs.Common
              * 
              */
 
-            var sw = Stopwatch.StartNew();    
+            var sw = Stopwatch.StartNew();
+            _logger.Info("Refresh Subscription Costs...");
 
             try
             {
@@ -182,14 +193,16 @@ namespace Azure.Costs.Common
             catch(Exception ex)
             {
                 // subscription scope usage bug: https://learn.microsoft.com/en-us/answers/questions/795590/az-consumption-usage-list-errors-out-with-please-u.html
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
             Debug.WriteLine($"Finished subscription in {sw.Elapsed.TotalSeconds} seconds");
+            _logger.Info("Complete Refresh Subscription Costs.");
         }
         public static async Task GetSqlServers(Subscription subscription)
         {
             try
             {
+                _logger.Info("Starting GetSqlServers()...");
 
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/resources?$filter=resourceType eq 'Microsoft.sql/servers'&$expand=resourceGroup,createdTime,changedTime&$top=1000&api-version=2021-04-01";
                 StringContent queryString = new StringContent("api-version=2021-04-01");
@@ -221,9 +234,12 @@ namespace Azure.Costs.Common
                     await GetSqlElasticPools(server);
                     await GetSqlServerDatabases(server);
                 });
-            }catch(Exception ex)
-            {
 
+                _logger.Info("Complete GetSqlServers().");
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex);
             }
 
             //Debug.WriteLine("fin get sql servers");
@@ -233,6 +249,8 @@ namespace Azure.Costs.Common
         {
             try
             {
+                _logger.Info("Starting GetSqlElasticPools()...");
+
                 string url = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resourceGroups/{sqlServer.resourceGroup}/providers/Microsoft.Sql/servers/{sqlServer.name}/elasticpools?api-version=2021-02-01-preview";
                 StringContent queryString = new StringContent("api-version=2021-04-01");
                 HttpResponseMessage response = await GetHttpClientAsync(url);
@@ -262,10 +280,13 @@ namespace Azure.Costs.Common
                     //restSql.AzServer = new Models.SQL.AzServer(restSql.name);
                 }
                 //subscription.SqlServers = servers.value.ToList();
+
+                _logger.Info("Complete GetSqlElasticPools().");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
 
             //Debug.WriteLine("fin get elastic pools");
@@ -274,6 +295,7 @@ namespace Azure.Costs.Common
         private static async Task GetSqlServerDatabases(RestSqlServer sqlServer)
         {
             //if (sqlServer.name != "octopus-sql-server-staging") return;
+            _logger.Info("Starting GetSqlServerDatabases()...");
 
             List<RestSqlDb> returnList = new List<RestSqlDb>();
             sqlServer.Dbs.Clear();
@@ -363,15 +385,20 @@ namespace Azure.Costs.Common
 
 
                 //Debug.WriteLine($"finished getting {sqlServer.name} dbs ({sqlServer.Dbs.Count})");
+                _logger.Info("Complete GetSqlServerDatabases.");
+                  
             }
             catch(Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }            
         }
 
         public static async Task RefreshRestDb(RestSqlDb sqlDb)
         {
+
+            _logger.Info("Starting RefreshRestDb...");
+
             Task[] tasks = new Task[5];
 
             tasks[0] = Task.Run(async () =>
@@ -398,14 +425,8 @@ namespace Azure.Costs.Common
 
 
             await Task.WhenAll(tasks);
-            Debug.WriteLine("Complete refresh db for " + sqlDb.name);
 
-            // await Task.WhenAll(_restSqlDbList.Select(i => GetCosts(i)));
-            //await GetDbRecommendedActions(sqlDb);
-            //await GetDbLatestVulnerabilityAssesment(sqlDb);
-            //await GetDbUsages(sqlDb);
-            //await GetDbMetrics(sqlDb);
-            //await GetDbLTRs(sqlDb);
+            _logger.Info("Complete RefreshRestDb.");
         }
 
         // short retention policies
@@ -417,6 +438,8 @@ namespace Azure.Costs.Common
         private static async Task GetDbUsages(RestSqlDb sqlDb)
         {
             //Debug.WriteLine("usage 1");
+            _logger.Info("Starting GetDbUsages()...");
+
             try
             {
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/usages?api-version=2021-11-01";
@@ -443,15 +466,19 @@ namespace Azure.Costs.Common
 
                     //Debug.WriteLine("usage 3");
                 }
+                _logger.Info("Complete GetDbUsages().");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error (ex);
             }
         }
 
         private static async Task GetDbRecommendedActions(RestSqlDb sqlDb)
         {
+
+            _logger.Info("Starting GetDbRecommendedActions()...");
+
             try
             {
                 if (sqlDb.IsSynapse) return; // dwh type db not supported
@@ -480,15 +507,17 @@ namespace Azure.Costs.Common
                         }
                     }
                 }
+                _logger.Info("Complete GetDbRecommendedActions().");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
         }
 
         private static async Task GetDbLatestVulnerabilityAssesment(RestSqlDb sqlDb)
         {
+            _logger.Info("Starting GetDbLatestVulnerabilityAssesment()...");
 
             try
             {
@@ -528,18 +557,20 @@ namespace Azure.Costs.Common
                 {
                     //Debug.WriteLine("ltr null");
                 }
+                _logger.Info("Complete GetDbLatestVulnerabilityAssesment().");
 
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
 
         }
 
         private static async Task GetDbLTRs(RestSqlDb sqlDb)
         {
-            
+            _logger.Info("Starting GetDbLTRs()...");
+
             try
             {
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/backupLongTermRetentionPolicies/default?api-version=2020-11-01-preview";
@@ -556,16 +587,17 @@ namespace Azure.Costs.Common
                 {
                     //Debug.WriteLine("ltr null");
                 }
-
+                _logger.Info("Complete GetDbLTRs().");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
 
         }
         public static async Task GetDbMetrics(RestSqlDb sqlDb, int? minutes = null)
         {
+            _logger.Info("Starting GetDbMetrics()...");
 
             try
             {
@@ -840,10 +872,11 @@ namespace Azure.Costs.Common
                 //}));
 
                 //Debug.WriteLine($"finished getting {sqlDb.name} metrics");
+                _logger.Info("Complete GetDbMetrics().");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
             
             sqlDb.IsRestQueryBusy = false;
@@ -851,6 +884,7 @@ namespace Azure.Costs.Common
 
         public static async Task GetVmMetrics(VM vm, int? minutes = null)
         {
+            _logger.Info("Starting GetVmMetrics()...");
 
             try
             {
@@ -939,17 +973,19 @@ namespace Azure.Costs.Common
                 }
 
                 //Debug.WriteLine($"finished getting {sqlDb.name} metrics");
+                _logger.Info("Complete GetVmMetrics().");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
 
             vm.IsRestQueryBusy = false;
         }
         private static async Task GetDbServiceTierAdvisors(RestSqlDb sqlDb)
         {
-            
+            _logger.Info("Starting GetDbServiceTierAdvisors()...");
+
             try
             {
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/serviceTierAdvisors/?api-version=2022-09-01";
@@ -966,12 +1002,13 @@ namespace Azure.Costs.Common
                         Debug.WriteLine($"multi advisors! {sqlDb.name} {advisors.value.Count()}");
                     }
                 }
-                
+
                 //Debug.WriteLine($"finished getting {sqlDb.name} advisors");
+                _logger.Info("Complete GetDbServiceTierAdvisors().");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
 
         }
@@ -1001,6 +1038,8 @@ namespace Azure.Costs.Common
 
             if (!subscription.ReadCosts) return;
             if (!subscription.NeedsNewCosts()) return;
+
+            _logger.Info("Starting GetSubscriptionCosts()...");
 
             subscription.ResourceCosts.Clear();
             subscription.CostsErrorMessage = "";
@@ -1204,11 +1243,12 @@ namespace Azure.Costs.Common
                     {
                         Debug.WriteLine(ex);
                     }                 
-                }                                
+                }
+                _logger.Info("Complete GetSubscriptionCosts().");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
                 subscription.CostsErrorMessage = ex.Message;
             }
             Debug.WriteLine($"** GOT COSTS OK for {subscription.displayName}");
@@ -1269,6 +1309,8 @@ namespace Azure.Costs.Common
         }
         public static async Task GetDataFactories(Subscription subscription)
         {
+            _logger.Info("Starting GetDataFactories()...");
+
             try
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/resources?$filter=resourceType eq 'Microsoft.DataFactory/factories' &$expand=resourceGroup,createdTime,changedTime&$top=1000&api-version=2021-04-01";
@@ -1290,14 +1332,18 @@ namespace Azure.Costs.Common
                     factory.PortalResourceUrl = $@"{BasePortalUrl}{factory.Subscription.subscriptionId}/resourceGroups/{factory.resourceGroup}/providers/Microsoft.DataFactory/factories/{factory.name}/overview";// ends subscriptions/                    
                 }
                 subscription.DataFactories = factories.value.ToList();
+
+                _logger.Info("Complete GetDataFactories()...");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }            
         }
         public static async Task GetStorageAccounts(Subscription subscription)
         {
+            _logger.Info("Starting GetStorageAccounts()...");
+
             try
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-05-01";
@@ -1321,15 +1367,19 @@ namespace Azure.Costs.Common
 
                 }
                 subscription.StorageAccounts = root.value.ToList();
+
+                _logger.Info("Complete GetStorageAccounts().");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
         }
 
         public static async Task GetVirtualNetworks(Subscription subscription)
         {
+            _logger.Info("Starting GetVirtualNetworks()...");
+
             try
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2022-05-01";
@@ -1352,15 +1402,19 @@ namespace Azure.Costs.Common
 
                 }
                 subscription.VNets = root.value.ToList();
+
+                _logger.Info("Complete GetVirtualNetworks().");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
         }
 
         public static async Task GetVirtualMachines(Subscription subscription)
         {
+            _logger.Info("Starting GetVirtualMachines()...");
+
             try
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2022-08-01";
@@ -1383,15 +1437,19 @@ namespace Azure.Costs.Common
 
                 }
                 subscription.VMs = root.value.ToList();
+
+                _logger.Info("Complete GetVirtualMachines().");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
         }
 
         public static async Task GetPurviews(Subscription subscription)
         {
+            _logger.Info("Starting GetPurviews()...");
+
             try
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Purview/accounts?api-version=2021-07-01";
@@ -1414,10 +1472,12 @@ namespace Azure.Costs.Common
 
                 }
                 subscription.Purviews = root.value.ToList();
+
+                _logger.Info("Complete GetPurviews().");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
         }
     }

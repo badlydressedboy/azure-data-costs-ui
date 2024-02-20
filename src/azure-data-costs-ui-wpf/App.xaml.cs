@@ -12,6 +12,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using NLog.Extensions.Logging;
 
 namespace DataEstateOverview
 {
@@ -31,8 +32,18 @@ namespace DataEstateOverview
            .Build()
            .Get<Config>();
 
-            //MainWindow mainWindow = new MainWindow(serviceProvider.GetRequiredService<IConfiguration>());
-            //mainWindow.Show();
+
+            var config = new ConfigurationBuilder()
+   .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+   .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+   .Build();
+
+            NLog.LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
+
+
+
+
+
         }
 
         private void ConfigureServices(IServiceCollection services)
