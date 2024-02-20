@@ -58,14 +58,30 @@ namespace Azure.Costs.Common
         }
         private static async Task<HttpResponseMessage> GetHttpClientAsync(string url)
         {
-            if (HttpClient == null)
+            try
             {
-                AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
-                _accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/");
-                HttpClient = new MyHttpClient("https://management.azure.com/", 30, _accessToken);
+                if (HttpClient == null)
+                {
+                    AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
+                    _accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/");
+                    HttpClient = new MyHttpClient("https://management.azure.com/", 30, _accessToken);
+                }
+                HttpResponseMessage r = await HttpClient.GetAsync(url);
+                return r;
             }
-            HttpResponseMessage r = await HttpClient.GetAsync(url);
-            return r;
+            catch(Exception ex)
+            {
+                if(ex.InnerException != null)
+                {
+                    _logger.Error(ex.InnerException);
+                }
+                else
+                {
+                    _logger.Error(ex);
+                }
+                
+            }
+            return null;
         }
         public static async Task<string?> TestLogin()
         {
@@ -75,7 +91,11 @@ namespace Azure.Costs.Common
 
                 // get tenants as a test
                 HttpResponseMessage tenantResponse = await GetHttpClientAsync("https://management.azure.com/tenants?api-version=2022-12-01");
-                if (!tenantResponse.IsSuccessStatusCode)
+                if (tenantResponse == null)
+                {
+                    return "";
+                }
+                if (!tenantResponse!.IsSuccessStatusCode)
                 {
                     return tenantResponse.ReasonPhrase;
                 }
@@ -103,7 +123,10 @@ namespace Azure.Costs.Common
             try
             {
                 HttpResponseMessage response = await GetHttpClientAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");// httpClient.GetAsync("https://management.azure.com/subscriptions?api-version=2020-01-01");
-
+                if (response == null)
+                {
+                    return null;
+                }
                 var json = await response.Content.ReadAsStringAsync();
                 RootSubscription subscriptions = await response?.Content?.ReadFromJsonAsync<RootSubscription>();
 
@@ -207,6 +230,10 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/resources?$filter=resourceType eq 'Microsoft.sql/servers'&$expand=resourceGroup,createdTime,changedTime&$top=1000&api-version=2021-04-01";
                 StringContent queryString = new StringContent("api-version=2021-04-01");
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
                 var json = await response.Content.ReadAsStringAsync();
                 // get location and name properties from list of servers
                 RootRestSqlServer servers = await response.Content.ReadFromJsonAsync<RootRestSqlServer>();
@@ -254,6 +281,11 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resourceGroups/{sqlServer.resourceGroup}/providers/Microsoft.Sql/servers/{sqlServer.name}/elasticpools?api-version=2021-02-01-preview";
                 StringContent queryString = new StringContent("api-version=2021-04-01");
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
                 var json = await response.Content.ReadAsStringAsync();
                 // get location and name properties from list of servers
 
@@ -304,6 +336,12 @@ namespace Azure.Costs.Common
             {
                 string dbUrl = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resourceGroups/{sqlServer.resourceGroup}/providers/Microsoft.Sql/servers/{sqlServer.name}/databases?api-version=2021-02-01-preview";              
                 var response = await GetHttpClientAsync(dbUrl);
+
+                if (response == null)
+                {
+                    return;
+                }
+
                 var json = await response.Content.ReadAsStringAsync();
                 RootRestSqlDb databases = await response?.Content?.ReadFromJsonAsync<RootRestSqlDb>();                
 
@@ -445,6 +483,10 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/usages?api-version=2021-11-01";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if(response == null)
+                {
+                    return;
+                }
                 var json = await response.Content.ReadAsStringAsync();
                 var usages = await response?.Content?.ReadFromJsonAsync<DBUsageRoot>();
                 //Debug.WriteLine("usage 2");
@@ -486,6 +528,11 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/advisors?$expand=recommendedActions&api-version=2021-11-01";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -524,6 +571,11 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name.ToLower()}/vulnerabilityAssessments/default/scans?api-version=2020-11-01-preview";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
                 var json = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -576,6 +628,11 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/backupLongTermRetentionPolicies/default?api-version=2020-11-01-preview";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
                 var json = await response.Content.ReadAsStringAsync();
                 var ltr = await response?.Content?.ReadFromJsonAsync<LTRPolicy>();
 
@@ -652,6 +709,10 @@ namespace Azure.Costs.Common
                         string poolUrl = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/elasticPools/{sqlDb.ElasticPool.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum{timeGrainParam}&timespan={timeFrom}/{timeTo}&metricnames=sessions_count,cpu_percent&api-version=2021-05-01";
 
                         var res = await GetHttpClientAsync(poolUrl);
+                        if (res == null)
+                        {
+                            return;
+                        }
 
                         if (!res.IsSuccessStatusCode)
                         {
@@ -721,6 +782,11 @@ namespace Azure.Costs.Common
                 sqlDb.MetricsErrorMessage = "";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
                 if (!response.IsSuccessStatusCode)
                 {
                     Debug.WriteLine("Failed metrics!");
@@ -916,6 +982,11 @@ namespace Azure.Costs.Common
                 vm.MetricsErrorMessage = "";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
                 if (!response.IsSuccessStatusCode)
                 {
                     Debug.WriteLine("Failed vm metrics!");
@@ -991,6 +1062,11 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/serviceTierAdvisors/?api-version=2022-09-01";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
                 var json = await response.Content.ReadAsStringAsync();
                 RootServiceTierAdvisor advisors = await response?.Content?.ReadFromJsonAsync<RootServiceTierAdvisor>();
 
@@ -1255,6 +1331,8 @@ namespace Azure.Costs.Common
         }
         private static string GetHeaderValue(HttpResponseMessage response, string headerName)
         {
+            if (response == null) return null;
+
             IEnumerable<string> values;
             if (response.Headers.TryGetValues(headerName, out values))
             {
@@ -1316,6 +1394,11 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/resources?$filter=resourceType eq 'Microsoft.DataFactory/factories' &$expand=resourceGroup,createdTime,changedTime&$top=1000&api-version=2021-04-01";
                 StringContent queryString = new StringContent("api-version=2021-04-01");
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
                 var json = await response.Content.ReadAsStringAsync();
                 // get location and name properties from list of servers
                 DataFactoryRoot factories = await response.Content.ReadFromJsonAsync<DataFactoryRoot>();
@@ -1349,6 +1432,10 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-05-01";
                 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
                 var json = await response.Content.ReadAsStringAsync();
                 Debug.WriteLine("got storage acc");
 
@@ -1385,6 +1472,11 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2022-05-01";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
                 var json = await response.Content.ReadAsStringAsync();
                 
                 RootVNet root = await response.Content.ReadFromJsonAsync<RootVNet>();
@@ -1420,6 +1512,11 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2022-08-01";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
                 var json = await response.Content.ReadAsStringAsync();
                
                 RootVM root = await response.Content.ReadFromJsonAsync<RootVM>();
@@ -1455,6 +1552,11 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Purview/accounts?api-version=2021-07-01";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
                 var json = await response.Content.ReadAsStringAsync();
                 
                 RootPurview root = await response.Content.ReadFromJsonAsync<RootPurview>();

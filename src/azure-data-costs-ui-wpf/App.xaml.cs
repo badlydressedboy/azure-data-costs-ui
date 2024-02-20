@@ -40,7 +40,7 @@ namespace DataEstateOverview
 
             NLog.LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
 
-
+            Debug.WriteLine("Nlog Setup");
 
 
 
