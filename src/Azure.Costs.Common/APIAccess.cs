@@ -276,7 +276,7 @@ namespace Azure.Costs.Common
         {
             try
             {
-                _logger.Info("Starting GetSqlElasticPools()...");
+                _logger.Info($"Starting GetSqlElasticPools() {sqlServer.name}...");
 
                 string url = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resourceGroups/{sqlServer.resourceGroup}/providers/Microsoft.Sql/servers/{sqlServer.name}/elasticpools?api-version=2021-02-01-preview";
                 StringContent queryString = new StringContent("api-version=2021-04-01");
@@ -313,7 +313,7 @@ namespace Azure.Costs.Common
                 }
                 //subscription.SqlServers = servers.value.ToList();
 
-                _logger.Info("Complete GetSqlElasticPools().");
+                _logger.Info($"Complete GetSqlElasticPools() {sqlServer.name}.");
             }
             catch (Exception ex)
             {
@@ -327,7 +327,7 @@ namespace Azure.Costs.Common
         private static async Task GetSqlServerDatabases(RestSqlServer sqlServer)
         {
             //if (sqlServer.name != "octopus-sql-server-staging") return;
-            _logger.Info("Starting GetSqlServerDatabases()...");
+            _logger.Info($"Starting GetSqlServerDatabases() {sqlServer.name}...");
 
             List<RestSqlDb> returnList = new List<RestSqlDb>();
             sqlServer.Dbs.Clear();
@@ -423,7 +423,7 @@ namespace Azure.Costs.Common
 
 
                 //Debug.WriteLine($"finished getting {sqlServer.name} dbs ({sqlServer.Dbs.Count})");
-                _logger.Info("Complete GetSqlServerDatabases.");
+                _logger.Info($"Complete GetSqlServerDatabases {sqlServer.name}.");
                   
             }
             catch(Exception ex)
@@ -435,7 +435,7 @@ namespace Azure.Costs.Common
         public static async Task RefreshRestDb(RestSqlDb sqlDb)
         {
 
-            _logger.Info("Starting RefreshRestDb...");
+            _logger.Info($"Starting RefreshRestDb ({sqlDb.name})...");
 
             Task[] tasks = new Task[5];
 
@@ -464,7 +464,7 @@ namespace Azure.Costs.Common
 
             await Task.WhenAll(tasks);
 
-            _logger.Info("Complete RefreshRestDb.");
+            _logger.Info($"Complete RefreshRestDb ({sqlDb.name}).");
         }
 
         // short retention policies
@@ -476,7 +476,7 @@ namespace Azure.Costs.Common
         private static async Task GetDbUsages(RestSqlDb sqlDb)
         {
             //Debug.WriteLine("usage 1");
-            _logger.Info("Starting GetDbUsages()...");
+            _logger.Info($"Starting GetDbUsages() {sqlDb.name}...");
 
             try
             {
@@ -508,7 +508,7 @@ namespace Azure.Costs.Common
 
                     //Debug.WriteLine("usage 3");
                 }
-                _logger.Info("Complete GetDbUsages().");
+                _logger.Info($"Complete GetDbUsages() {sqlDb.name}.");
             }
             catch (Exception ex)
             {
@@ -519,7 +519,7 @@ namespace Azure.Costs.Common
         private static async Task GetDbRecommendedActions(RestSqlDb sqlDb)
         {
 
-            _logger.Info("Starting GetDbRecommendedActions()...");
+            _logger.Info($"Starting GetDbRecommendedActions() {sqlDb.name}...");
 
             try
             {
@@ -554,7 +554,7 @@ namespace Azure.Costs.Common
                         }
                     }
                 }
-                _logger.Info("Complete GetDbRecommendedActions().");
+                _logger.Info($"Complete GetDbRecommendedActions() {sqlDb.name}.");
             }
             catch (Exception ex)
             {
@@ -564,7 +564,7 @@ namespace Azure.Costs.Common
 
         private static async Task GetDbLatestVulnerabilityAssesment(RestSqlDb sqlDb)
         {
-            _logger.Info("Starting GetDbLatestVulnerabilityAssesment()...");
+            _logger.Info($"Starting GetDbLatestVulnerabilityAssesment() {sqlDb.name}...");
 
             try
             {
@@ -609,7 +609,7 @@ namespace Azure.Costs.Common
                 {
                     //Debug.WriteLine("ltr null");
                 }
-                _logger.Info("Complete GetDbLatestVulnerabilityAssesment().");
+                _logger.Info($"Complete GetDbLatestVulnerabilityAssesment() {sqlDb.name}.");
 
             }
             catch (Exception ex)
@@ -621,7 +621,7 @@ namespace Azure.Costs.Common
 
         private static async Task GetDbLTRs(RestSqlDb sqlDb)
         {
-            _logger.Info("Starting GetDbLTRs()...");
+            _logger.Info($"Starting GetDbLTRs() {sqlDb.name}...");
 
             try
             {
@@ -644,7 +644,7 @@ namespace Azure.Costs.Common
                 {
                     //Debug.WriteLine("ltr null");
                 }
-                _logger.Info("Complete GetDbLTRs().");
+                _logger.Info($"Complete GetDbLTRs() {sqlDb.name}.");
             }
             catch (Exception ex)
             {
@@ -654,7 +654,7 @@ namespace Azure.Costs.Common
         }
         public static async Task GetDbMetrics(RestSqlDb sqlDb, int? minutes = null)
         {
-            _logger.Info("Starting GetDbMetrics()...");
+            _logger.Info($"Starting GetDbMetrics() for {sqlDb.name}...");
 
             try
             {
@@ -938,7 +938,7 @@ namespace Azure.Costs.Common
                 //}));
 
                 //Debug.WriteLine($"finished getting {sqlDb.name} metrics");
-                _logger.Info("Complete GetDbMetrics().");
+                _logger.Info($"Complete GetDbMetrics() {sqlDb.name}.");
             }
             catch (Exception ex)
             {
@@ -1269,6 +1269,11 @@ namespace Azure.Costs.Common
                                                     "application/json");//CONTENT-TYPE header
 
                 HttpResponseMessage response = await SendThrottledRequest(client, request);
+
+                if(response == null)
+                {
+                    return;
+                }
 
                 var remainingReads = GetHeaderValue(response, "x-ms-ratelimit-remaining-subscription-reads");
                 if (remainingReads != null) Debug.WriteLine("Remaing reads: " + remainingReads.ToString());
