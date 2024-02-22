@@ -93,7 +93,7 @@ namespace Azure.Costs.Common
                 HttpResponseMessage tenantResponse = await GetHttpClientAsync("https://management.azure.com/tenants?api-version=2022-12-01");
                 if (tenantResponse == null)
                 {
-                    return "";
+                    return "Could not connect to tennant - do you need to 'AZ LOGIN'?";
                 }
                 if (!tenantResponse!.IsSuccessStatusCode)
                 {
@@ -1272,23 +1272,25 @@ namespace Azure.Costs.Common
 
                 if(response == null)
                 {
+                    _logger.Error($"No response when querying costs for {subscription.displayName}");
                     return;
                 }
 
                 var remainingReads = GetHeaderValue(response, "x-ms-ratelimit-remaining-subscription-reads");
-                if (remainingReads != null) Debug.WriteLine("Remaing reads: " + remainingReads.ToString());
-               
+                if (remainingReads != null)
+                {
+                    _logger.Info($"HTTP Header x-ms-ratelimit-remaining-subscription-reads: {remainingReads}");
+                }
+
                 if (!response.IsSuccessStatusCode)
                 {
                     
                     subscription.CostsErrorMessage = $@"Subscription '{subscription.displayName}' costs query {response.ReasonPhrase}";
-                    Debug.WriteLine($"Couldnt get costs for subscription: {subscription.displayName}; {response.ReasonPhrase}");
+                    _logger.Error($"Couldnt get costs for subscription: {subscription.displayName}; {response.ReasonPhrase}");
                     return;
                 }
                 var json = await response.Content.ReadAsStringAsync();
-                if (json.Contains("vm-exds-1-we-01")){
-                    Debug.WriteLine("got it");
-                }
+               
                 ResourceCostQuery query = await response.Content.ReadFromJsonAsync<ResourceCostQuery>();
 
                 foreach (var obj in query.properties?.rows)
@@ -1322,7 +1324,7 @@ namespace Azure.Costs.Common
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine(ex);
+                        _logger.Error(ex);
                     }                 
                 }
                 _logger.Info("Complete GetSubscriptionCosts().");
@@ -1332,7 +1334,7 @@ namespace Azure.Costs.Common
                 _logger.Error(ex);
                 subscription.CostsErrorMessage = ex.Message;
             }
-            Debug.WriteLine($"** GOT COSTS OK for {subscription.displayName}");
+            _logger.Info($"** GOT COSTS OK for {subscription.displayName}");
         }
         private static string GetHeaderValue(HttpResponseMessage response, string headerName)
         {
