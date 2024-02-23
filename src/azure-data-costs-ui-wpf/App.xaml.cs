@@ -13,6 +13,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using NLog.Extensions.Logging;
+using NLog;
 
 namespace DataEstateOverview
 {
@@ -22,10 +23,25 @@ namespace DataEstateOverview
     public partial class App : Application
     {
         public static Config Config;
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            LogUnhandledException((Exception)e.ExceptionObject, "AppDomain.CurrentDomain.UnhandledException");
+
+            DispatcherUnhandledException += (s, e) =>
+            {
+                LogUnhandledException(e.Exception, "Application.Current.DispatcherUnhandledException");
+                e.Handled = true;
+            };
+
+            TaskScheduler.UnobservedTaskException += (s, e) =>
+            {
+                LogUnhandledException(e.Exception, "TaskScheduler.UnobservedTaskException");
+                e.SetObserved();
+            };
+
             Config = new ConfigurationBuilder()
            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
            .AddJsonFile("appsettings.json")
@@ -33,16 +49,14 @@ namespace DataEstateOverview
            .Get<Config>();
 
 
-            var config = new ConfigurationBuilder()
-   .SetBasePath(System.IO.Directory.GetCurrentDirectory())
-   .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-   .Build();
+   //         var config = new ConfigurationBuilder()
+   //.SetBasePath(System.IO.Directory.GetCurrentDirectory())
+   //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+   //.Build();
 
-            NLog.LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
+            //LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
 
             Debug.WriteLine("Nlog Setup");
-
-
 
         }
 
@@ -51,6 +65,23 @@ namespace DataEstateOverview
             //services.AddSingleton(Configuration);
         }
 
+        private void LogUnhandledException(Exception exception, string source)
+        {
+            string message = $"Unhandled exception ({source})";
+            try
+            {
+                System.Reflection.AssemblyName assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName();
+                message = string.Format("Unhandled exception in {0} v{1}", assemblyName.Name, assemblyName.Version);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Exception in LogUnhandledException");
+            }
+            finally
+            {
+                _logger.Error(exception, message);
+            }
+        }
         public static void SaveConfig()
         {
             try

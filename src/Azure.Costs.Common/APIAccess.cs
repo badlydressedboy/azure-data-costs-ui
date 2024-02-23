@@ -64,7 +64,7 @@ namespace Azure.Costs.Common
                 {
                     AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
                     _accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/");
-                    HttpClient = new MyHttpClient("https://management.azure.com/", 30, _accessToken);
+                    HttpClient = new MyHttpClient("https://management.azure.com/", 15, _accessToken);
                 }
                 HttpResponseMessage r = await HttpClient.GetAsync(url);
                 return r;
@@ -1115,7 +1115,7 @@ namespace Azure.Costs.Common
             if (!subscription.ReadCosts) return;
             if (!subscription.NeedsNewCosts()) return;
 
-            _logger.Info("Starting GetSubscriptionCosts()...");
+            _logger.Info($"Starting GetSubscriptionCosts() for {subscription.displayName}...");
 
             subscription.ResourceCosts.Clear();
             subscription.CostsErrorMessage = "";
@@ -1293,9 +1293,10 @@ namespace Azure.Costs.Common
                
                 ResourceCostQuery query = await response.Content.ReadFromJsonAsync<ResourceCostQuery>();
 
+                int costsFount = 0;
                 foreach (var obj in query.properties?.rows)
                 {
-                    
+                    costsFount++;
                     try
                     {
                         var rc = new ResourceCost();
@@ -1327,7 +1328,7 @@ namespace Azure.Costs.Common
                         _logger.Error(ex);
                     }                 
                 }
-                _logger.Info("Complete GetSubscriptionCosts().");
+                _logger.Info($"Complete GetSubscriptionCosts() for {subscription.displayName}; {costsFount} costs found.");
             }
             catch (Exception ex)
             {

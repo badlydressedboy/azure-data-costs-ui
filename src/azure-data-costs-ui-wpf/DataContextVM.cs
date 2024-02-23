@@ -463,7 +463,7 @@ namespace Azure.Costs.Ui.Wpf
             if (IsGetSqlServersBusy) return;
 
             IsGetSqlServersBusy = true;
-            _logger.Error("IsGetSqlServersBusy = true...");
+            Debug.WriteLine("IsGetSqlServersBusy = true...");
 
             RestSqlDbList.Clear();
             RestErrorMessage = "";
@@ -523,7 +523,7 @@ namespace Azure.Costs.Ui.Wpf
                 _logger.Error(ex);
             }
             IsGetSqlServersBusy = false;
-            _logger.Error("IsGetSqlServersBusy = false");
+            Debug.WriteLine("IsGetSqlServersBusy = false");
             UpdateHttpAccessCountMessage();
         }
 
