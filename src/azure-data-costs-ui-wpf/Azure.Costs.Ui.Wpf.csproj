@@ -14,12 +14,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Azure.Costs.Ui.Wpf.csproj~RF62a67e46.TMP" />
     <None Remove="CostData\Detail_Subscription_a5be5e3e-da5c-45f5-abe9-9591a51fccfa_202211_en.csv" />
     <None Remove="Images\azure.png" />
     <None Remove="Images\info.png" />
     <None Remove="Images\loading.gif" />
     <None Remove="Images\refresh.png" />
     <None Remove="Images\zoom.png" />
+    <None Remove="nlog.config" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,9 +67,6 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="nlog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -87,6 +86,9 @@
     <Resource Include="Images\loading.gif" />
     <Resource Include="Images\refresh.png" />
     <Resource Include="Images\zoom.png" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -58,6 +58,17 @@ namespace DataEstateOverview
 
             Debug.WriteLine("Nlog Setup");
 
+            //NLog.Common.InternalLogger.LogToConsole = true;
+
+            // enable internal logging to a file
+            NLog.Common.InternalLogger.LogFile = "c:\\nlog-internal.txt"; // On Linux one can use "/home/nlog-internal.txt"
+
+            // enable internal logging to a custom TextWriter
+            //NLog.Common.InternalLogger.LogWriter = new StringWriter(); //e.g. TextWriter writer = File.CreateText("C:\\perl.txt")
+
+            // set internal log level
+            NLog.Common.InternalLogger.LogLevel = NLog.LogLevel.Trace;
+
         }
 
         private void ConfigureServices(IServiceCollection services)
