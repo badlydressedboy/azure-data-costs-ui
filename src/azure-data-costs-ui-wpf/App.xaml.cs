@@ -23,7 +23,7 @@ namespace DataEstateOverview
     public partial class App : Application
     {
         public static Config Config;
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
+        private static Logger _logger;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -68,6 +68,8 @@ namespace DataEstateOverview
 
             // set internal log level
             NLog.Common.InternalLogger.LogLevel = NLog.LogLevel.Trace;
+
+            _logger = LogManager.GetCurrentClassLogger();
 
         }
 
