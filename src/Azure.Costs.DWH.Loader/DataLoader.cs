@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Azure.Costs.DWH.Loader
 {
-    public static class DataAccess
+    public static class DataLoader
     {
 
     }
