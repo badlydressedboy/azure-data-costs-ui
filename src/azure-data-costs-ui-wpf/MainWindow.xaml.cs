@@ -620,6 +620,15 @@ namespace Azure.Costs.Ui.Wpf
             //Process.Start(db.PortalResourceUrl);
         }
 
+        private void NonGridExpandingTextBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            // select text and return othwise the datagrid expan event will fire and annoy you to hell.
+            var tb = (TextBox)sender;
+            tb.SelectAll();
+            tb.Focus();
+            e.Handled = true;
+            return;
+        }
     }
     public class ignoresubscriptionnames
     {
