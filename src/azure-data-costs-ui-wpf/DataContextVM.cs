@@ -23,6 +23,9 @@ namespace Azure.Costs.Ui.Wpf
     {
 
         #region vars
+
+        private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
         public List<Subscription> SelectedSubscriptions { get; set; } = new List<Subscription>();
         public ObservableCollection<Subscription> DetectedSubscriptions { get; set; } = new ObservableCollection<Subscription>();
 
@@ -402,7 +405,7 @@ namespace Azure.Costs.Ui.Wpf
                 //if (subsList.co) { }
                 if (subsList == null )//|| subsList.Count == 0
                 {
-                    Debug.WriteLine("No subscriptions! Are you logged into Azure?");
+                    _logger.Info("No subscriptions! Are you logged into Azure?");
                     RestErrorMessage = "No subscriptions! Are you logged into Azure?";
                     return;
                 }
@@ -428,8 +431,8 @@ namespace Azure.Costs.Ui.Wpf
                 UpdateHttpAccessCountMessage();
                 UpdateAllSubsChecks();
             }
-            catch (Exception ex) { 
-                Debug.WriteLine(ex.ToString()); 
+            catch (Exception ex) {
+                _logger.Error(ex); 
             }
             IsGetSubscriptionsBusy = false;
         }
@@ -491,7 +494,7 @@ namespace Azure.Costs.Ui.Wpf
                     {
                         if (sub.ResourceCosts.Count == 0 && sub.ReadCosts && sub.SqlServers.Count > 0) // only an error if we actually asked for costs
                         {
-                            Debug.WriteLine($"No expected DB costs found for sub: {sub.displayName}");
+                            _logger.Info($"No expected DB costs found for sub: {sub.displayName}");
                             sub.CostsErrorMessage = "No expected DB costs found.";
                             //continue;
                         }
@@ -517,7 +520,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
             IsGetSqlServersBusy = false;
             Debug.WriteLine("IsGetSqlServersBusy = false");
@@ -573,7 +576,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             catch(Exception ex)
             {
-                Debug.WriteLine($"{ex}");   
+                _logger.Error(ex);   
             }
             IsStorageQueryBusy = false;
             UpdateHttpAccessCountMessage();
@@ -616,7 +619,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"{ex}");
+                _logger.Error(ex); 
             }
             IsADFQueryBusy = false;
             UpdateHttpAccessCountMessage();
@@ -668,7 +671,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"{ex}");
+                _logger.Error(ex);
             }
             IsVNetQueryBusy = false;
             UpdateHttpAccessCountMessage();
@@ -728,7 +731,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"{ex}");
+                _logger.Error(ex);
             }
             IsVMQueryBusy = false;
             UpdateHttpAccessCountMessage();
@@ -775,7 +778,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"{ex}");
+                _logger.Error(ex);
             }
             IsPurviewQueryBusy = false;
             UpdateHttpAccessCountMessage();
@@ -786,7 +789,7 @@ namespace Azure.Costs.Ui.Wpf
             bool found = false;
             if (costs.Count == 0)
             {
-                Debug.WriteLine("elastic db!");
+                _logger.Error("elastic db!");
             }
             List<ResourceCost> elasticCosts = new List<ResourceCost>();
             foreach(ResourceCost cost in costs)
@@ -797,24 +800,27 @@ namespace Azure.Costs.Ui.Wpf
                     db.TotalCostBilling += cost.Cost;
                     found = true;
                 }
-                if (db.ElasticPool != null && cost.ResourceId.Contains(db.ElasticPool.name))
+                if (db.ElasticPool != null && cost.ResourceId.Contains(db.ElasticPool.name.ToLower()))
                 {                                                           
                     db.Costs.Add(cost);
                     db.TotalCostBilling += cost.Cost/db.ElasticPool.dbList.Count;
                     found = true;
                 }
-                if (cost.Meter.Contains("Elastic") || cost.MeterSubCategory.Contains("Elastic") || cost.Product.Contains("Elastic") || cost.ServiceName.Contains("Elastic"))
+                if (cost.Meter.Contains("Elastic") 
+                    || cost.MeterSubCategory.Contains("Elastic") 
+                    //|| cost.Product.Contains("Elastic") 
+                    || cost.ServiceName.Contains("Elastic"))
                 {
                     elasticCosts.Add(cost);
                 }
             }
             //if(elasticCosts.Count > 0)
             //{
-            //    //Debug.WriteLine($"elastic costs");
+            //    //_logger.Error($"elastic costs");
             //}
             if (!found)
             {
-                Debug.WriteLine($"why no cost for DB {db.name}? Costs.count: {costs.Count}");
+                _logger.Info($"why no cost for DB {db.name}? Costs.count: {costs.Count}");
             }
         }
         private static void MapCostToDF(DataFactory df, List<ResourceCost> costs)
@@ -825,7 +831,7 @@ namespace Azure.Costs.Ui.Wpf
 
             foreach (ResourceCost cost in costs)
             {
-                if (cost.ResourceId.Contains(df.name) && cost.ResourceId.Contains(df.resourceGroup))
+                if (cost.ResourceId.Contains(df.name.ToLower()) && cost.ResourceId.Contains(df.resourceGroup.ToLower()))
                 {
                     df.TotalCostBilling += cost.Cost;
 
@@ -835,7 +841,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             if (!found)
             {
-                Debug.WriteLine($"why no cost for df {df.name}?");
+                _logger.Info($"why no cost for df {df.name}?");
             }
         }
         private static void MapCostToStorage(StorageAccount sa, List<ResourceCost> costs)
@@ -846,7 +852,7 @@ namespace Azure.Costs.Ui.Wpf
             
             foreach (ResourceCost cost in costs)
             {
-                if (cost.ResourceId.Contains(sa.name) && cost.ResourceId.Contains(sa.resourceGroup))
+                if (cost.ResourceId.EndsWith(sa.name.ToLower()) && cost.ResourceId.Contains(sa.resourceGroup.ToLower()))
                 {
                     sa.TotalCostBilling += cost.Cost;
 
@@ -856,7 +862,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             if (!found)
             {
-                Debug.WriteLine($"why no cost for storage {sa.name}? Sub costs error: {sa.Subscription.CostsErrorMessage}");
+                _logger.Info($"why no cost for storage {sa.name}? Sub costs error: {sa.Subscription.CostsErrorMessage}");
             }
         }
 
@@ -868,7 +874,7 @@ namespace Azure.Costs.Ui.Wpf
 
             foreach (ResourceCost cost in costs)
             {
-                if (cost.ResourceId.Contains(vnet.resourceGroup))
+                if (cost.ResourceId.Contains(vnet.resourceGroup.ToLower()))
                 {
                     // todo - get component name from end of resourceId
                     if (!cost.ResourceId.Contains(@"network/")) continue;
@@ -892,7 +898,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             if (!found)
             {
-                Debug.WriteLine($"why no cost for vnet {vnet.name}?");
+                _logger.Info($"why no cost for vnet {vnet.name}?");
             }
         }
 
@@ -911,10 +917,10 @@ namespace Azure.Costs.Ui.Wpf
 
                     //if(vm.name.ToUpper().Contains("OCT-ENG-VD1-69"))
                     //{
-                    //    Debug.WriteLine("OCT-ENG-VD1-69");
+                    //    _logger.Error("OCT-ENG-VD1-69");
                     //}
 
-                    if (costVmName.ToLower() == vm.name.ToLower())
+                    if ((costVmName.ToLower() == vm.name.ToLower()) && cost.ResourceId.Contains(vm.resourceGroup.ToLower()))
                     {
                         if (cost.ServiceName == "Virtual Machines" || cost.ServiceName == "Bandwidth" || cost.ServiceName == "Virtual Network")
                         {
@@ -927,12 +933,12 @@ namespace Azure.Costs.Ui.Wpf
                     }
                 }catch(Exception ex)
                 {
-                    Debug.WriteLine($"VM costs error: {ex}");
+                    _logger.Error($"VM costs error: {ex}");
                 }
             }
             if (!found)
             {
-                Debug.WriteLine($"why no cost for VM {vm.name}?");
+                _logger.Info($"why no cost for VM {vm.name}?");
             }
         }
 
@@ -949,13 +955,13 @@ namespace Azure.Costs.Ui.Wpf
                     && (!cost.ResourceId.Contains(@"purview/accounts/"))
                     && (!cost.ServiceName.Contains("purview")))
                 {
-                    //Debug.WriteLine(cost.ResourceId);
+                    //_logger.Error(cost.ResourceId);
                     continue;
                 }
 
                 string costPurvName = cost.ResourceId.Substring(cost.ResourceId.IndexOf("purview/accounts/") + 17);
 
-                if (costPurvName == purv.name || cost.ResourceId.Contains(purv.properties.managedResourceGroupName))
+                if (costPurvName == purv.name || cost.ResourceId.Contains(purv.properties.managedResourceGroupName.ToLower()))
                 {
                     purv.TotalCostBilling += cost.Cost;
 
@@ -965,7 +971,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             if (!found)
             {
-                Debug.WriteLine($"why no cost for Purview {purv.name}?");
+                _logger.Info($"why no cost for Purview {purv.name}?");
             }
         }
 
@@ -993,7 +999,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
             IsDbSpendAnalysisBusy = false;
             HasDbSpendAnalysisBeenPerformed = true;
@@ -1025,7 +1031,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
             IsVmSpendAnalysisBusy = false;
             HasVmSpendAnalysisBeenPerformed = true;
@@ -1056,7 +1062,7 @@ namespace Azure.Costs.Ui.Wpf
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
             }
             IsQueryingDatabase = false;
             UpdateHttpAccessCountMessage();
@@ -1070,20 +1076,18 @@ namespace Azure.Costs.Ui.Wpf
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.Error(ex.Message);
             }
         }
 
         public void LoadSubscriptionOptions()
         {
-            
-
             try
             {
 
             }catch(Exception ex)
             {
-                Debug.WriteLine(ex.Message);
+                _logger.Error(ex.Message);
             }
         }
 

@@ -18,7 +18,8 @@ namespace Azure.Costs.Common
     {
         private static string _sqlAccessToken;
         private static DateTime _sqlAccessTokenGetTime;
-        
+        private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
         // return object containing result data and nullable exception message
         private static async Task<string> GetSqlAccessToken()
         {
@@ -32,7 +33,7 @@ namespace Azure.Costs.Common
                 return await azureServiceTokenProvider.GetAccessTokenAsync("https://database.windows.net");
             }catch(Exception ex)
             {
-                Debug.WriteLine(ex);    
+                _logger.Error(ex);    
             }
             return null;
         }
@@ -87,6 +88,7 @@ namespace Azure.Costs.Common
             var result = new DataResult();
             try
             {
+               
                 using (SqlConnection conn = new SqlConnection(connString))
                 {
                     var azureServiceTokenProvider = new AzureServiceTokenProvider();
@@ -98,7 +100,7 @@ namespace Azure.Costs.Common
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                _logger.Error(ex);
                 result.ExceptionMessage = $"{memberName}: {ex.Message}";
             }
             return result;

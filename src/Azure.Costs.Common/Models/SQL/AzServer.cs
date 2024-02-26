@@ -8,6 +8,7 @@ namespace Azure.Costs.Common.Models.SQL
 {
     public class AzServer : BaseModel
     {
+        protected int _sqlConnTimeoutSecs = 3;
 
         public List<AzDB> ChildAzDBs { get; set; } = new List<AzDB>();
         public List<FireWallRule> FireWallRules { get; set; } = new List<FireWallRule>();
@@ -20,7 +21,7 @@ namespace Azure.Costs.Common.Models.SQL
         public AzServer(string serverName)
         {
             Name = serverName;
-            ConnString = $"Server={Name}.database.windows.net; Database=master; Connection Timeout=5; Application Name=AzureSqlMeta";
+            ConnString = $"Server={Name}.database.windows.net; Database=master; Connection Timeout={_sqlConnTimeoutSecs}; Application Name=AzureSqlMeta";
         }
 
         public async Task RefreshMetaData()

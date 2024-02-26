@@ -6,17 +6,32 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>azure.ico</ApplicationIcon>
+	<PublishSingleFile>true</PublishSingleFile>
+	<DebugType>embedded</DebugType>
+	<StartupObject>DataEstateOverview.App</StartupObject>
+	<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+	<AssemblyName>AzureDataCosts</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Azure.Costs.Ui.Wpf.csproj~RF62a67e46.TMP" />
     <None Remove="CostData\Detail_Subscription_a5be5e3e-da5c-45f5-abe9-9591a51fccfa_202211_en.csv" />
+    <None Remove="Images\azure.png" />
+    <None Remove="Images\info.png" />
     <None Remove="Images\loading.gif" />
+    <None Remove="Images\refresh.png" />
+    <None Remove="Images\zoom.png" />
+    <None Remove="nlog.config" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="azure.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\azure.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +48,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="NLog" Version="5.2.8" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="5.3.8" />
     <PackageReference Include="Polly" Version="8.2.0" />
     <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
     <PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
@@ -65,7 +82,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\info.png" />
     <Resource Include="Images\loading.gif" />
+    <Resource Include="Images\refresh.png" />
+    <Resource Include="Images\zoom.png" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

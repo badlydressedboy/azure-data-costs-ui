@@ -19,8 +19,25 @@
                 -->
                 <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />-->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Steel.xaml" />
+
+
+                <ResourceDictionary>
+
+                    <Style x:Key="HelpImageStyle" TargetType="Image">
+                        <Setter Property="Source" Value="/AzureDataCosts;component/Images/info.png"/>
+                        <Setter Property="Margin" Value="4"/>
+                        <Setter Property="ToolTipService.InitialShowDelay" Value="0"/>
+                        <Setter Property="Cursor" Value="Help"/>
+                    </Style>
+
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
+
+          
+
         </ResourceDictionary>
+        
+        
     </Application.Resources>
     
 </Application>
