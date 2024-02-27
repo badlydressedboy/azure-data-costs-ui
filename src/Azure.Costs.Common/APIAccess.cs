@@ -939,6 +939,7 @@ namespace Azure.Costs.Common
                         // handle epool costs if appropriate
                         if (sqlDb.IsElaticPoolMember)
                         {
+                            
                             _logger.Info($"Over provision % for {sqlDb.name} based on EPOOL max use % of {sqlDb.ElasticPool.MaxDtuUsed}");
                             sqlDb.OverSpendFromMaxPc = 100 - sqlDb.ElasticPool.MaxDtuUsed;
                         }

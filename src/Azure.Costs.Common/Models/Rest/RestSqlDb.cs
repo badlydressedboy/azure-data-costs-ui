@@ -1,4 +1,5 @@
 ﻿using Azure.Costs.Common.Models.SQL;
+using Azure.Costs.Common.Models.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,8 @@ namespace Azure.Costs.Common.Models.Rest
     }
     public abstract class PortalResource
     {
+        protected static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
         public string PortalResourceUrl { get; set; }
     }
     public class RestSqlDb : PortalResource, INotifyPropertyChanged
@@ -203,6 +206,16 @@ namespace Azure.Costs.Common.Models.Rest
                 OnPropertyChanged("PotentialSavingAmountString");
             }
         }
+        private string _potentialSavingDescription = "None";
+        public string PotentialSavingDescription
+        {
+            get { return _potentialSavingDescription; }
+            set
+            {
+                _potentialSavingDescription = value;
+                OnPropertyChanged("PotentialSavingAmountString");
+            }
+        }
 
         public double allocated_data_storage_gb { get; set; }
 
@@ -357,13 +370,51 @@ namespace Azure.Costs.Common.Models.Rest
         {
             PotentialSavingAmount = 0;
             if (TotalCostBilling <= 6) return; // too small to decrease
-            if(OverSpendFromMaxPc > 75)
+
+            if (IsElaticPoolMember)
             {
-                PotentialSavingAmount = TotalCostBilling * (decimal)0.75;
+                if (properties.currentServiceObjectiveName == "ElasticPool GP_Gen5 2")
+                {
+                    _logger.Info($"EPOOL {ElasticPool.name} already cheapest vcore. Maybe drop to DTU if usage very low");
+                    if (OverSpendFromMaxPc > 75)
+                    {
+                        // cost reuction is approx $400 pm to $270 for DTU Standard 100DTUs - 33%ish
+                        // calc % not hard code to cater for diff currencies
+                        PotentialSavingAmount = TotalCostBilling * (decimal)0.33;
+
+                        PotentialSavingDescription = $"Already cheapest vcore. Drop to DTU as usage very low {100 - OverSpendFromMaxPc}";
+                    }
+                }
+                else
+                {
+
+                    // not cheapest vcore but % of the cost is storage and licensing so approx 50% can be reduced
+                    var nonStorageCost = TotalCostBilling * (decimal)0.5;
+                    if (OverSpendFromMaxPc > 75)
+                    {
+                        PotentialSavingAmount = nonStorageCost * (decimal)0.75;
+                        PotentialSavingDescription = $"Reducing vcore component cost of {nonStorageCost} (not license or storage) by 75% as max usage under 25%.";
+                    }
+                    if (OverSpendFromMaxPc > 50 && OverSpendFromMaxPc <= 75)
+                    {
+                        PotentialSavingAmount = nonStorageCost * (decimal)0.50;
+                        PotentialSavingDescription = $"Reducing vcore component cost of {nonStorageCost} (not license or storage) by 50% as max usage between 25% and 50%.";
+                    }
+                }
             }
-            if (OverSpendFromMaxPc > 50 && OverSpendFromMaxPc <= 75)
+            else
             {
-                PotentialSavingAmount = TotalCostBilling * (decimal)0.50;
+                // DTU is linear with no seperate storage/licensing costs
+                if (OverSpendFromMaxPc > 75)
+                {
+                    PotentialSavingAmount = TotalCostBilling * (decimal)0.75;
+                    PotentialSavingDescription = $"Reducing DTU cost by 75% as max usage under 25%.";
+                }
+                if (OverSpendFromMaxPc > 50 && OverSpendFromMaxPc <= 75)
+                {
+                    PotentialSavingAmount = TotalCostBilling * (decimal)0.50;
+                    PotentialSavingDescription = $"Reducing DTU cost by 50% as max usage between 25% and 50%.";
+                }
             }
 
         }

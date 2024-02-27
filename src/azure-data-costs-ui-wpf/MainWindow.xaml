@@ -468,6 +468,8 @@
 
                                 <DataGridTextColumn Header="Over Provision%"  Binding="{Binding OverSpendFromMaxPc, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
                                 <DataGridTextColumn Header="Potential Saving"  Binding="{Binding PotentialSavingAmount, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="Saving Description"  Binding="{Binding PotentialSavingDescription}" />
+
 
                                 <DataGridTextColumn Header="DTU %"  Binding="{Binding dtu_consumption_percent, StringFormat=N0}" local:DataGridExtensions.SortDesc="True" >
                                     <DataGridTextColumn.CellStyle>
