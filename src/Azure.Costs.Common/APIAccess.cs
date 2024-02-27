@@ -29,12 +29,13 @@ using System.Reflection.PortableExecutable;
 using Azure;
 using Azure.Costs.Common.Models.SQL;
 using Polly;
+using NLog;
 
 namespace Azure.Costs.Common
 {
     public static class APIAccess
     {
-        public static MyHttpClient HttpClient;        
+        public static MyHttpClient HttpClient;
         private static string _accessToken;
         public static int CostDays { get; set; } = 30;
         public static string DefaultDomain;
@@ -69,9 +70,9 @@ namespace Azure.Costs.Common
                 HttpResponseMessage r = await HttpClient.GetAsync(url);
                 return r;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                if(ex.InnerException != null)
+                if (ex.InnerException != null)
                 {
                     _logger.Error(ex.InnerException);
                 }
@@ -79,7 +80,7 @@ namespace Azure.Costs.Common
                 {
                     _logger.Error(ex);
                 }
-                
+
             }
             return null;
         }
@@ -111,7 +112,7 @@ namespace Azure.Costs.Common
             }
             catch (Exception ex)
             {
-                return ex.Message;                
+                return ex.Message;
             }
             return null;
         }
@@ -132,7 +133,7 @@ namespace Azure.Costs.Common
 
                 _logger.Info("Got subscriptions OK.");
 
-                return subscriptions.value; 
+                return subscriptions.value;
             }
             catch (Exception ex)
             {
@@ -167,13 +168,13 @@ namespace Azure.Costs.Common
                  *  - az account get-access-token --resource https://vault.azure.net
                  */
 
-            
+
                 try
                 {
                     Task[] tasks = new Task[7];
                     tasks[0] = Task.Run(async () =>
                     {
-                        await GetSqlServers(subscription);      
+                        await GetSqlServers(subscription);
                     });
                     tasks[1] = Task.Run(async () =>
                     {
@@ -211,9 +212,9 @@ namespace Azure.Costs.Common
                 catch (AggregateException ae)
                 {
                     throw ae.Flatten();//https://msdn.microsoft.com/en-us/library/dd537614(v=vs.110).aspx
-                }                
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // subscription scope usage bug: https://learn.microsoft.com/en-us/answers/questions/795590/az-consumption-usage-list-errors-out-with-please-u.html
                 _logger.Error(ex);
@@ -238,7 +239,7 @@ namespace Azure.Costs.Common
                 // get location and name properties from list of servers
                 RootRestSqlServer servers = await response.Content.ReadFromJsonAsync<RootRestSqlServer>();
                 if (servers.value == null) return;
-                
+
                 foreach (var restSql in servers.value)
                 {
                     string rg = restSql.id.Substring(restSql.id.IndexOf("resourceGroup") + 15);
@@ -264,7 +265,7 @@ namespace Azure.Costs.Common
 
                 _logger.Info("Complete GetSqlServers().");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error(ex);
             }
@@ -289,7 +290,7 @@ namespace Azure.Costs.Common
                 var json = await response.Content.ReadAsStringAsync();
                 // get location and name properties from list of servers
 
-                
+
 
 
                 RootElasticPool pools = await response.Content.ReadFromJsonAsync<RootElasticPool>();
@@ -299,7 +300,7 @@ namespace Azure.Costs.Common
                 //{
                 //    Debug.WriteLine("got elastic");
                 //}
-                sqlServer.ElasticPools.Clear(); 
+                sqlServer.ElasticPools.Clear();
                 foreach (var restPool in pools.value)
                 {
                     sqlServer.ElasticPools.Add(restPool);
@@ -334,7 +335,7 @@ namespace Azure.Costs.Common
 
             try
             {
-                string dbUrl = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resourceGroups/{sqlServer.resourceGroup}/providers/Microsoft.Sql/servers/{sqlServer.name}/databases?api-version=2021-02-01-preview";              
+                string dbUrl = $"https://management.azure.com/subscriptions/{sqlServer.Subscription.subscriptionId}/resourceGroups/{sqlServer.resourceGroup}/providers/Microsoft.Sql/servers/{sqlServer.name}/databases?api-version=2021-02-01-preview";
                 var response = await GetHttpClientAsync(dbUrl);
 
                 if (response == null)
@@ -343,7 +344,7 @@ namespace Azure.Costs.Common
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
-                RootRestSqlDb databases = await response?.Content?.ReadFromJsonAsync<RootRestSqlDb>();                
+                RootRestSqlDb databases = await response?.Content?.ReadFromJsonAsync<RootRestSqlDb>();
 
                 foreach (var db in databases.value.Where(x => x.name != "master"))
                 {
@@ -357,11 +358,11 @@ namespace Azure.Costs.Common
                     db.PortalResourceUrl = $@"{BasePortalUrl}{db.Subscription.subscriptionId}/resourceGroups/{db.resourceGroup}/providers/Microsoft.Sql/servers/{db.serverName}/databases/{db.name}/overview";// ends subscriptions/
 
                     if (db.properties.elasticPoolId != null)
-                    {                        
-                        foreach(var ep in sqlServer.ElasticPools)
-                        {                            
+                    {
+                        foreach (var ep in sqlServer.ElasticPools)
+                        {
                             if (db.properties.elasticPoolId.Contains(ep.name))
-                            {                                
+                            {
                                 db.properties.elasticPoolName = ep.name;
                                 db.ElasticPool = ep;
                             }
@@ -376,7 +377,7 @@ namespace Azure.Costs.Common
                 {
                     foreach (var db in sqlServer.Dbs)
                     {
-                        if(db.ElasticPool != null && db.ElasticPool.name == pool.name)
+                        if (db.ElasticPool != null && db.ElasticPool.name == pool.name)
                         {
                             pool.dbList.Add(db);
                             db.properties.currentServiceObjectiveName += $" {pool.sku.name} {pool.sku.capacity}";
@@ -386,7 +387,7 @@ namespace Azure.Costs.Common
 
                 try
                 {
-                  
+
                     Task[] tasks = new Task[6];
                     tasks[0] = Task.Run(async () =>
                     {
@@ -424,12 +425,12 @@ namespace Azure.Costs.Common
 
                 //Debug.WriteLine($"finished getting {sqlServer.name} dbs ({sqlServer.Dbs.Count})");
                 _logger.Info($"Complete GetSqlServerDatabases {sqlServer.name}.");
-                  
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error(ex);
-            }            
+            }
         }
 
         public static async Task RefreshRestDb(RestSqlDb sqlDb)
@@ -483,7 +484,7 @@ namespace Azure.Costs.Common
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/usages?api-version=2021-11-01";
 
                 HttpResponseMessage response = await GetHttpClientAsync(url);
-                if(response == null)
+                if (response == null)
                 {
                     return;
                 }
@@ -494,7 +495,7 @@ namespace Azure.Costs.Common
                 {
                     foreach (var a in usages.value)
                     {
-                        if(a.name == "database_size")
+                        if (a.name == "database_size")
                         {
                             sqlDb.currentDbSizeBytes = a.properties.currentValue;
                             sqlDb.currentDbSizeLimitBytes = a.properties.limit;
@@ -512,7 +513,7 @@ namespace Azure.Costs.Common
             }
             catch (Exception ex)
             {
-                _logger.Error (ex);
+                _logger.Error(ex);
             }
         }
 
@@ -542,14 +543,15 @@ namespace Azure.Costs.Common
                     return;
                 }
                 var advisors = await response?.Content?.ReadFromJsonAsync<List<Advisor>>();
-                                
+
                 if (advisors != null)
                 {
                     foreach (var a in advisors)
                     {
                         sqlDb.AdvisorRecommendationCount += a.properties.recommendedActions.Count;
 
-                        foreach (var ra in a.properties.recommendedActions) {
+                        foreach (var ra in a.properties.recommendedActions)
+                        {
                             sqlDb.advisorRecommendationDetails += ra.properties.implementationDetails.script + "\n\n";
                         }
                     }
@@ -590,8 +592,8 @@ namespace Azure.Costs.Common
                         // unknown error
                         sqlDb.VulnerabilityScanError = json;
                         Debug.WriteLine($"Vuln Assessment Error for {sqlDb.serverName}.{sqlDb.name}: {response.StatusCode}, {response.ReasonPhrase}");
-                    }                    
-                    
+                    }
+
                     return;
                 }
                 var scans = await response?.Content?.ReadFromJsonAsync<RootVulnerabilityScans>();
@@ -601,7 +603,7 @@ namespace Azure.Costs.Common
                     var latestScan = scans.value.OrderByDescending(x => x.properties.endTime).First();
                     if (latestScan == null) return;
                     sqlDb.latestVulnerabilityScanProperties = latestScan.properties;
-                   
+
                     //Debug.WriteLine("ltr null");
                     //sqlDb.lTRPolicyProperties = ltr?.properties;
                 }
@@ -683,13 +685,13 @@ namespace Azure.Costs.Common
 
                 string timeGrainParam = "&interval=PT1M"; // PT1H, PT30M, PT1M, P1D
 
-                if(minutes == null) // use sqlDb.MetricsHistoryDays
+                if (minutes == null) // use sqlDb.MetricsHistoryDays
                 {
                     minutes = sqlDb.MetricsHistoryDays * 1440;
                 }
                 int mins = (int)minutes;
 
-                if(mins > 120) timeGrainParam = "&interval=PT5M";
+                if (mins > 120) timeGrainParam = "&interval=PT5M";
                 if (mins > 360) timeGrainParam = "&interval=PT15M";
                 if (mins > 720) timeGrainParam = "&interval=PT30M";
                 if (mins > 1440) timeGrainParam = "&interval=PT1H";
@@ -698,9 +700,9 @@ namespace Azure.Costs.Common
 
                 sqlDb.MetricsHistoryMinutes = mins;
 
-                string timeFrom = DateTime.UtcNow.AddMinutes(-1* mins).ToString("s") + "Z";
+                string timeFrom = DateTime.UtcNow.AddMinutes(-1 * mins).ToString("s") + "Z";
                 string timeTo = DateTime.UtcNow.ToString("s") + "Z";
-                
+
                 if (sqlDb.IsElaticPoolMember)
                 {
                     // get elastic pool costs if required
@@ -758,16 +760,18 @@ namespace Azure.Costs.Common
 
                                             break;
                                     }
-                                }catch(Exception ex) { 
-                                    Debug.WriteLine(ex.ToString()); 
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.WriteLine(ex.ToString());
                                 }
                             }
                         }
                     }
                 }
-               
+
                 string url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?{timeGrainParam}&aggregation=average,maximum&timespan={timeFrom}/{timeTo}&metricnames=physical_data_read_percent,log_write_percent,dtu_consumption_percent,sessions_count,storage,storage_percent,workers_percent,sessions_percent,dtu_limit,dtu_used,sqlserver_process_core_percent,sqlserver_process_memory_percent,tempdb_data_size,tempdb_log_size,tempdb_log_used_percent,allocated_data_storage&api-version=2021-05-01";
-                if (sqlDb.IsVCore) 
+                if (sqlDb.IsVCore)
                 {
                     // dont get elastic pool metrics - we are still at db level
                     url = $"https://management.azure.com/subscriptions/{sqlDb.Subscription.subscriptionId}/resourceGroups/{sqlDb.resourceGroup}/providers/Microsoft.Sql/servers/{sqlDb.serverName}/databases/{sqlDb.name}/providers/Microsoft.Insights/metrics?aggregation=average,maximum{timeGrainParam}&timespan={timeFrom}/{timeTo}&metricnames=cpu_percent&api-version=2021-05-01";
@@ -801,140 +805,152 @@ namespace Azure.Costs.Common
                 //App.Current.Dispatcher.Invoke(new Action(() =>
                 //{
 
-                    if (metrics?.value != null)
+                if (metrics?.value != null)
+                {
+                    foreach (var metric in metrics.value)
                     {
-                        foreach (var metric in metrics.value)
+                        if (metric.timeseries.Count() == 0) continue;
+
+                        var latestAvg = metric.timeseries[0].data[0].average;
+                        var latestMax = metric.timeseries[0].data[0].maximum;
+
+                        if (latestMax > 0)
                         {
-                            if (metric.timeseries.Count() == 0) continue;
-
-                            var latestAvg = metric.timeseries[0].data[0].average;
-                            var latestMax = metric.timeseries[0].data[0].maximum;
-
-                            if (latestMax > 0)
-                            {
-                                //Debug.WriteLine("Got max for " + metric.name.value);
-                            }
-
-                            string metricName = metric.name.value;
-                            long outLong;
-                            switch (metricName)
-                            {
-                                case "dtu_consumption_percent":
-                                    sqlDb.dtu_consumption_percent = latestAvg;
-
-                                    sqlDb.PerformanceMetricSeries.Clear();
-
-                                    sqlDb.MaxDtuUsed = 0;
-                                    foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
-                                    {
-                                        sqlDb.PerformanceMetricSeries.Add(d);
-                                        if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
-                                    }
-
-                                    break;
-                                case "cpu_percent":
-                                    sqlDb.dtu_consumption_percent = latestAvg;
-
-                                    sqlDb.PerformanceMetricSeries.Clear();
-
-                                    sqlDb.MaxDtuUsed = 0;
-                                    foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
-                                    {
-                                        sqlDb.PerformanceMetricSeries.Add(d);
-                                        if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
-                                    }
-
-                                    break;
-                                case "dwu_consumption_percent": // DWH
-                                    sqlDb.dtu_consumption_percent = latestAvg;
-
-                                    sqlDb.PerformanceMetricSeries.Clear();
-
-                                    sqlDb.MaxDtuUsed = 0;
-                                    foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
-                                    {
-                                        sqlDb.PerformanceMetricSeries.Add(d);
-                                        if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
-                                    }
-
-                                    break;
-
-
-                                case "physical_data_read_percent":
-                                    sqlDb.physical_data_read_percent = latestAvg;
-                                    break;
-                                case "log_write_percent":
-                                    sqlDb.log_write_percent = latestAvg;
-                                    break;
-                                case "storage_percent":
-                                    sqlDb.storage_percent = latestAvg;
-                                    break;
-                                case "workers_percent":
-                                    sqlDb.workers_percent = latestAvg;
-                                    break;
-                                case "sessions_percent":
-                                    sqlDb.sessions_percent = latestAvg;
-                                    break;
-                                case "sqlserver_process_core_percent":
-                                    sqlDb.sqlserver_process_core_percent = latestAvg;
-                                    break;
-                                case "sqlserver_process_memory_percent":
-                                    sqlDb.sqlserver_process_memory_percent = latestAvg;
-                                    break;
-
-                                case "sessions_count":
-                                    if (Int64.TryParse(latestAvg.ToString(), out outLong))
-                                    {
-                                        sqlDb.sessions_count = outLong;
-                                    }
-                                    break;
-                                case "storage":
-                                    if (Int64.TryParse(latestAvg.ToString(), out outLong))
-                                    {
-                                        sqlDb.storage = outLong;
-                                    }
-                                    break;
-                                case "dtu_limit":
-                                    if (Int64.TryParse(latestAvg.ToString(), out outLong))
-                                    {
-                                        sqlDb.dtu_limit = outLong;
-                                    }
-                                    break;
-                                case "dtu_used":
-                                    if (Int64.TryParse(latestAvg.ToString(), out outLong))
-                                    {
-                                        sqlDb.dtu_used = outLong;
-                                    }
-                                    break;
-                                case "tempdb_data_size":
-                                    sqlDb.tempdb_data_size = latestMax;
-                                    // always 0
-                                    break;
-                                case "tempdb_log_size":
-                                    sqlDb.tempdb_log_size = latestMax;
-                                    // always 0
-                                    break;
-                                case "tempdb_log_used_percent":
-                                    sqlDb.tempdb_log_used_percent = latestMax;
-                                    // always 0
-                                    break;
-                                case "allocated_data_storage":
-                                    if (Int64.TryParse(latestAvg.ToString(), out outLong))
-                                    {
-                                        sqlDb.allocated_data_storage = outLong;
-                                    }
-                                    break;
-                            }
+                            //Debug.WriteLine("Got max for " + metric.name.value);
                         }
 
-                        // spend analysis
-                        if (minutes > 2)
+                        string metricName = metric.name.value;
+                        long outLong;
+                        switch (metricName)
                         {
-                            sqlDb.GotMetricsHistory = true;
-                            sqlDb.OverSpendFromMaxPc = 100 - sqlDb.MaxDtuUsed;
-                            sqlDb.CalcPotentialSaving();
+                            case "dtu_consumption_percent":
+                                sqlDb.dtu_consumption_percent = latestAvg;
+
+                                sqlDb.PerformanceMetricSeries.Clear();
+
+                                sqlDb.MaxDtuUsed = 0;
+                                foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                {
+                                    sqlDb.PerformanceMetricSeries.Add(d);
+                                    if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
+                                }
+
+                                break;
+                            case "cpu_percent":
+                                sqlDb.dtu_consumption_percent = latestAvg;
+
+                                sqlDb.PerformanceMetricSeries.Clear();
+
+                                sqlDb.MaxDtuUsed = 0;
+                                foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                {
+                                    sqlDb.PerformanceMetricSeries.Add(d);
+                                    if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
+                                }
+
+                                break;
+                            case "dwu_consumption_percent": // DWH
+                                sqlDb.dtu_consumption_percent = latestAvg;
+
+                                sqlDb.PerformanceMetricSeries.Clear();
+
+                                sqlDb.MaxDtuUsed = 0;
+                                foreach (var d in metric.timeseries[0].data.OrderByDescending(x => x.timeStamp))
+                                {
+                                    sqlDb.PerformanceMetricSeries.Add(d);
+                                    if (d.maximum > sqlDb.MaxDtuUsed) sqlDb.MaxDtuUsed = d.maximum;
+                                }
+
+                                break;
+
+
+                            case "physical_data_read_percent":
+                                sqlDb.physical_data_read_percent = latestAvg;
+                                break;
+                            case "log_write_percent":
+                                sqlDb.log_write_percent = latestAvg;
+                                break;
+                            case "storage_percent":
+                                sqlDb.storage_percent = latestAvg;
+                                break;
+                            case "workers_percent":
+                                sqlDb.workers_percent = latestAvg;
+                                break;
+                            case "sessions_percent":
+                                sqlDb.sessions_percent = latestAvg;
+                                break;
+                            case "sqlserver_process_core_percent":
+                                sqlDb.sqlserver_process_core_percent = latestAvg;
+                                break;
+                            case "sqlserver_process_memory_percent":
+                                sqlDb.sqlserver_process_memory_percent = latestAvg;
+                                break;
+
+                            case "sessions_count":
+                                if (Int64.TryParse(latestAvg.ToString(), out outLong))
+                                {
+                                    sqlDb.sessions_count = outLong;
+                                }
+                                break;
+                            case "storage":
+                                if (Int64.TryParse(latestAvg.ToString(), out outLong))
+                                {
+                                    sqlDb.storage = outLong;
+                                }
+                                break;
+                            case "dtu_limit":
+                                if (Int64.TryParse(latestAvg.ToString(), out outLong))
+                                {
+                                    sqlDb.dtu_limit = outLong;
+                                }
+                                break;
+                            case "dtu_used":
+                                if (Int64.TryParse(latestAvg.ToString(), out outLong))
+                                {
+                                    sqlDb.dtu_used = outLong;
+                                }
+                                break;
+                            case "tempdb_data_size":
+                                sqlDb.tempdb_data_size = latestMax;
+                                // always 0
+                                break;
+                            case "tempdb_log_size":
+                                sqlDb.tempdb_log_size = latestMax;
+                                // always 0
+                                break;
+                            case "tempdb_log_used_percent":
+                                sqlDb.tempdb_log_used_percent = latestMax;
+                                // always 0
+                                break;
+                            case "allocated_data_storage":
+                                if (Int64.TryParse(latestAvg.ToString(), out outLong))
+                                {
+                                    sqlDb.allocated_data_storage = outLong;
+                                }
+                                break;
                         }
                     }
+
+                    // spend analysis
+                    if (minutes > 2)
+                    {
+                        sqlDb.GotMetricsHistory = true;
+
+                        // handle epool costs if appropriate
+                        if (sqlDb.IsElaticPoolMember)
+                        {
+                            _logger.Info($"Over provision % for {sqlDb.name} based on EPOOL max use % of {sqlDb.ElasticPool.MaxDtuUsed}");
+                            sqlDb.OverSpendFromMaxPc = 100 - sqlDb.ElasticPool.MaxDtuUsed;
+                        }
+                        else
+                        {
+                            _logger.Info($"Over provision % for {sqlDb.name} based on DB max use % of {sqlDb.MaxDtuUsed}");
+                            sqlDb.OverSpendFromMaxPc = 100 - sqlDb.MaxDtuUsed;
+                            
+                        }
+                        sqlDb.CalcPotentialSaving();
+                    }
+                }
                 //}));
 
                 //Debug.WriteLine($"finished getting {sqlDb.name} metrics");
@@ -944,7 +960,7 @@ namespace Azure.Costs.Common
             {
                 _logger.Error(ex);
             }
-            
+
             sqlDb.IsRestQueryBusy = false;
         }
 
@@ -954,7 +970,7 @@ namespace Azure.Costs.Common
 
             try
             {
-             
+
                 string timeGrainParam = "&interval=PT1M"; // PT1H, PT30M, PT1M, P1D
 
                 if (minutes == null) // use sqlDb.MetricsHistoryDays
@@ -1015,7 +1031,7 @@ namespace Azure.Costs.Common
                         long outLong;
                         switch (metricName)
                         {
-                          
+
                             case "Percentage CPU":
                                 //vm.dtu_consumption_percent = latestAvg;
 
@@ -1029,8 +1045,8 @@ namespace Azure.Costs.Common
                                 }
 
                                 break;
-                          
-                          
+
+
                         }
                     }
 
@@ -1070,7 +1086,7 @@ namespace Azure.Costs.Common
                 var json = await response.Content.ReadAsStringAsync();
                 RootServiceTierAdvisor advisors = await response?.Content?.ReadFromJsonAsync<RootServiceTierAdvisor>();
 
-                if(advisors?.value?.Count() > 0)
+                if (advisors?.value?.Count() > 0)
                 {
                     sqlDb.serviceTierAdvisor = advisors.value[0];
                     if (advisors.value.Count() > 1)
@@ -1121,9 +1137,9 @@ namespace Azure.Costs.Common
             subscription.CostsErrorMessage = "";
 
             try
-            {       
+            {
                 string timeFrom = DateTime.UtcNow.AddDays(-CostDays).ToString("s") + "Z";
-                string timeTo = DateTime.UtcNow.ToString("s") + "Z";         
+                string timeTo = DateTime.UtcNow.ToString("s") + "Z";
 
                 string payload = @"{'type':'ActualCost','dataSet':{'granularity':'None','aggregation':{'totalCost':{'name':'Cost','function':'Sum'},'totalCostUSD':{'name':'CostUSD','function':'Sum'},'sorting':[{'direction':'descending','name':'Cost'}],'grouping':[{'type':'Dimension','name':'ServiceName'},{'type':'Dimension','name':'MeterSubCategory'},{'type':'Dimension','name':'Product'},{'type':'Dimension','name':'Meter'},{'type':'Dimension','name':'ChargeType'},{'type':'Dimension','name':'PublisherType'}]},'timeframe':'Custom','timePeriod':{'from':'2022-11-01T00:00:00.000Z','to':'2022-11-30T23:59:59.000Z'}";
                 payload = @"{""type"":""ActualCost"",""dataSet"":{""granularity"":""None"",""aggregation"":{""totalCost"":{""name"":""Cost"",""function"":""Sum""},""totalCostUSD"":{""name"":""CostUSD"",""function"":""Sum""}},""sorting"":[{""direction"":""descending"",""name"":""Cost""}],""grouping"":[{""type"":""Dimension"",""name"":""ResourceGroupName""},{""type"":""Dimension"",""name"":""SubscriptionId""}]},""timeframe"":""Custom"",""timePeriod"":{""from"":""2022-11-01T00:00:00.000Z"",""to"":""2022-11-30T23:59:59.000Z""}}";
@@ -1146,7 +1162,7 @@ namespace Azure.Costs.Common
                         break;
                     case CostRequestType.DataFactory:
                         typeClause = @"""Azure Data Factory v2"",""Storage"", ""Bandwidth""";
-                        break; 
+                        break;
                     case CostRequestType.Storage:
                         typeClause = @""""",""Bandwidth"",""Storage""";
                         break;
@@ -1155,7 +1171,7 @@ namespace Azure.Costs.Common
                         break;
                     case CostRequestType.VM:
                         typeClause = @"""Virtual machines"", ""Virtual Network"", ""Bandwidth"",""Storage""";
-                        break;                    
+                        break;
                 }
                 //" + typeClause + @"
 
@@ -1246,11 +1262,11 @@ namespace Azure.Costs.Common
               
                                      
                  */
-             
+
 
 
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.CostManagement/query?api-version=2021-10-01";
-            
+
                 var client = new HttpClient
                 {
                     BaseAddress = new Uri("https://management.azure.com/subscriptions/")
@@ -1260,7 +1276,7 @@ namespace Azure.Costs.Common
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + _accessToken);
                 client.DefaultRequestHeaders.Add("Connection", "keep-alive");
                 client.DefaultRequestHeaders.Add("ClientType", "MetaToolType");
-                
+
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header               
 
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
@@ -1270,7 +1286,7 @@ namespace Azure.Costs.Common
 
                 HttpResponseMessage response = await SendThrottledRequest(client, request);
 
-                if(response == null)
+                if (response == null)
                 {
                     _logger.Error($"No response when querying costs for {subscription.displayName}");
                     return;
@@ -1284,13 +1300,13 @@ namespace Azure.Costs.Common
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    
+
                     subscription.CostsErrorMessage = $@"Subscription '{subscription.displayName}' costs query {response.ReasonPhrase}";
                     _logger.Error($"Couldnt get costs for subscription: {subscription.displayName}; {response.ReasonPhrase}");
                     return;
                 }
                 var json = await response.Content.ReadAsStringAsync();
-               
+
                 ResourceCostQuery query = await response.Content.ReadFromJsonAsync<ResourceCostQuery>();
 
                 int costsFount = 0;
@@ -1301,7 +1317,7 @@ namespace Azure.Costs.Common
                     {
                         var rc = new ResourceCost();
                         rc.SubscriptionId = subscription.subscriptionId;
-                        rc.Cost = Decimal.Parse(obj[0].ToString(), NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint); 
+                        rc.Cost = Decimal.Parse(obj[0].ToString(), NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint);
                         rc.CostUSD = Decimal.Parse(obj[1].ToString(), NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint);
                         rc.ResourceId = obj[2].ToString();
                         rc.ServiceName = obj[3].ToString();
@@ -1326,7 +1342,7 @@ namespace Azure.Costs.Common
                     catch (Exception ex)
                     {
                         _logger.Error(ex);
-                    }                 
+                    }
                 }
                 _logger.Info($"Complete GetSubscriptionCosts() for {subscription.displayName}; {costsFount} costs found.");
             }
@@ -1365,12 +1381,12 @@ namespace Azure.Costs.Common
                 TimeSpan _pauseBetweenFailures = TimeSpan.FromSeconds(2);
 
 
-        //var retryPolicy = Policy
-        //.HandleResult<HttpResponseMessage<T>>(x => !x.IsSuccessful)
-        //.WaitAndRetryAsync(_maxRetryAttempts, x => _pauseBetweenFailures, (iRestResponse, timeSpan, retryCount, context) =>
-        //{
-        //    _logger.LogWarning($"The request failed. HttpStatusCode={iRestResponse.Result.StatusCode}. Waiting {timeSpan} seconds before retry. Number attempt {retryCount}. Uri={iRestResponse.Result.ResponseUri}; RequestResponse={iRestResponse.Result.Content}");
-        //});
+                //var retryPolicy = Policy
+                //.HandleResult<HttpResponseMessage<T>>(x => !x.IsSuccessful)
+                //.WaitAndRetryAsync(_maxRetryAttempts, x => _pauseBetweenFailures, (iRestResponse, timeSpan, retryCount, context) =>
+                //{
+                //    _logger.LogWarning($"The request failed. HttpStatusCode={iRestResponse.Result.StatusCode}. Waiting {timeSpan} seconds before retry. Number attempt {retryCount}. Uri={iRestResponse.Result.ResponseUri}; RequestResponse={iRestResponse.Result.Content}");
+                //});
 
                 await p.Execute(async () => response = await client.SendAsync(request));
 
@@ -1387,7 +1403,8 @@ namespace Azure.Costs.Common
                     //    Debug.WriteLine("!FLOODED REQUEST AFTER SLEEP!");
                     //}
                 }
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex);
             }
@@ -1429,7 +1446,7 @@ namespace Azure.Costs.Common
             catch (Exception ex)
             {
                 _logger.Error(ex);
-            }            
+            }
         }
         public static async Task GetStorageAccounts(Subscription subscription)
         {
@@ -1438,7 +1455,7 @@ namespace Azure.Costs.Common
             try
             {
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-05-01";
-                
+
                 HttpResponseMessage response = await GetHttpClientAsync(url);
                 if (response == null)
                 {
@@ -1450,7 +1467,7 @@ namespace Azure.Costs.Common
                 RootStorageAccount root = await response.Content.ReadFromJsonAsync<RootStorageAccount>();
                 if (root?.value == null) return;
 
-                foreach(var account in root?.value)
+                foreach (var account in root?.value)
                 {
                     Debug.WriteLine($"Got storage acc {account.name}");
                     account.Subscription = subscription;
@@ -1486,7 +1503,7 @@ namespace Azure.Costs.Common
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
-                
+
                 RootVNet root = await response.Content.ReadFromJsonAsync<RootVNet>();
                 if (root?.value == null) return;
 
@@ -1526,7 +1543,7 @@ namespace Azure.Costs.Common
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
-               
+
                 RootVM root = await response.Content.ReadFromJsonAsync<RootVM>();
                 if (root?.value == null) return;
 
@@ -1566,7 +1583,7 @@ namespace Azure.Costs.Common
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
-                
+
                 RootPurview root = await response.Content.ReadFromJsonAsync<RootPurview>();
                 if (root?.value == null) return;
 

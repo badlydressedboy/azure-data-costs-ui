@@ -1707,7 +1707,7 @@
                                                 <TextBox Height="22" Width="30" VerticalContentAlignment="Center" Padding="0" VerticalAlignment="Center" Margin="10,2,2,2" 
                                                          Text="{Binding MetricsHistoryDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                          MouseDoubleClick="NonGridExpandingTextBox_MouseDoubleClick"
-                                                         PreviewMouseDoubleClick=""
+                                                         PreviewMouseDoubleClick="NonGridExpandingTextBox_MouseDoubleClick"
                                                          ></TextBox>
                                                 <TextBlock Margin="4,2,2,2" Text="Days" VerticalAlignment="Center"></TextBlock>
 
