@@ -213,7 +213,7 @@ namespace Azure.Costs.Common.Models.Rest
             set
             {
                 _potentialSavingDescription = value;
-                OnPropertyChanged("PotentialSavingAmountString");
+                OnPropertyChanged("PotentialSavingDescription");
             }
         }
 
