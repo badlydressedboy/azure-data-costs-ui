@@ -20,6 +20,10 @@ SQL DB Cost Savings Analysis
 ![az-costs-analyze](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/2dcf6641-c031-4671-84b4-34d8b5e69f61)
 
 
+Spend analysis gives saving and reason for all databases
+![image](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/0e9c121d-be64-4052-ba65-89c79c144bb6)
+
+
 SQL DB Live Status (sessions etc)
 ![az-db-status](https://github.com/badlydressedboy/azure-data-costs-ui/assets/3395522/60c345fd-398a-456d-bdd9-2586b580373d)
 
