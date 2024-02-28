@@ -1285,6 +1285,9 @@ namespace Azure.Costs.Common
                                                     Encoding.UTF8,
                                                     "application/json");//CONTENT-TYPE header
 
+
+                
+
                 HttpResponseMessage response = await SendThrottledRequest(client, request);
 
                 if (response == null)
@@ -1304,6 +1307,8 @@ namespace Azure.Costs.Common
 
                     subscription.CostsErrorMessage = $@"Subscription '{subscription.displayName}' costs query {response.ReasonPhrase}";
                     _logger.Error($"Couldnt get costs for subscription: {subscription.displayName}; {response.ReasonPhrase}");
+                    _logger.Error($"Request url: {url}");
+                    _logger.Error($"Request content: {payload}");
                     return;
                 }
                 var json = await response.Content.ReadAsStringAsync();
