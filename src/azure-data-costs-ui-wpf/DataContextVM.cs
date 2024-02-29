@@ -218,6 +218,17 @@ namespace Azure.Costs.Ui.Wpf
                 SetProperty(ref isPurviewQueryBusy, value);
             }
         }
+
+        private bool isFunctionsQueryBusy;
+        public bool IsFunctionsQueryBusy
+        {
+            get => isFunctionsQueryBusy;
+            set
+            {
+                SetProperty(ref isFunctionsQueryBusy, value);
+            }
+        }
+
         private bool isTestLoginBusy;
         public bool IsTestLoginBusy
         {
@@ -758,6 +769,53 @@ namespace Azure.Costs.Ui.Wpf
                         {
                             await APIAccess.GetPurviews(sub);
                             if (sub.Purviews.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Purview);
+                        });
+
+                foreach (var sub in subsCopy)
+                {
+                    if (!sub.ReadObjects) continue; // ignore this subscription
+                    foreach (var purv in sub.Purviews)
+                    {
+                        MapCostToPurview(purv, sub.ResourceCosts);
+                        PurviewList.Add(purv);
+
+                        foreach (var c in purv.Costs)
+                        {
+                            totalPurviewCosts += c.Cost;
+                        }
+                    }
+                }
+                TotalPurviewCostsText = totalPurviewCosts.ToString("N2");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+            IsPurviewQueryBusy = false;
+            UpdateHttpAccessCountMessage();
+        }
+
+        public async Task RefreshFunctions()
+        {
+            if (IsFunctionsQueryBusy) return;
+            IsFunctionsQueryBusy = true;
+
+            try
+            {
+                SyncSelectedSubs();
+
+                PurviewList.Clear();
+
+                decimal totalPurviewCosts = 0;
+
+
+                var subsCopy = SelectedSubscriptions.ToList();
+                await Parallel.ForEachAsync(subsCopy
+                        , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                        , async (sub, y) =>
+                        {
+                            await APIAccess.GetFunctions(sub);
+                            //if (sub.Purviews.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Purview);
                         });
 
                 foreach (var sub in subsCopy)

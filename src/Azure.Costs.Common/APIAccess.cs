@@ -1705,6 +1705,49 @@ namespace Azure.Costs.Common
                 _logger.Error(ex);
             }
         }
+
+        public static async Task GetFunctions(Subscription subscription)
+        {
+            _logger.Info("Starting GetFunctions()...");
+
+            try
+            {
+                string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers?api-version=2023-07-01";
+
+                HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+
+
+                return;
+
+                RootPurview root = await response.Content.ReadFromJsonAsync<RootPurview>();
+                if (root?.value == null) return;
+
+                foreach (var purv in root.value)
+                {
+                    Debug.WriteLine($"Got purv acc {purv.name}");
+                    purv.Subscription = subscription;
+
+                    string rg = purv.id.Substring(purv.id.IndexOf("resourceGroup") + 15);
+                    purv.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
+
+                    purv.PortalResourceUrl = $@"{BasePortalUrl}{purv.Subscription.subscriptionId}/resourceGroups/{purv.resourceGroup}/providers/Microsoft.Purview/accounts/{purv.name}/overview";
+
+                }
+                subscription.Purviews = root.value.ToList();
+
+                _logger.Info("Complete GetFunctions().");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
     }
 
 

@@ -424,6 +424,11 @@ namespace Azure.Costs.Ui.Wpf
             await vm.RefreshPurview();
         }
 
+        private async void FunctionsRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await vm.RefreshFunctions();
+        }
+
         private async void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             switch (MainTabControl.SelectedIndex)
@@ -628,6 +633,12 @@ namespace Azure.Costs.Ui.Wpf
             tb.Focus();
             e.Handled = true;
             return;
+        }
+
+     
+        private void FunctionsDataGridViewSource_Filter(object sender, FilterEventArgs e)
+        {
+
         }
     }
     public class ignoresubscriptionnames
