@@ -1,5 +1,8 @@
 # azure-data-costs-ui
-Drill down into individual Azure data related costs and see side by side expenditure on resources of given types
+Support this project with a ⭐ -report an issue, or even better, place a pull request 📫 😊. Grab the latest release if you just want to cut your Azure spending.
+
+
+See Azure data related costs side by side with their usage over time to identify where you are over-spending.
 
 The UI is WPF so currently Windows only. I like the simplicity of not having to worry about a server and data access if governed by your login to azure, not a servers.
 
