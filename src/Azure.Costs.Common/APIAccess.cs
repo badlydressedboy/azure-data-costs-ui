@@ -1264,7 +1264,85 @@ namespace Azure.Costs.Common
                                      
                  */
 
+                payload = @"{{{""type"":""ActualCost""
+                        ,,,""timeframe"": ""Custom""
+                        , ""timePeriod"":{""from"":""2024-01-30T10:44:38Z"",""to"":""2024-02-29T10:44:38Z""}
+                        ,""dataSet"":{
+                            ""granularity"":""None""
+,""filter"": {
+""dimensions"": {
+""name"": ""serviceName""
+,""operator"": ""In""
+,""values"": [
+                                        ""Azure Data Factory v2""
+                                        ,""SQL Database""
+                                        ,""SQL Server""
+                                        ,""Storage""
+                                        ,""Virtual machines""
+                                        ,""Bandwidth""
+                                        ,""Virtual Network""
+                                        ,""Advanced Threat Protection""
+                                        ,""Purview""
+                                        ,""Azure Purview""
+                                        ,""Power BI Embedded""
+                                        ,""Azure Synapse Analytics""
+                                        ,""Synapse SQL Pool""
+                                    ]
+                                }
+                            }
 
+
+
+                        ,""aggregation"":{
+                            ""totalCost"":{
+                                ""name"":""Cost""
+                                ,""function"":""Sum""
+                            },
+                            ""totalCostUSD"":{
+                                ""name"":""CostUSD""
+                                ,""function"":""Sum""
+                            }
+                        }
+                        ,""sorting"":[
+                            {""direction"":""descending""
+                            ,""name"":""Cost""}
+                        ]
+                        ,""grouping"":[
+                            {""type"":""Dimension""
+                            ,""name"":""ResourceId""
+                            }
+                            ,{""type"":""Dimension""
+                                ,""name"":""ServiceName""
+                            }
+                            ,{""type"":""Dimension""
+                                ,""name"":""MeterSubCategory""
+                            }
+                            ,{""type"":""Dimension""
+                                ,""name"":""Product""
+                            }
+                            ,{""type"":""Dimension""
+                                ,""name"":""Meter""
+                            }
+                            ,{""type"":""Dimension""
+                                ,""name"":""ChargeType""
+                            }
+                            ,{""type"":""Dimension""
+                                ,""name"":""PublisherType""
+                            }
+                            ,{""type"":""Dimension""
+                                ,""name"":""Provider""
+                            }
+                           
+                            ,{""type"":""Dimension""
+                                ,""name"":""MeterCategory""
+                            }
+                            ,{""type"":""Dimension""
+                                ,""name"":""ResourceType""
+                            }
+                        ]
+                    }
+                }
+";
 
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.CostManagement/query?api-version=2021-10-01";
 
@@ -1286,10 +1364,11 @@ namespace Azure.Costs.Common
                                                     "application/json");//CONTENT-TYPE header
 
 
-                
+
 
                 HttpResponseMessage response = await SendThrottledRequest(client, request);
-
+                //response.Content.ReadAsStream
+                
                 if (response == null)
                 {
                     _logger.Error($"No response when querying costs for {subscription.displayName}");
@@ -1304,11 +1383,24 @@ namespace Azure.Costs.Common
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    var w = response.RequestMessage;
 
                     subscription.CostsErrorMessage = $@"Subscription '{subscription.displayName}' costs query {response.ReasonPhrase}";
                     _logger.Error($"Couldnt get costs for subscription: {subscription.displayName}; {response.ReasonPhrase}");
                     _logger.Error($"Request url: {url}");
                     _logger.Error($"Request content: {payload}");
+                    _logger.Error($"Bearer Token *secret*: {_accessToken}");
+
+                    using (var stream = response.Content.ReadAsStream())
+                    {
+                        using (var reader = new StreamReader(stream, Encoding.UTF8))
+                        {
+                            var responseContentText = reader.ReadToEnd();
+                            _logger.Error($"Response text: {responseContentText}");
+                        }
+                    }
+                    _logger.Error("Use the above token, url and content to test in postman (set authorization: bearer token & paste token in, url is a POST and paste content into body as raw)");
+
                     return;
                 }
                 var json = await response.Content.ReadAsStringAsync();
