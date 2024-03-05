@@ -97,6 +97,12 @@ namespace Azure.Costs.Ui.Wpf
             get => totalStorageCostsText;
             set => SetProperty(ref totalStorageCostsText, value);
         }
+        private string dbFooterErrorText;
+        public string DbFooterErrorText
+        {
+            get => dbFooterErrorText;
+            set => SetProperty(ref dbFooterErrorText, value);
+        }
         private string totalVNetCostsText;
         public string TotalVNetCostsText
         {
@@ -464,7 +470,7 @@ namespace Azure.Costs.Ui.Wpf
 
             IsGetSqlServersBusy = true;
             Debug.WriteLine("IsGetSqlServersBusy = true...");
-
+            DbFooterErrorText = "";
             RestSqlDbList.Clear();
             RestErrorMessage = "";
             decimal totalSqlDbCosts = 0;
@@ -495,7 +501,7 @@ namespace Azure.Costs.Ui.Wpf
                         if (sub.ResourceCosts.Count == 0 && sub.ReadCosts && sub.SqlServers.Count > 0) // only an error if we actually asked for costs
                         {
                             _logger.Info($"No expected DB costs found for sub: {sub.displayName}");
-                            sub.CostsErrorMessage = "No expected DB costs found.";
+                            // sub.CostsErrorMessage = "No expected DB costs found."; // this may already have costs error message so dont overwrite it
                             //continue;
                         }
                         foreach (var s in sub.SqlServers)

@@ -341,17 +341,16 @@
 
                         </StackPanel>
 
-                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="4,4,4,4" Visibility="Collapsed">
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="4,4,4,4" Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
 
-                            <TextBlock Margin="2,39,2,0" 
+                            <!--<TextBlock Margin="2,39,2,0" 
                                    Style="{StaticResource WarningTextBlockStyle}" 
                                    Text="{Binding TestLoginErrorMessage}" 
                                    Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}, FallbackValue=Collapsed}" 
-                                   />
+                                   />-->
 
-                            <TextBox Padding="6" Grid.Row="2" BorderThickness="0"
-                            IsReadOnly="True" Margin="2,2,2,702" Text="{Binding RestErrorMessage}" MaxHeight="150" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" 
-                                 Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" Background="Orange" Grid.ColumnSpan="4" Grid.RowSpan="2"></TextBox>
+                            <TextBlock Margin="2,2,2,2" Padding="6" Text="{Binding RestErrorMessage}" MaxHeight="160" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" 
+                                  Background="Orange" ></TextBlock>
 
                         </StackPanel>
 

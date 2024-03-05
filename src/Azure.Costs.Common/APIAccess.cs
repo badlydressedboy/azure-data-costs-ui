@@ -1217,35 +1217,37 @@ namespace Azure.Costs.Common
                                 ,""name"":""Cost""}
                             ]
                             ,""grouping"":[
-                                {""type"":""Dimension""
-                                ,""name"":""ResourceId""
-                                }
-                                ,{""type"":""Dimension""
-                                    ,""name"":""ServiceName""
-                                }
-                                ,{""type"":""Dimension""
-                                    ,""name"":""MeterSubCategory""
-                                }
-                                ,{""type"":""Dimension""
-                                    ,""name"":""Product""
-                                }
-                                ,{""type"":""Dimension""
-                                    ,""name"":""Meter""
-                                }
-                                ,{""type"":""Dimension""
-                                    ,""name"":""ChargeType""
-                                }
-                                ,{""type"":""Dimension""
-                                    ,""name"":""PublisherType""
-                                }
-                                ,{""type"":""Dimension""
-                                    ,""name"":""Provider""
-                                }
-                                ,{""type"":""Dimension""
-                                    ,""name"":""MeterCategory""
-                                }
-                                ,{""type"":""Dimension""
-                                    ,""name"":""ResourceType""
+                                {
+                                    ""type"":""Dimension"",
+                                    ""name"":""ResourceId""
+                                },
+                                {
+                                    ""type"":""Dimension"", 
+                                    ""name"":""ResourceType""
+                                },
+                                {
+                                    ""type"":""Dimension"", 
+                                    ""name"":""PublisherType""
+                                },
+                                {
+                                    ""type"":""Dimension"", 
+                                    ""name"":""ServiceName""
+                                },
+                                {
+                                    ""type"":""Dimension"", 
+                                    ""name"":""Meter""
+                                },
+                                {
+                                    ""type"":""Dimension"", 
+                                    ""name"":""MeterCategory""
+                                },
+                                {
+                                    ""type"":""Dimension"", 
+                                    ""name"":""MeterSubCategory""
+                                },
+                                {
+                                    ""type"":""Dimension"", 
+                                    ""name"":""ChargeType""
                                 }
                             ]
                         }
@@ -1385,6 +1387,12 @@ namespace Azure.Costs.Common
                         using (var reader = new StreamReader(stream, Encoding.UTF8))
                         {
                             var responseContentText = reader.ReadToEnd();
+
+                            if(responseContentText.Contains("Too many requests"))
+                            {
+                                _logger.Error("Throttling occurring - try again in a few minutes.");
+                                
+                            }
                             _logger.Error($"Response text: {responseContentText}");
                         }
                     }
@@ -1409,12 +1417,15 @@ namespace Azure.Costs.Common
                         rc.ResourceId = obj[2].ToString();
                         rc.ServiceName = obj[3].ToString();
                         rc.MeterSubCategory = obj[4].ToString();
-                        rc.Product = obj[5].ToString();
-                        rc.Meter = obj[6].ToString();
-                        rc.ChargeType = obj[7].ToString();
-                        rc.PublisherType = obj[8].ToString();
-                        rc.ResourceType = obj[11].ToString();
-                        rc.Currency = obj[12].ToString();
+                        rc.Meter = obj[5].ToString();
+                        rc.ChargeType = obj[6].ToString();
+                        rc.PublisherType = obj[7].ToString();
+                        rc.Currency = obj[10].ToString();
+                        
+                        // arent always available
+                        //rc.Product = obj[5].ToString();
+                        //rc.ResourceType = obj[11].ToString();
+
                         subscription.ResourceCosts.Add(rc);
 
                         //if (rc.ServiceName.Contains("Factory"))
@@ -1430,6 +1441,13 @@ namespace Azure.Costs.Common
                     {
                         _logger.Error(ex);
                     }
+                }
+
+                if(costsFount == 0)
+                {
+                    // can return zero costs but response.IsSuccessStatusCode == true
+                    // weird but maybe something to do with too many requests as it happened after 30 mins of too many requests
+                    subscription.CostsErrorMessage = $"No costs found but REST request reports successful for {subscription.displayName}";
                 }
                 _logger.Info($"Complete GetSubscriptionCosts() for {subscription.displayName}; {costsFount} costs found.");
             }

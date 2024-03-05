@@ -30,7 +30,8 @@ namespace Azure.Costs.Common.Models.Rest
         public string name { get; set; }
         public string location { get; set; }
         public string serverName { get; set; }
-        
+        public string CostsErrorMessage { get; set; } // this is for convenience to display in UI, value taken from subscription costs error message
+
         //public string subscriptionid { get; set; }
         public Subscription Subscription { get; set; }
         public ElasticPool ElasticPool { get; set; }    
