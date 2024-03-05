@@ -1335,7 +1335,8 @@ namespace Azure.Costs.Common
 ";
 
 
-                string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.CostManagement/query?api-version=2021-10-01";
+                string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.CostManagement/query?api-version=2021-10-01";//bust
+                 // string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.CostManagement/query?api-version=2023-11-01";
 
                 var client = new HttpClient
                 {
@@ -1366,11 +1367,7 @@ namespace Azure.Costs.Common
                     return;
                 }
 
-                var remainingReads = GetHeaderValue(response, "x-ms-ratelimit-remaining-subscription-reads");
-                if (remainingReads != null)
-                {
-                    _logger.Info($"HTTP Header x-ms-ratelimit-remaining-subscription-reads: {remainingReads}");
-                }
+               
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -1467,7 +1464,7 @@ namespace Azure.Costs.Common
             {
                 return values.First();
             }
-            return "";
+            return null;
         }
         private static async Task<HttpResponseMessage> SendThrottledRequest(HttpClient client, HttpRequestMessage request)
         {
@@ -1508,6 +1505,12 @@ namespace Azure.Costs.Common
                     //    Debug.WriteLine("!FLOODED REQUEST AFTER SLEEP!");
                     //}
                 }
+                var remainingReads = GetHeaderValue(response, "x-ms-ratelimit-remaining-subscription-reads");
+                if (remainingReads != null) _logger.Info($"HTTP Header x-ms-ratelimit-remaining-subscription-reads: {remainingReads}");
+
+                var remainingResourceRequests = GetHeaderValue(response, "x-ms-ratelimit-remaining-subscription-resource-requests");
+                if (remainingResourceRequests != null) _logger.Info($"HTTP Header x-ms-ratelimit-remaining-subscription-resource-requests: {remainingResourceRequests}");
+
             }
             catch (Exception ex)
             {
