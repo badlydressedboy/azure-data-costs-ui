@@ -1259,12 +1259,8 @@ namespace Azure.Costs.Common
                         }
                     }";
 
-                /*
-              
-                                     
-                 */
 
-                payload = @"{{{""type"":""ActualCost""
+                string testPayload = @"{""type"":""ActualCost""
                         ,,,""timeframe"": ""Custom""
                         , ""timePeriod"":{""from"":""2024-01-30T10:44:38Z"",""to"":""2024-02-29T10:44:38Z""}
                         ,""dataSet"":{
@@ -1344,6 +1340,7 @@ namespace Azure.Costs.Common
                 }
 ";
 
+
                 string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.CostManagement/query?api-version=2021-10-01";
 
                 var client = new HttpClient
@@ -1359,10 +1356,10 @@ namespace Azure.Costs.Common
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));//ACCEPT header               
 
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, url);
-                request.Content = new StringContent(payload,
-                                                    Encoding.UTF8,
-                                                    "application/json");//CONTENT-TYPE header
 
+                // swap for testing
+                request.Content = new StringContent(payload,Encoding.UTF8,"application/json");//CONTENT-TYPE header
+                //request.Content = new StringContent(testPayload, Encoding.UTF8, "application/json");//CONTENT-TYPE header
 
 
 
