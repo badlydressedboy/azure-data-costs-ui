@@ -1177,19 +1177,15 @@ namespace Azure.Costs.Common
                 //" + typeClause + @"
 
                 payload = @"{""type"":""ActualCost""
-                   
                             ,""timeframe"": ""Custom""
                             , ""timePeriod"":{""from"":""" + timeFrom + @""",""to"":""" + timeTo + @"""}
                             ,""dataSet"":{
                                 ""granularity"":""None""
-                                
- ,""filter"": { 
+                                ,""filter"": { 
                                     ""dimensions"": {
                                         ""name"": ""serviceName""
                                         ,""operator"": ""In""
                                         ,""values"": [  
-
-
                                             ""Azure Data Factory v2""
                                             ,""SQL Database""
                                             ,""SQL Server""
@@ -1206,9 +1202,6 @@ namespace Azure.Costs.Common
                                         ]
                                     }
                                 }
-
-
-
                             ,""aggregation"":{
                                 ""totalCost"":{
                                     ""name"":""Cost""
@@ -1248,7 +1241,6 @@ namespace Azure.Costs.Common
                                 ,{""type"":""Dimension""
                                     ,""name"":""Provider""
                                 }
-                               
                                 ,{""type"":""Dimension""
                                     ,""name"":""MeterCategory""
                                 }
