@@ -1356,18 +1356,13 @@ namespace Azure.Costs.Common
                 request.Content = new StringContent(payload,Encoding.UTF8,"application/json");//CONTENT-TYPE header
                 //request.Content = new StringContent(testPayload, Encoding.UTF8, "application/json");//CONTENT-TYPE header
 
-
-
                 HttpResponseMessage response = await SendThrottledRequest(client, request);
-                //response.Content.ReadAsStream
                 
                 if (response == null)
                 {
                     _logger.Error($"No response when querying costs for {subscription.displayName}");
                     return;
                 }
-
-               
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -1409,19 +1404,23 @@ namespace Azure.Costs.Common
                     {
                         var rc = new ResourceCost();
                         rc.SubscriptionId = subscription.subscriptionId;
+                        
                         rc.Cost = Decimal.Parse(obj[0].ToString(), NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint);
                         rc.CostUSD = Decimal.Parse(obj[1].ToString(), NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint);
                         rc.ResourceId = obj[2].ToString();
-                        rc.ServiceName = obj[3].ToString();
-                        rc.MeterSubCategory = obj[4].ToString();
-                        rc.Meter = obj[5].ToString();
-                        rc.ChargeType = obj[6].ToString();
-                        rc.PublisherType = obj[7].ToString();
+                        rc.ResourceType = obj[3].ToString();
+                        rc.PublisherType = obj[4].ToString();
+                        rc.ServiceName = obj[5].ToString();
+                        rc.Meter = obj[6].ToString();
+                        rc.MeterCategory = obj[7].ToString();
+                        rc.MeterSubCategory = obj[8].ToString();
+                        rc.ChargeType = obj[9].ToString();
+                        
                         rc.Currency = obj[10].ToString();
                         
                         // arent always available
                         //rc.Product = obj[5].ToString();
-                        //rc.ResourceType = obj[11].ToString();
+                        //rc.Provider = obj[11].ToString();
 
                         subscription.ResourceCosts.Add(rc);
 

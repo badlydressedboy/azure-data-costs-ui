@@ -762,9 +762,12 @@
                                                 <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                                     <DataGrid.Columns>
                                                         <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-                                                        <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
-                                                        <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="ResourceName" Binding="{Binding Path=ResourceName}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Meter Category" Binding="{Binding Path=MeterCategory}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Meter SubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>
+
+
+                                                        <!--<DataGridTextColumn Header="Service Name" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Resource Type" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
 
                                                         <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
                                                             <DataGridTextColumn.CellStyle>
@@ -779,7 +782,7 @@
                                                             </DataGridTextColumn.CellStyle>
                                                         </DataGridTextColumn>
 
-                                                        <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Charge Type" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
                                                         <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
                                                     </DataGrid.Columns>
                                                 </DataGrid>
@@ -1208,10 +1211,11 @@
 
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-                                            <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
-                                            <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
-                                            <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
+                                                <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Meter Category" Binding="{Binding Path=MeterCategory}" IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Meter SubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>
+
+                                                <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
                                                 <DataGridTextColumn.CellStyle>
                                                     <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
                                                         <Style.Triggers>
@@ -1364,9 +1368,8 @@
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-                                                <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
-                                                <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
-                                                <!--<DataGridTextColumn Header="ResourceType" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
+                                                <DataGridTextColumn Header="Meter Category" Binding="{Binding Path=MeterCategory}" IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Meter SubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>
 
                                                 <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
                                                     <DataGridTextColumn.CellStyle>
@@ -1523,9 +1526,9 @@
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-                                                <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
-                                                <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="ResourceName" Binding="{Binding Path=ResourceName}" IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Meter Category" Binding="{Binding Path=MeterCategory}" IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Meter SubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>
+
 
                                                 <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
                                                     <DataGridTextColumn.CellStyle>
@@ -1779,11 +1782,9 @@
 
                                             <DataGrid ItemsSource="{Binding Path=Costs}" Grid.Row="1" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                                 <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
                                                     <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-                                                    <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
-                                                    <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
-                                                    <!--<DataGridTextColumn Header="ResourceType" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
+                                                    <DataGridTextColumn Header="Meter Category" Binding="{Binding Path=MeterCategory}" IsReadOnly="True"/>
+                                                    <DataGridTextColumn Header="Meter SubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>
 
 
                                                     <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
@@ -1940,10 +1941,7 @@
                                                 <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
                                                 <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
                                                 <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-                                                <!--<DataGridTextColumn Header="MeterSubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
-
-                                                <!--<DataGridTextColumn Header="ResourceType" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
-
+                                                
 
                                                 <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
                                                     <DataGridTextColumn.CellStyle>

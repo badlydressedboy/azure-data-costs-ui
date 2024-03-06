@@ -23,6 +23,7 @@ namespace Azure.Costs.Common.Models.Rest
         public string SubscriptionId { get; set; }
         public string ResourceId { get; set; }
         public string ServiceName { get; set; }
+        public string MeterCategory { get; set; }
         public string MeterSubCategory { get; set; }
         public string Product { get; set; }
         public string Meter { get; set; }
