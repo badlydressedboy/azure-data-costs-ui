@@ -1404,9 +1404,46 @@ namespace Azure.Costs.Common
                     {
                         var rc = new ResourceCost();
                         rc.SubscriptionId = subscription.subscriptionId;
-                        
-                        rc.Cost = Decimal.Parse(obj[0].ToString(), NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint);
-                        rc.CostUSD = Decimal.Parse(obj[1].ToString(), NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint);
+
+                        decimal cost = 0;
+                        if(Decimal.TryParse(obj[0].ToString(), out cost))
+                        {
+                            rc.Cost = cost;
+                        }
+                        else
+                        {
+                            if (Decimal.TryParse(obj[0].ToString().Replace('.', ','), out cost))
+                            {
+                                rc.Cost = cost;
+                            }
+                            else
+                            {
+                                _logger.Error($"{obj[0].ToString()} in not a decimal using , or .! couldnt read cost value");
+                            }
+                        }
+
+                        decimal costUSD = (decimal)-1.0;
+                        if (Decimal.TryParse(obj[1].ToString(), out costUSD))
+                        {
+                            rc.CostUSD = costUSD;
+                        }
+                        else
+                        {
+                            if (Decimal.TryParse(obj[1].ToString().Replace('.', ','), out cost))
+                            {
+                                rc.Cost = cost;
+                            }
+                            else
+                            {
+                                _logger.Error($"{obj[1].ToString()} in not a decimal using , or .! couldnt read cost value");
+                            }
+                        }
+
+
+                        //rc.Cost = Decimal.Parse(obj[0].ToString(), NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint);
+                        //rc.CostUSD = Decimal.Parse(obj[1].ToString(), NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint);
+
+
                         rc.ResourceId = obj[2].ToString();
                         rc.ResourceType = obj[3].ToString();
                         rc.PublisherType = obj[4].ToString();

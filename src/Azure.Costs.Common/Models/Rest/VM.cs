@@ -177,6 +177,7 @@ namespace Azure.Costs.Common.Models.Rest
         public string vmId { get; set; }
         public VMHardwareProfile hardwareProfile { get; set; }
         public VMOSProfile osProfile { get; set; }
+        public VMStorageProfile storageProfile { get; set; }
         public DateTime timeCreated { get; set; }
     }
     public class VMHardwareProfile
@@ -186,5 +187,15 @@ namespace Azure.Costs.Common.Models.Rest
     public class VMOSProfile
     {
         public string computerName { get; set; }
+    }
+    public class VMStorageProfile
+    {
+        public List<VMDataDisk> dataDisks { get; set; }
+    }
+    public class VMDataDisk
+    {
+        public string name { get; set; }
+        public int diskSizeGB { get; set; }
+        
     }
 }

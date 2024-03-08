@@ -918,23 +918,34 @@ namespace Azure.Costs.Ui.Wpf
             {
                 try
                 {
-                    if (!cost.ResourceId.Contains(@"virtualmachines/")) continue;
-                    string costVmName = cost.ResourceId.Substring(cost.ResourceId.IndexOf("virtualmachines/") + 16);
+                    if ((!cost.ResourceId.Contains(@"virtualmachines/")) && (!cost.ResourceId.Contains(@"disks/"))) continue;
 
-                    //if(vm.name.ToUpper().Contains("OCT-ENG-VD1-69"))
-                    //{
-                    //    _logger.Error("OCT-ENG-VD1-69");
-                    //}
+                    var lastSlashPos = cost.ResourceId.LastIndexOf("/")+1;
+                    string costVmName = cost.ResourceId.Substring(lastSlashPos, (cost.ResourceId.Length - lastSlashPos) );
 
                     if ((costVmName.ToLower() == vm.name.ToLower()) && cost.ResourceId.Contains(vm.resourceGroup.ToLower()))
                     {
-                        if (cost.ServiceName == "Virtual Machines" || cost.ServiceName == "Bandwidth" || cost.ServiceName == "Virtual Network")
+                        if (cost.ServiceName == "Virtual Machines" || cost.ServiceName == "Storage" || cost.ServiceName == "Bandwidth" || cost.ServiceName == "Virtual Network")
                         {
-                            // "ResourceType
                             vm.TotalCostBilling += cost.Cost;
-
                             vm.Costs.Add(cost);
                             found = true;
+                        }
+                    }
+                    else
+                    {
+                        // disk name cost does not match vm name< which means it MAY be a disk
+                        if (cost.ResourceId.ToLower().Contains(vm.resourceGroup.ToLower()) && cost.ResourceType.ToLower().Contains("disks"))// too wide - need actual vm
+                        {
+                            foreach (var disk in vm.properties.storageProfile.dataDisks)
+                            {
+                                if (cost.ResourceId.ToLower().Contains(disk.name.ToLower()))
+                                {
+                                    vm.TotalCostBilling += cost.Cost;
+                                    vm.Costs.Add(cost);
+                                    found = true;
+                                }
+                            }
                         }
                     }
                 }catch(Exception ex)
