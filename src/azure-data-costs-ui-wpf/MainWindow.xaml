@@ -10,6 +10,7 @@
         xmlns:busyIndicator="https://github.com/Peoky/BusyIndicator"         
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
                  xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+                 xmlns:dgx="clr-namespace:DataGridExtensions;assembly=DataGridExtensions"   
         Title="Azure Data Costs" 
         Height="850" Width="1200"
         WindowStartupLocation="CenterScreen"
@@ -367,7 +368,8 @@
                                   ClipboardCopyMode="IncludeHeader"   
                                   SelectionChanged="RestDbDataGrid_SelectionChanged"
                                   LoadingRowDetails="RestDbDataGrid_LoadingRowDetails"
-                                local:DataGridExtensions.SortDesc="True"
+                                    local:DataGridExtensions.SortDesc="True"
+                                  dgx:DataGridFilter.IsAutoFilterEnabled="True"
                             >
 
                             <DataGrid.Resources>
@@ -429,28 +431,14 @@
 
                             <DataGrid.Columns>
 
-                                <DataGridTextColumn Header="DB"  Binding="{Binding name}" >
-                                    <!--<DataGridTextColumn.CellStyle>
-                                        <Style TargetType="DataGridCell">
-
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Cursor" Value="Hand"></Setter>
-                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
-                                                    <Setter Property="Background" Value="LightGray"></Setter>
-                                                </Trigger>
-
-                                            </Style.Triggers>
-                                        </Style>
-                                    </DataGridTextColumn.CellStyle>-->
-                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="DB"  Binding="{Binding name}" dgx:DataGridFilterColumn.IsFilterVisible="False"></DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Server"  Binding="{Binding serverName}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}" ></DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Service Objective"  Binding="{Binding properties.currentServiceObjectiveName}" ></DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Cost (Bill CCY)"  Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);'?'}}" >
+                                <DataGridTextColumn Header="Cost (Bill CCY)"  Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);'?'}}" dgx:DataGridFilterColumn.IsFilterVisible="False" >
 
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
@@ -465,12 +453,12 @@
 
                                 </DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Over Provision%"  Binding="{Binding OverSpendFromMaxPc, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
-                                <DataGridTextColumn Header="Potential Saving"  Binding="{Binding PotentialSavingAmount, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
-                                <DataGridTextColumn Header="Saving Description"  Binding="{Binding PotentialSavingDescription}" />
+                                <DataGridTextColumn Header="Over Provision%"  Binding="{Binding OverSpendFromMaxPc, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
+                                <DataGridTextColumn Header="Potential Saving"  Binding="{Binding PotentialSavingAmount, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
+                                <DataGridTextColumn Header="Saving Description"  Binding="{Binding PotentialSavingDescription}"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
 
 
-                                <DataGridTextColumn Header="DTU %"  Binding="{Binding dtu_consumption_percent, StringFormat=N0}" local:DataGridExtensions.SortDesc="True" >
+                                <DataGridTextColumn Header="DTU %"  Binding="{Binding dtu_consumption_percent, StringFormat=N0}" local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False">
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
                                             <Style.Triggers>
@@ -483,15 +471,15 @@
                                     </DataGridTextColumn.CellStyle>
                                 </DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Sessions"  Binding="{Binding sessions_count}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="Sessions"  Binding="{Binding sessions_count}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
 
-                                <DataGridTextColumn Header="Size Limit GB"  Binding="{Binding currentDbSizeLimitGb, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="Size Limit GB"  Binding="{Binding currentDbSizeLimitGb, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
 
-                                <DataGridTextColumn Header="Allocated GB"  Binding="{Binding currentAllocatedDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="Allocated GB"  Binding="{Binding currentAllocatedDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
 
-                                <DataGridTextColumn Header="Used GB"  Binding="{Binding currentDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="Used GB"  Binding="{Binding currentDbSizeGb, StringFormat=N2}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
 
-                                <DataGridTextColumn Header="Used GB %"  Binding="{Binding currentDbSizeUsedPc, StringFormat=N2}" local:DataGridExtensions.SortDesc="True">
+                                <DataGridTextColumn Header="Used GB %"  Binding="{Binding currentDbSizeUsedPc, StringFormat=N2}" local:DataGridExtensions.SortDesc="True" dgx:DataGridFilterColumn.IsFilterVisible="False">
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
                                             <Style.Triggers>
@@ -520,14 +508,14 @@
 
                             <DataGridTextColumn Header="Elastic Pool"  Binding="{Binding ElasticPoolName}" ></DataGridTextColumn>-->
 
-                                <DataGridTextColumn Header="Earliest Restore Date"  Binding="{Binding properties.earliestRestoreDate}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Earliest Restore Date"  Binding="{Binding properties.earliestRestoreDate}"  dgx:DataGridFilterColumn.IsFilterVisible="False"></DataGridTextColumn>
 
                                 <DataGridTextColumn Header="LTR Monthly Retention"  Binding="{Binding lTRPolicyProperties.monthlyRetention}" CellStyle="{StaticResource NumericGridCellStyle}"  ></DataGridTextColumn>
                                 <DataGridTextColumn Header="LTR Week Of Year"  Binding="{Binding lTRPolicyProperties.weekOfYear}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="LTR Weekly Retention"  Binding="{Binding lTRPolicyProperties.weeklyRetention}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="LTR Yearly Retention"  Binding="{Binding lTRPolicyProperties.yearlyRetention}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Vuln Scan Time"  Binding="{Binding latestVulnerabilityScanProperties.endTime}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Vuln Scan Time"  Binding="{Binding latestVulnerabilityScanProperties.endTime}" CellStyle="{StaticResource NumericGridCellStyle}"  dgx:DataGridFilterColumn.IsFilterVisible="False"></DataGridTextColumn>
                                 <DataGridTextColumn Header="Vuln Scan State"  Binding="{Binding latestVulnerabilityScanProperties.state}" CellStyle="{StaticResource NumericGridCellStyle}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Vuln Scan Failed Sec Checks"  Binding="{Binding latestVulnerabilityScanProperties.numberOfFailedSecurityChecks}"  >
                                     <DataGridTextColumn.CellStyle>
@@ -545,7 +533,7 @@
 
 
 
-                                <DataGridTextColumn Header="Advisor Recommendations"  Binding="{Binding AdvisorRecommendationCount, StringFormat=N0}" >
+                                <DataGridTextColumn Header="Advisor Recommendations"  Binding="{Binding AdvisorRecommendationCount, StringFormat=N0}"  dgx:DataGridFilterColumn.IsFilterVisible="False">
 
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
@@ -563,15 +551,15 @@
                                     </DataGridTextColumn.CellStyle>
                                 </DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Recommendations Error" Width="140" Foreground="OrangeRed"  Binding="{Binding RecommendationsError}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Recommendations Error" Width="140" Foreground="OrangeRed"  Binding="{Binding RecommendationsError}" dgx:DataGridFilterColumn.IsFilterVisible="False" ></DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Physical Read %"  Binding="{Binding physical_data_read_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True" />
-                                <DataGridTextColumn Header="Log Write %"  Binding="{Binding log_write_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="Physical Read %"  Binding="{Binding physical_data_read_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
+                                <DataGridTextColumn Header="Log Write %"  Binding="{Binding log_write_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
                                 <!--<DataGridTextColumn Header="Storage %"  Binding="{Binding storage_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  />-->
-                                <DataGridTextColumn Header="Workers %"  Binding="{Binding workers_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True" />
-                                <DataGridTextColumn Header="Sessions %"  Binding="{Binding sessions_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True" />
-                                <DataGridTextColumn Header="SqlServer Proc Core %"  Binding="{Binding sqlserver_process_core_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"   local:DataGridExtensions.SortDesc="True"/>
-                                <DataGridTextColumn Header="SqlServer Proc Mem %"  Binding="{Binding sqlserver_process_memory_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="Workers %"  Binding="{Binding workers_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
+                                <DataGridTextColumn Header="Sessions %"  Binding="{Binding sessions_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
+                                <DataGridTextColumn Header="SqlServer Proc Core %"  Binding="{Binding sqlserver_process_core_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"   local:DataGridExtensions.SortDesc="True" dgx:DataGridFilterColumn.IsFilterVisible="False"/>
+                                <DataGridTextColumn Header="SqlServer Proc Mem %"  Binding="{Binding sqlserver_process_memory_percent, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}"  local:DataGridExtensions.SortDesc="True" dgx:DataGridFilterColumn.IsFilterVisible="False" />
 
                                 <!--<DataGridTextColumn Header="Storage"  Binding="{Binding storage}" CellStyle="{StaticResource NumericGridCellStyle}"  />
                             <DataGridTextColumn Header="DTU Limit"  Binding="{Binding dtu_limit}" CellStyle="{StaticResource NumericGridCellStyle}"  />
