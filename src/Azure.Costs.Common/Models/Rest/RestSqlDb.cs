@@ -21,6 +21,41 @@ namespace Azure.Costs.Common.Models.Rest
         protected static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public string PortalResourceUrl { get; set; }
+
+        protected string _tagsString;
+        public string TagsString { get { return _tagsString; }
+            set
+            {
+                
+                // populate TagsList
+                try
+                {
+                    var tmp = value.Replace("{", "").Replace("}","");
+
+                    _tagsString = tmp;
+                    TagsStringMultiLine = tmp.Replace(",", ",\n");  
+
+                    var tags = tmp.Split(',');
+                    TagsList = tags.ToList();
+                }
+                catch(Exception ex)
+                {
+                    _logger.Error(ex);
+                }
+            }
+        }
+
+        public string TagsStringMultiLine { get; set; }
+
+        public List<string> TagsList { get; set; } = new List<string>();
+
+        //protected string _tags ;
+        public dynamic tags {
+            get { return TagsString; }
+            set {
+                TagsString = value.ToString();
+            }
+        }
     }
     public class RestSqlDb : PortalResource, INotifyPropertyChanged
     {

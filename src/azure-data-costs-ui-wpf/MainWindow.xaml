@@ -22,6 +22,11 @@
 
     <mah:MetroWindow.Resources>
 
+        <Style TargetType="{x:Type ToolTip}" >
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="4"/>
+        </Style>
+
         <SolidColorBrush Color="#F3F4F6" x:Key="LightestGreyHighlight"/>
 
         <Style TargetType="Image" x:Key="ButtonImageStyle">
@@ -373,6 +378,8 @@
                             >
 
                             <DataGrid.Resources>
+
+                               
                                 <DataTemplate x:Key="HeaderTemplate">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -437,7 +444,7 @@
                                 <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}" ></DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Service Objective"  Binding="{Binding properties.currentServiceObjectiveName}" ></DataGridTextColumn>
-
+                                
                                 <DataGridTextColumn Header="Cost (Bill CCY)"  Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);'?'}}" dgx:DataGridFilterColumn.IsFilterVisible="False" >
 
                                     <DataGridTextColumn.CellStyle>
@@ -498,6 +505,40 @@
                                 <DataGridTextColumn Header="Location"  Binding="{Binding location}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>
 
+                                <DataGridTextColumn Header="Tags"  Binding="{Binding TagsString}" Width="220" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="Tags" TextWrapping="Wrap" VerticalAlignment="Center"/>
+
+                                                <Button Grid.Column="1" Click="FilterTagsButton_Click" Height="12" Width="40" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                   
+                                                    <StackPanel Orientation="Horizontal">
+                                                       
+                                                        <!--<Image Source="/Images/filter.png" />-->
+
+                                                        <Image Source="/AzureDataCosts;component/Images\filter.png" />
+                                                        <Image Source="/DataEstateOverview;component/Images\filter.png" />
+                                                    </StackPanel>
+                                                   
+                                                </Button>   
+                                            </Grid>
+                                            
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+                                    
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" >
+                                            <Setter Property="ToolTip" Value="{Binding TagsStringMultiLine}"/>
+                                            <Setter Property="ToolTipService.InitialShowDelay" Value="0"/>
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
+                                </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Zone Redundant"  Binding="{Binding properties.zoneRedundant}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Backup Storage Redundancy"  Binding="{Binding properties.currentBackupStorageRedundancy}" ></DataGridTextColumn>

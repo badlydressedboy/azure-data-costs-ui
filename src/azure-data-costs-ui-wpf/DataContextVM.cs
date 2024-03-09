@@ -36,6 +36,9 @@ namespace Azure.Costs.Ui.Wpf
         public ObservableCollection<Purview> PurviewList { get; private set; } = new ObservableCollection<Purview>();
         public ObservableCollection<VM> VMList { get; private set; } = new ObservableCollection<VM>();
 
+        public List<SelectableTag> AllDBTags { get; set; } = new List<SelectableTag>();
+        public List<string> SelectedDBTags { get; set; } = new List<string>();
+
         public static string PortalUrl;
 
         public bool _readAllObjectsCheck { get; set; }
@@ -477,6 +480,7 @@ namespace Azure.Costs.Ui.Wpf
            
             try
             {
+                AllDBTags.Clear();
                 SyncSelectedSubs();
                 await Parallel.ForEachAsync(SelectedSubscriptions
                     , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
@@ -511,6 +515,16 @@ namespace Azure.Costs.Ui.Wpf
                                 MapCostToDb(db, sub.ResourceCosts);
 
                                 totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool
+
+                                foreach (var tag in db.TagsList)
+                                {
+                                    var existing = AllDBTags.FirstOrDefault(x => x.Tag == tag); 
+                                    if (existing == null)
+                                    {
+                                        AllDBTags.Add(new SelectableTag() { Tag = tag, IsSelected = true });
+                                    }
+                                }
+
                             }
                         }
 
@@ -523,6 +537,7 @@ namespace Azure.Costs.Ui.Wpf
                 });
 
                 TotalSqlDbCostsText = totalSqlDbCosts.ToString("N2");
+
             }
             catch (Exception ex)
             {
@@ -1108,6 +1123,12 @@ namespace Azure.Costs.Ui.Wpf
             }
         }
 
+    }
+
+    public class SelectableTag : ObservableObject
+    {
+        public string Tag { get; set; }
+        public bool IsSelected { get; set; }
     }
 
 }

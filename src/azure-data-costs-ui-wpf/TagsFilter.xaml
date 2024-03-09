@@ -1,0 +1,27 @@
+﻿<mah:MetroWindow x:Class="Azure.Costs.Ui.Wpf.TagsFilter"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Azure.Costs.Ui.Wpf"
+        xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
+        mc:Ignorable="d"
+            
+            ShowMinButton="False" 
+            ShowMaxRestoreButton="False" 
+            ShowCloseButton="True"
+            WindowStartupLocation="CenterOwner"
+        Title="Filter" Height="280" Width="360">
+    <Grid>
+        <DataGrid x:Name="TagsDataGrid" AutoGenerateColumns="False" >
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="DB"  Binding="{Binding Tag}" ></DataGridTextColumn>
+
+                <DataGridCheckBoxColumn Header="Select" Binding="{Binding IsSelected, Mode=TwoWay}" ></DataGridCheckBoxColumn>
+
+            </DataGrid.Columns>
+            
+        </DataGrid>
+    </Grid>
+</mah:MetroWindow>

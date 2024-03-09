@@ -17,6 +17,7 @@
     <None Remove="Azure.Costs.Ui.Wpf.csproj~RF62a67e46.TMP" />
     <None Remove="CostData\Detail_Subscription_a5be5e3e-da5c-45f5-abe9-9591a51fccfa_202211_en.csv" />
     <None Remove="Images\azure.png" />
+    <None Remove="Images\filter.png" />
     <None Remove="Images\info.png" />
     <None Remove="Images\loading.gif" />
     <None Remove="Images\refresh.png" />
@@ -90,6 +91,12 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\filter.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

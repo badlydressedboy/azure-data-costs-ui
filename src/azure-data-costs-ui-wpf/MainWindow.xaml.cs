@@ -629,6 +629,16 @@ namespace Azure.Costs.Ui.Wpf
             e.Handled = true;
             return;
         }
+
+        private void FilterTagsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var tagsWin = new TagsFilter();
+            tagsWin.TagsDataGrid.ItemsSource = vm.AllDBTags;
+            
+            tagsWin.ShowDialog();
+            
+            Debug.WriteLine("end filter");
+        }
     }
     public class ignoresubscriptionnames
     {
