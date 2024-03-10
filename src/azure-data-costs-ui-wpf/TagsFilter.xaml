@@ -40,7 +40,25 @@
 
                 <DataGridTextColumn Header="DB"  Binding="{Binding Tag}" ></DataGridTextColumn>
 
-                <DataGridCheckBoxColumn IsReadOnly="False" Header="Select" Binding="{Binding IsSelected, Mode=TwoWay}" ></DataGridCheckBoxColumn>
+                <DataGridTemplateColumn Header="Select">
+
+                    <DataGridTemplateColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Margin="1,1,4,1">Select</TextBlock>
+                                <CheckBox IsChecked="{Binding DataContext.AllChecksSelected, RelativeSource={RelativeSource AncestorType=DataGrid}}" ></CheckBox>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.HeaderTemplate>
+
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Path=IsSelected, UpdateSourceTrigger=PropertyChanged}" Checked="CheckBox_Checked" Unchecked="CheckBox_Checked" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+               
 
             </DataGrid.Columns>
             

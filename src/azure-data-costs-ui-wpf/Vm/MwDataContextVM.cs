@@ -19,7 +19,7 @@ using System.Windows.Threading;
 
 namespace Azure.Costs.Ui.Wpf
 {
-    public class DataContextVM : ObservableObject
+    public class MwDataContextVM : ObservableObject
     {
 
         #region vars
@@ -380,7 +380,7 @@ namespace Azure.Costs.Ui.Wpf
         }
         #endregion
 
-        public DataContextVM(){
+        public MwDataContextVM(){
 
             //Subscriptions.Add(new Subscription("a5be5e3e-da5c-45f5-abe9-9591a51fccfa"));//, this
             //Subscriptions.Add(new Subscription("151b40b6-6164-4053-9884-58a8d3151fe6"));//, this
@@ -1127,8 +1127,18 @@ namespace Azure.Costs.Ui.Wpf
 
     public class SelectableTag : ObservableObject
     {
+        
         public string Tag { get; set; }
-        public bool IsSelected { get; set; }
+        
+        private bool isSelected;
+        public bool IsSelected {
+            get => isSelected;
+
+            set
+            {
+                SetProperty(ref isSelected, value);
+            }
+        }
     }
 
 }

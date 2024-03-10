@@ -42,7 +42,7 @@ namespace Azure.Costs.Ui.Wpf
     public partial class MainWindow : MetroWindow
     {
         List<string> connStrings = new List<string>();
-        DataContextVM vm = new DataContextVM();
+        MwDataContextVM vm = new MwDataContextVM();
         
         public MainWindow()
         {
@@ -188,52 +188,48 @@ namespace Azure.Costs.Ui.Wpf
             TabRest.IsSelected = true;
         }
 
-        private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
-        {
-
-        }
-
         private void RestDbDataGridViewSource_Filter(object sender, FilterEventArgs e)
         {
+            if(e.Item == null) return;
+
             var db = e.Item as RestSqlDb;
-            if (db != null)
+           
+            bool textFilterMatched = true;
+            bool tagFilterMatched = true;
+
+            // 1.filter on name text
+            if (RestDbFilterText.Text.Length > 0)
             {
-                bool textFilterMatched = true;
-                bool tagFilterMatched = true;
-
-                // 1.filter on name text
-                if (RestDbFilterText.Text.Length > 0)
+                textFilterMatched = false;
+                if (!db.name.Contains(RestDbFilterText.Text))
                 {
-                    textFilterMatched = false;
-                    if (!db.name.Contains(RestDbFilterText.Text))
-                    {
-                        textFilterMatched = true;
-                    }
+                    textFilterMatched = true;
                 }
+            }
 
-                // 2.filter on tag
-                if(vm.AllDBTags.Count > 0) tagFilterMatched = false;
+            // 2.filter on tag
+            if(vm.AllDBTags.Count > 0) tagFilterMatched = false;
 
-                if (db.TagsList.Count > 0)
+            if (db.TagsList.Count > 0)
+            {
+                foreach (var tag in db.TagsList)
                 {
-                    foreach (var tag in db.TagsList)
+                    foreach (var allTag in vm.AllDBTags.Where(x => x.IsSelected))
                     {
-                        foreach (var allTag in vm.AllDBTags.Where(x => x.IsSelected))
+                        if (tag == allTag.Tag)
                         {
-                            if (tag == allTag.Tag)
-                            {
-                                tagFilterMatched = true;
-                            }
+                            tagFilterMatched = true;
                         }
                     }
                 }
-
-                if (textFilterMatched && tagFilterMatched) { 
-                    e.Accepted = true;
-                    return;
-                }
-                e.Accepted = false;
             }
+
+            if (textFilterMatched && tagFilterMatched) { 
+                e.Accepted = true;
+                return;
+            }
+            e.Accepted = false;
+            
         }
 
 
@@ -658,8 +654,8 @@ namespace Azure.Costs.Ui.Wpf
 
         private void FilterTagsButton_Click(object sender, RoutedEventArgs e)
         {
-            var tagsWin = new TagsFilter();
-            tagsWin.TagsDataGrid.ItemsSource = vm.AllDBTags;
+            var tagsWin = new TagsFilter(vm.AllDBTags);
+           
             tagsWin.Owner = this;
 
             tagsWin.ShowDialog();

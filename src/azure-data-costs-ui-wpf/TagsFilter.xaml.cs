@@ -1,4 +1,8 @@
-﻿using MahApps.Metro.Controls;
+﻿using Azure.Costs.Common.Models.Rest;
+using Azure.Costs.Ui.Wpf.Vm;
+using DataEstateOverview;
+using DbMeta.Ui.Wpf.Config;
+using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +24,27 @@ namespace Azure.Costs.Ui.Wpf
     /// </summary>
     public partial class TagsFilter : MetroWindow
     {
-        public TagsFilter()
+        private FilterWindowVm _vm;
+
+        
+        public TagsFilter(List<SelectableTag> tagList)
         {
             InitializeComponent();
+
+            _vm = new FilterWindowVm(tagList);
+            DataContext = _vm;
+            
+            TagsDataGrid.ItemsSource = _vm.TagList;
+
+            _vm.TestAllChecksSelected();
+        }     
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (e.OriginalSource is CheckBox)
+            {
+                _vm.TestAllChecksSelected();                
+            }
         }
     }
 }
