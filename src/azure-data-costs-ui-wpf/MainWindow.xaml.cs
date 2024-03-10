@@ -192,6 +192,8 @@ namespace Azure.Costs.Ui.Wpf
         {
             if(e.Item == null) return;
 
+            vm.SetDbTagFilterSummary();
+
             var db = e.Item as RestSqlDb;
            
             bool textFilterMatched = true;

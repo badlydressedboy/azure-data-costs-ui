@@ -516,17 +516,28 @@
 
                                                 <TextBlock Text="Tags" TextWrapping="Wrap" VerticalAlignment="Center"/>
 
-                                                <Button Grid.Column="1" Click="FilterTagsButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
-                                                   
-                                                    <StackPanel Orientation="Horizontal">
-                                                       
-                                                        <!--<Image Source="/Images/filter.png" />-->
 
-                                                        <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
-                                                        <!--<Image Source="/DataEstateOverview;component/Images\filter.png" />-->
-                                                    </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+                                                               Foreground="DarkOrange"
+                                                               Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DbTagFilterSummary}">
+                                                        
+                                                    </TextBlock>
+                                                    
+                                                    <Button  Click="FilterTagsButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+
+                                                        <StackPanel Orientation="Horizontal">
+
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                            
+                                                        </StackPanel>
                                                    
-                                                </Button>   
+                                                    </Button>   
+                                                </StackPanel>
+                                              
                                             </Grid>
                                             
                                         </DataTemplate>

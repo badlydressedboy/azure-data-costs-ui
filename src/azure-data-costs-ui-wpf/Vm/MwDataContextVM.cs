@@ -82,6 +82,14 @@ namespace Azure.Costs.Ui.Wpf
             get => testLoginErrorMessage;
             set => SetProperty(ref testLoginErrorMessage, value);
         }
+        private string? dbTagFilterSummary;
+        public string? DbTagFilterSummary
+        {
+            get => dbTagFilterSummary;
+            set => SetProperty(ref dbTagFilterSummary, value);
+        }
+
+        
         private string totalSqlDbCostsText;
         public string TotalSqlDbCostsText
         {
@@ -474,6 +482,7 @@ namespace Azure.Costs.Ui.Wpf
             IsGetSqlServersBusy = true;
             Debug.WriteLine("IsGetSqlServersBusy = true...");
             DbFooterErrorText = "";
+            DbTagFilterSummary = "";
             RestSqlDbList.Clear();
             RestErrorMessage = "";
             decimal totalSqlDbCosts = 0;
@@ -1120,6 +1129,19 @@ namespace Azure.Costs.Ui.Wpf
             }catch(Exception ex)
             {
                 _logger.Error(ex.Message);
+            }
+        }
+
+        public void SetDbTagFilterSummary()
+        {
+            var x = AllDBTags.Where(x => x.IsSelected).Count();
+            var y = AllDBTags.Count;
+            if (x == y)
+            {
+                DbTagFilterSummary = "";
+            }
+            else {
+                DbTagFilterSummary = $"{x}/{y}";
             }
         }
 
