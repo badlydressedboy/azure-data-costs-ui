@@ -13,12 +13,34 @@
             WindowStartupLocation="CenterOwner"
         Title="Filter" Height="280" Width="360">
     <Grid>
+
+        <Grid.Resources>
+            <Style TargetType="DataGrid">
+                <Style.Setters>
+                    <Setter Property="CanUserAddRows" Value="False"/>
+                    <Setter Property="VerticalGridLinesBrush" Value="LightGray"/>
+                    <Setter Property="HorizontalGridLinesBrush" Value="LightGray"/>
+
+
+                    <Setter Property="AutoGenerateColumns" Value="False"/>
+                    <!--<Setter Property="IsReadOnly" Value="True"/>-->
+                    <Setter Property="RowHeight" Value="20"/>
+                    <Setter Property="SelectionMode" Value="Extended"/>
+                    <Setter Property="SelectionUnit" Value="Cell"/>
+                    <Setter Property="CanUserResizeRows" Value="False"/>
+                    <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="true" />
+                    <Setter Property="EnableRowVirtualization"  Value="True"/>
+                    <Setter Property="RowDetailsVisibilityMode"  Value="Collapsed"/>
+                </Style.Setters>
+            </Style>
+        </Grid.Resources>
+        
         <DataGrid x:Name="TagsDataGrid" AutoGenerateColumns="False" >
             <DataGrid.Columns>
 
                 <DataGridTextColumn Header="DB"  Binding="{Binding Tag}" ></DataGridTextColumn>
 
-                <DataGridCheckBoxColumn Header="Select" Binding="{Binding IsSelected, Mode=TwoWay}" ></DataGridCheckBoxColumn>
+                <DataGridCheckBoxColumn IsReadOnly="False" Header="Select" Binding="{Binding IsSelected, Mode=TwoWay}" ></DataGridCheckBoxColumn>
 
             </DataGrid.Columns>
             

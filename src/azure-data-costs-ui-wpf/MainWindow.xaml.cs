@@ -196,17 +196,43 @@ namespace Azure.Costs.Ui.Wpf
         private void RestDbDataGridViewSource_Filter(object sender, FilterEventArgs e)
         {
             var db = e.Item as RestSqlDb;
-            if (db != null)            
+            if (db != null)
             {
+                bool textFilterMatched = true;
+                bool tagFilterMatched = true;
+
+                // 1.filter on name text
                 if (RestDbFilterText.Text.Length > 0)
                 {
+                    textFilterMatched = false;
                     if (!db.name.Contains(RestDbFilterText.Text))
                     {
-                        e.Accepted = false;
-                        return;
-                    }                    
-                } 
-                e.Accepted = true;
+                        textFilterMatched = true;
+                    }
+                }
+
+                // 2.filter on tag
+                if(vm.AllDBTags.Count > 0) tagFilterMatched = false;
+
+                if (db.TagsList.Count > 0)
+                {
+                    foreach (var tag in db.TagsList)
+                    {
+                        foreach (var allTag in vm.AllDBTags.Where(x => x.IsSelected))
+                        {
+                            if (tag == allTag.Tag)
+                            {
+                                tagFilterMatched = true;
+                            }
+                        }
+                    }
+                }
+
+                if (textFilterMatched && tagFilterMatched) { 
+                    e.Accepted = true;
+                    return;
+                }
+                e.Accepted = false;
             }
         }
 
@@ -634,10 +660,15 @@ namespace Azure.Costs.Ui.Wpf
         {
             var tagsWin = new TagsFilter();
             tagsWin.TagsDataGrid.ItemsSource = vm.AllDBTags;
-            
+            tagsWin.Owner = this;
+
             tagsWin.ShowDialog();
             
             Debug.WriteLine("end filter");
+
+            // do actual filter: vm.AllDBTags
+
+            CollectionViewSource.GetDefaultView(RestDbDataGrid.ItemsSource).Refresh();
         }
     }
     public class ignoresubscriptionnames

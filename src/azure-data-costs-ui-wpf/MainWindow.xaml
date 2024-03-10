@@ -516,14 +516,14 @@
 
                                                 <TextBlock Text="Tags" TextWrapping="Wrap" VerticalAlignment="Center"/>
 
-                                                <Button Grid.Column="1" Click="FilterTagsButton_Click" Height="12" Width="40" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                <Button Grid.Column="1" Click="FilterTagsButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
                                                    
                                                     <StackPanel Orientation="Horizontal">
                                                        
                                                         <!--<Image Source="/Images/filter.png" />-->
 
-                                                        <Image Source="/AzureDataCosts;component/Images\filter.png" />
-                                                        <Image Source="/DataEstateOverview;component/Images\filter.png" />
+                                                        <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        <!--<Image Source="/DataEstateOverview;component/Images\filter.png" />-->
                                                     </StackPanel>
                                                    
                                                 </Button>   
@@ -536,6 +536,8 @@
                                         <Style TargetType="{x:Type DataGridCell}" >
                                             <Setter Property="ToolTip" Value="{Binding TagsStringMultiLine}"/>
                                             <Setter Property="ToolTipService.InitialShowDelay" Value="0"/>
+                                            <Setter Property="IsEnabled" Value="True"/>
+                                            <Setter Property="IsEditing" Value="True"/>
                                         </Style>
                                     </DataGridTextColumn.CellStyle>
                                 </DataGridTextColumn>
