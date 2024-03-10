@@ -658,9 +658,7 @@ namespace Azure.Costs.Ui.Wpf
            
             tagsWin.Owner = this;
 
-            tagsWin.ShowDialog();
-            
-            Debug.WriteLine("end filter");
+            tagsWin.ShowDialog();                       
 
             // do actual filter: vm.AllDBTags
 
