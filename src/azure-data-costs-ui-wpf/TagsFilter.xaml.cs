@@ -27,7 +27,7 @@ namespace Azure.Costs.Ui.Wpf
         private FilterWindowVm _vm;
 
         
-        public TagsFilter(List<SelectableTag> tagList)
+        public TagsFilter(List<SelectableString> tagList)
         {
             InitializeComponent();
 
@@ -45,6 +45,11 @@ namespace Azure.Costs.Ui.Wpf
             {
                 _vm.TestAllChecksSelected();                
             }
+        }
+
+        private void ButtonOK_Click(object sender, RoutedEventArgs e)
+        {
+            Close();    
         }
     }
 }

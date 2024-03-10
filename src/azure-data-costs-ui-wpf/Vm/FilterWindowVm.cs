@@ -11,7 +11,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
     {
         private bool _allChecksSelected;
 
-        public List<SelectableTag> TagList { get; set; }
+        public List<SelectableString> TagList { get; set; }
 
         public bool AllChecksSelected
         {
@@ -28,7 +28,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
             }
         }
 
-        public FilterWindowVm(List<SelectableTag> tagList)
+        public FilterWindowVm(List<SelectableString> tagList)
         {
             TagList = tagList;
             TestAllChecksSelected();

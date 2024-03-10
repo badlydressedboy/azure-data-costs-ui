@@ -216,7 +216,7 @@ namespace Azure.Costs.Ui.Wpf
                 {
                     foreach (var allTag in vm.AllDBTags.Where(x => x.IsSelected))
                     {
-                        if (tag == allTag.Tag)
+                        if (tag == allTag.StringValue)
                         {
                             tagFilterMatched = true;
                         }

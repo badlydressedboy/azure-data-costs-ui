@@ -36,7 +36,7 @@ namespace Azure.Costs.Ui.Wpf
         public ObservableCollection<Purview> PurviewList { get; private set; } = new ObservableCollection<Purview>();
         public ObservableCollection<VM> VMList { get; private set; } = new ObservableCollection<VM>();
 
-        public List<SelectableTag> AllDBTags { get; set; } = new List<SelectableTag>();
+        public List<SelectableString> AllDBTags { get; set; } = new List<SelectableString>();
         public List<string> SelectedDBTags { get; set; } = new List<string>();
 
         public static string PortalUrl;
@@ -518,10 +518,10 @@ namespace Azure.Costs.Ui.Wpf
 
                                 foreach (var tag in db.TagsList)
                                 {
-                                    var existing = AllDBTags.FirstOrDefault(x => x.Tag == tag); 
+                                    var existing = AllDBTags.FirstOrDefault(x => x.StringValue == tag); 
                                     if (existing == null)
                                     {
-                                        AllDBTags.Add(new SelectableTag() { Tag = tag, IsSelected = true });
+                                        AllDBTags.Add(new SelectableString() { StringValue = tag, IsSelected = true });
                                     }
                                 }
 
@@ -1125,10 +1125,10 @@ namespace Azure.Costs.Ui.Wpf
 
     }
 
-    public class SelectableTag : ObservableObject
+    public class SelectableString : ObservableObject
     {
         
-        public string Tag { get; set; }
+        public string StringValue { get; set; }
         
         private bool isSelected;
         public bool IsSelected {
