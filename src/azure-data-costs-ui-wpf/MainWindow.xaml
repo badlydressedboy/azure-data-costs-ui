@@ -532,10 +532,10 @@
                                 <DataGridTextColumn Header="Location"  Binding="{Binding location}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Tags" Width="220" >
+                                <DataGridTextColumn Header="Tags" Width="220" Binding="{Binding TagsString}">
                                     <DataGridTextColumn.HeaderTemplate>
                                         <DataTemplate>
-                                            <Grid Background="LightPink" HorizontalAlignment="Stretch">
+                                            <Grid >
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*" />
@@ -543,7 +543,7 @@
 
                                                 <TextBlock Text="Tags" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,4,0"/>
 
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Green">
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" >
                                                     <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
                                                     <TextBlock Margin="1" VerticalAlignment="Center" 
                                                                Foreground="DarkOrange"
