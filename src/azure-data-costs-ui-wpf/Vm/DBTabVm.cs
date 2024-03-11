@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Azure.Costs.Ui.Wpf;
 
 namespace Azure.Costs.Ui.Wpf.Vm
 {
@@ -18,6 +19,8 @@ namespace Azure.Costs.Ui.Wpf.Vm
         public ObservableCollection<RestSqlDb> RestSqlDbList { get; private set; } = new ObservableCollection<RestSqlDb>();
 
         public List<SelectableString> AllTags { get; set; } = new List<SelectableString>();
+
+        public List<SelectableString> AllServiceObjectives { get; set; } = new List<SelectableString>();
 
         private bool isGetSqlServersBusy;
         public bool IsGetSqlServersBusy
@@ -40,6 +43,12 @@ namespace Azure.Costs.Ui.Wpf.Vm
         {
             get => tagFilterSummary;
             set => SetProperty(ref tagFilterSummary, value);
+        } 
+        private string? soFilterSummary;
+        public string? SoFilterSummary
+        {
+            get => soFilterSummary;
+            set => SetProperty(ref soFilterSummary, value);
         }
         private string restErrorMessage;
         public string RestErrorMessage
@@ -272,18 +281,12 @@ namespace Azure.Costs.Ui.Wpf.Vm
             //UpdateHttpAccessCountMessage(); // todo
             TotalPotentialDbSavingAmount = RestSqlDbList.Sum(x => x.PotentialSavingAmount);
         }
-        public void SetTagFilterSummary()
+        public void SetFilterSummaries()
         {
-            var x = AllTags.Where(x => x.IsSelected).Count();
-            var y = AllTags.Count;
-            if (x == y)
-            {
-                TagFilterSummary = "";
-            }
-            else
-            {
-                TagFilterSummary = $"{x}/{y}";
-            }
+            TagFilterSummary = Helpers.GetFilterSummary(AllTags);
+            SoFilterSummary = Helpers.GetFilterSummary(AllServiceObjectives);
         }
+
+        
     }
 }

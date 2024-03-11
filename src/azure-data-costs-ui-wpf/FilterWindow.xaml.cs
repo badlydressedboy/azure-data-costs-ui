@@ -22,12 +22,12 @@ namespace Azure.Costs.Ui.Wpf
     /// <summary>
     /// Interaction logic for TagsFilter.xaml
     /// </summary>
-    public partial class TagsFilter : MetroWindow
+    public partial class FilterWindow : MetroWindow
     {
         private FilterWindowVm _vm;
 
         
-        public TagsFilter(List<SelectableString> tagList)
+        public FilterWindow(List<SelectableString> tagList)
         {
             InitializeComponent();
 

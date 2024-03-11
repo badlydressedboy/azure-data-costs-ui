@@ -192,7 +192,7 @@ namespace Azure.Costs.Ui.Wpf
         {
             if(e.Item == null) return;
 
-            vm.DBTabVm.SetTagFilterSummary();
+            vm.DBTabVm.SetFilterSummaries();
 
             var db = e.Item as RestSqlDb;
            
@@ -656,7 +656,7 @@ namespace Azure.Costs.Ui.Wpf
 
         private void FilterTagsButton_Click(object sender, RoutedEventArgs e)
         {
-            var tagsWin = new TagsFilter(vm.DBTabVm.AllTags);
+            var tagsWin = new FilterWindow(vm.DBTabVm.AllTags);
            
             tagsWin.Owner = this;
 
