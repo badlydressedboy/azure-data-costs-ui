@@ -14,18 +14,11 @@ using NLog.Filters;
 
 namespace Azure.Costs.Ui.Wpf.Vm
 {
-    public class DBTabVm : ObservableObject
+    public class DBTabVm : TabVmBase
     {
         #region Properties
         public ObservableCollection<RestSqlDb> RestSqlDbList { get; private set; } = new ObservableCollection<RestSqlDb>();
-        //public Dictionary<string, Filter> Filters { get; set; } = new Dictionary<string, Filter>();
         
-
-        //public TabFilters Filters { get; set; } = new TabFilters(); 
-        //public List<SelectableString> AllTags { get; set; } = new List<SelectableString>();
-
-        //public List<SelectableString> AllServiceObjectives { get; set; } = new List<SelectableString>();
-
         private bool isGetSqlServersBusy;
         public bool IsGetSqlServersBusy
         {
@@ -42,33 +35,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
             set => SetProperty(ref dbFooterErrorText, value);
         }
 
-        private string restErrorMessage;
-        public string RestErrorMessage
-        {
-            get => restErrorMessage;
-            set
-            {
-
-                SetProperty(ref restErrorMessage, value);
-                if (string.IsNullOrEmpty(value))
-                {
-                    IsRestErrorMessageVisible = false;
-                }
-                else
-                {
-                    IsRestErrorMessageVisible = true;
-                }
-            }
-        }
-        private bool isRestErrorMessageVisible;
-        public bool IsRestErrorMessageVisible
-        {
-            get => isRestErrorMessageVisible;
-            set
-            {
-                SetProperty(ref isRestErrorMessageVisible, value);
-            }
-        }
+        
         private string totalSqlDbCostsText;
         public string TotalSqlDbCostsText
         {
@@ -108,19 +75,25 @@ namespace Azure.Costs.Ui.Wpf.Vm
         #endregion
 
         #region Filters
-
+        
         public Filter TagsFilter { get; set; } = new Filter();
         public Filter SoFilter { get; set; } = new Filter();
         public Filter ServerFilter { get; set; } = new Filter();
         public Filter SubscriptionFilter { get; set; } = new Filter();
 
+        
         #endregion
 
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public DBTabVm()
         {
-            //_logger.Info("DBTabVm ctor");            
+            //_logger.Info("DBTabVm ctor");
+
+            _filterList.Add(TagsFilter);
+            _filterList.Add(SoFilter);
+            _filterList.Add(ServerFilter);
+            _filterList.Add(SubscriptionFilter);        
         }
 
         public async Task RefreshDatabases(List<Subscription> selectedSubscriptions)
@@ -136,16 +109,11 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
             try
             {
-                // filter columns clear
-                TagsFilter.Items.Clear();
+                // repopulate filters from empty
+                ClearFilterItems();                
                 TagsFilter.Items.Add(new SelectableString() { StringValue = "", IsSelected = true }); // need option for NO tags
-
-                SoFilter.Items.Clear();
-                ServerFilter.Items.Clear(); 
-                SubscriptionFilter.Items.Clear();
                 
                 //SyncSelectedSubs();// todo
-
 
                 await Parallel.ForEachAsync(selectedSubscriptions
                     , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
@@ -284,14 +252,9 @@ namespace Azure.Costs.Ui.Wpf.Vm
             //UpdateHttpAccessCountMessage(); // todo
             TotalPotentialDbSavingAmount = RestSqlDbList.Sum(x => x.PotentialSavingAmount);
         }
-        public void SetFilterSummaries()
-        {
-            TagsFilter.UpdateFilterSummary();
-            SoFilter.UpdateFilterSummary();
-            SubscriptionFilter.UpdateFilterSummary();
-            ServerFilter.UpdateFilterSummary(); 
-        }
-
         
+
+
     }
+
 }

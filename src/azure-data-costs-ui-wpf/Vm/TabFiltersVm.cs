@@ -54,7 +54,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
         public bool IsValueSelected(string stringValue)
         {
-            if(Items.Count == 0)
+            if(Items.Count == 0) // no items, so nothing to filter on
             {
                 return true;
             }
