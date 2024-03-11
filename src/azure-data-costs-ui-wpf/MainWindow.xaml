@@ -72,7 +72,7 @@
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"></BooleanToVisibilityConverter>
 
-        <CollectionViewSource Source="{Binding RestSqlDbList}" Filter="RestDbDataGridViewSource_Filter"  x:Key="RestDbDataGridViewSource">
+        <CollectionViewSource Source="{Binding DBTabVm.RestSqlDbList}" Filter="RestDbDataGridViewSource_Filter"  x:Key="RestDbDataGridViewSource">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
             </CollectionViewSource.SortDescriptions>
@@ -258,7 +258,7 @@
 
             <mah:MetroTabItem Header="SQL Databases" Name="TabRest">
 
-                <busyIndicator:BusyMask TargetUpdated="BusyIndicatorSql_TargetUpdated" SourceUpdated="BusyIndicatorSql_SourceUpdated" x:Name="BusyIndicatorSql" IsBusy="{Binding IsGetSqlServersBusy}" IndicatorType="Cogs"  BusyContent="Please wait..." >
+                <busyIndicator:BusyMask TargetUpdated="BusyIndicatorSql_TargetUpdated" SourceUpdated="BusyIndicatorSql_SourceUpdated" x:Name="BusyIndicatorSql" IsBusy="{Binding DBTabVm.IsGetSqlServersBusy}" IndicatorType="Cogs"  BusyContent="Please wait..." >
                     <Grid>
 
                         <Grid.RowDefinitions>
@@ -280,7 +280,7 @@
 
                             <!--<Button x:Name="RestConfigButton" Margin="12,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="RestConfigButton_Click">Configure</Button>-->
 
-                            <Button x:Name="RestRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DBRefreshButton_Click" IsEnabled="{Binding IsGetSqlServersBusy, Converter={StaticResource InverseBooleanConverter}}">
+                            <Button x:Name="RestRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DBRefreshButton_Click" IsEnabled="{Binding DBTabVm.IsGetSqlServersBusy, Converter={StaticResource InverseBooleanConverter}}">
                                 <StackPanel Orientation="Horizontal" >
 
                                     <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
@@ -293,7 +293,7 @@
                         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4,6,4,6">
 
                             <TextBlock Margin="8,2,2,2" FontSize="14" VerticalAlignment="Center">Total SQL DB Costs:</TextBlock>
-                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalSqlDbCostsText}"></TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding DBTabVm.TotalSqlDbCostsText}"></TextBlock>
 
                             <Button x:Name="DBAnalyseSpendButton" Margin="28,2,2,2" Padding="8,1,8,1" Click="DBAnalyseSpendButton_Click" >
                                 <StackPanel Orientation="Horizontal" >
@@ -336,14 +336,14 @@
                             <Image gif:ImageBehavior.AnimatedSource="/Images/loading.gif" 
                                 Margin="8,0,0,0" 
                                 Style="{StaticResource LoadingGifStyle}"
-                                Visibility="{Binding IsDbSpendAnalysisBusy,Converter={StaticResource BooleanToVisibilityConverter}}">
+                                Visibility="{Binding DBTabVm.IsDbSpendAnalysisBusy,Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Image.LayoutTransform>
                                     <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
                                 </Image.LayoutTransform>
                             </Image>
 
-                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center" Visibility="{Binding HasDbSpendAnalysisBeenPerformed, Converter={StaticResource BooleanToVisibilityConverter}}">Total Potential Saving:</TextBlock>
-                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialDbSavingAmount, StringFormat=N0}" Visibility="{Binding HasDbSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}"></TextBlock>
+                            <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center" Visibility="{Binding DBTabVm.HasDbSpendAnalysisBeenPerformed, Converter={StaticResource BooleanToVisibilityConverter}}">Total Potential Saving:</TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding DBTabVm.TotalPotentialDbSavingAmount, StringFormat=N0}" Visibility="{Binding DBTabVm.HasDbSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}"></TextBlock>
 
                         </StackPanel>
 
@@ -355,7 +355,7 @@
                                    Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}, FallbackValue=Collapsed}" 
                                    />-->
 
-                            <TextBlock Margin="2,2,2,2" Padding="6" Text="{Binding RestErrorMessage}" MaxHeight="160" ToolTip="{Binding RestErrorMessage}" ToolTipService.InitialShowDelay="0" 
+                            <TextBlock Margin="2,2,2,2" Padding="6" Text="{Binding DBTabVm.RestErrorMessage}" MaxHeight="160" ToolTip="{Binding DBTabVm.RestErrorMessage}" ToolTipService.InitialShowDelay="0" 
                                   Background="Orange" ></TextBlock>
 
                         </StackPanel>
@@ -523,7 +523,7 @@
                                                     
                                                     <TextBlock Margin="1" VerticalAlignment="Center" 
                                                                Foreground="DarkOrange"
-                                                               Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DbTagFilterSummary}">
+                                                               Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.TagFilterSummary}">
                                                         
                                                     </TextBlock>
                                                     

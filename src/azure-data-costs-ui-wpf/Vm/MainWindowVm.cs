@@ -1,6 +1,7 @@
 ﻿using Azure.Costs.Common;
 using Azure.Costs.Common.Models.Rest;
 using Azure.Costs.Common.Models.SQL;
+using Azure.Costs.Ui.Wpf.Vm;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DataEstateOverview;
 using System;
@@ -19,25 +20,22 @@ using System.Windows.Threading;
 
 namespace Azure.Costs.Ui.Wpf
 {
-    public class MwDataContextVM : ObservableObject
+    public class MainWindowVm : ObservableObject
     {
 
         #region vars
 
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
+        public DBTabVm DBTabVm { get; set; } = new DBTabVm();
         public List<Subscription> SelectedSubscriptions { get; set; } = new List<Subscription>();
-        public ObservableCollection<Subscription> DetectedSubscriptions { get; set; } = new ObservableCollection<Subscription>();
-
-        public ObservableCollection<RestSqlDb> RestSqlDbList { get; private set; } = new ObservableCollection<RestSqlDb>();
+        public ObservableCollection<Subscription> DetectedSubscriptions { get; set; } = new ObservableCollection<Subscription>();        
         public ObservableCollection<DataFactory> DataFactoryList { get; private set; } = new ObservableCollection<DataFactory>();
         public ObservableCollection<StorageAccount> StorageList { get; private set; } = new ObservableCollection<StorageAccount>();
         public ObservableCollection<VNet> VNetList { get; private set; } = new ObservableCollection<VNet>();
         public ObservableCollection<Purview> PurviewList { get; private set; } = new ObservableCollection<Purview>();
         public ObservableCollection<VM> VMList { get; private set; } = new ObservableCollection<VM>();
-
-        public List<SelectableString> AllDBTags { get; set; } = new List<SelectableString>();
-        public List<string> SelectedDBTags { get; set; } = new List<string>();
+                
 
         public static string PortalUrl;
 
@@ -82,20 +80,10 @@ namespace Azure.Costs.Ui.Wpf
             get => testLoginErrorMessage;
             set => SetProperty(ref testLoginErrorMessage, value);
         }
-        private string? dbTagFilterSummary;
-        public string? DbTagFilterSummary
-        {
-            get => dbTagFilterSummary;
-            set => SetProperty(ref dbTagFilterSummary, value);
-        }
+        
 
         
-        private string totalSqlDbCostsText;
-        public string TotalSqlDbCostsText
-        {
-            get => totalSqlDbCostsText;
-            set => SetProperty(ref totalSqlDbCostsText, value);
-        }
+        
         private string totalADFCostsText;
         public string TotalADFCostsText
         {
@@ -108,12 +96,7 @@ namespace Azure.Costs.Ui.Wpf
             get => totalStorageCostsText;
             set => SetProperty(ref totalStorageCostsText, value);
         }
-        private string dbFooterErrorText;
-        public string DbFooterErrorText
-        {
-            get => dbFooterErrorText;
-            set => SetProperty(ref dbFooterErrorText, value);
-        }
+        
         private string totalVNetCostsText;
         public string TotalVNetCostsText
         {
@@ -171,15 +154,7 @@ namespace Azure.Costs.Ui.Wpf
                 SetProperty(ref isRestQueryBusy, value);
             }
         }
-        private bool isGetSqlServersBusy;
-        public bool IsGetSqlServersBusy
-        {
-            get => isGetSqlServersBusy;
-            set
-            {
-                SetProperty(ref isGetSqlServersBusy, value);
-            }
-        }
+        
         private bool isGetSubscriptionsBusy;
         public bool IsGetSubscriptionsBusy
         {
@@ -244,24 +219,8 @@ namespace Azure.Costs.Ui.Wpf
                 SetProperty(ref isTestLoginBusy, value);
             }
         }
-        private bool isDbSpendAnalysisBusy;
-        public bool IsDbSpendAnalysisBusy
-        {
-            get => isDbSpendAnalysisBusy;
-            set
-            {
-                SetProperty(ref isDbSpendAnalysisBusy, value);
-            }
-        }
-        private bool hasDbSpendAnalysisBeenPerformed;
-        public bool HasDbSpendAnalysisBeenPerformed
-        {
-            get => hasDbSpendAnalysisBeenPerformed;
-            set
-            {
-                SetProperty(ref hasDbSpendAnalysisBeenPerformed, value);
-            }
-        }
+        
+        
         private bool isVmSpendAnalysisBusy;
         public bool IsVmSpendAnalysisBusy
         {
@@ -280,16 +239,7 @@ namespace Azure.Costs.Ui.Wpf
                 SetProperty(ref hasVmSpendAnalysisBeenPerformed, value);
             }
         }
-        private decimal _totalPotentialDbSavingAmount;
-        public decimal TotalPotentialDbSavingAmount
-        {
-            get { return _totalPotentialDbSavingAmount; }
-            set
-            {
-                _totalPotentialDbSavingAmount = value;
-                OnPropertyChanged("TotalPotentialDbSavingAmount");
-            }
-        }
+        
         private decimal _totalPotentialVmSavingAmount;
         public decimal TotalPotentialVmSavingAmount
         {
@@ -388,7 +338,7 @@ namespace Azure.Costs.Ui.Wpf
         }
         #endregion
 
-        public MwDataContextVM(){
+        public MainWindowVm(){
 
             //Subscriptions.Add(new Subscription("a5be5e3e-da5c-45f5-abe9-9591a51fccfa"));//, this
             //Subscriptions.Add(new Subscription("151b40b6-6164-4053-9884-58a8d3151fe6"));//, this
@@ -475,87 +425,7 @@ namespace Azure.Costs.Ui.Wpf
         }
 
         // db/sql server data plus costs
-        public async Task RefreshDatabases()
-        {
-            if (IsGetSqlServersBusy) return;
-
-            IsGetSqlServersBusy = true;
-            Debug.WriteLine("IsGetSqlServersBusy = true...");
-            DbFooterErrorText = "";
-            DbTagFilterSummary = "";
-            RestSqlDbList.Clear();
-            RestErrorMessage = "";
-            decimal totalSqlDbCosts = 0;
-           
-            try
-            {
-                AllDBTags.Clear();
-                SyncSelectedSubs();
-                await Parallel.ForEachAsync(SelectedSubscriptions
-                    , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
-                    , async (sub, y) =>
-                {                    
-                    await APIAccess.GetSqlServers(sub);
-
-                    // add servers to ui quickly, dont wait for costs
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        sub.SqlServers.ForEach(s =>
-                        {
-                            s.Dbs.ForEach(db => RestSqlDbList.Add(db));
-                        });
-                    });
-
-                    if (sub.SqlServers.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.SqlDatabase);
-
-                    // on ui thread
-                    App.Current.Dispatcher.Invoke(() =>
-                    {
-                        if (sub.ResourceCosts.Count == 0 && sub.ReadCosts && sub.SqlServers.Count > 0) // only an error if we actually asked for costs
-                        {
-                            _logger.Info($"No expected DB costs found for sub: {sub.displayName}");
-                            // sub.CostsErrorMessage = "No expected DB costs found."; // this may already have costs error message so dont overwrite it
-                            //continue;
-                        }
-                        foreach (var s in sub.SqlServers)
-                        {
-                            foreach (var db in s.Dbs)
-                            {
-                                MapCostToDb(db, sub.ResourceCosts);
-
-                                totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool
-
-                                foreach (var tag in db.TagsList)
-                                {
-                                    var existing = AllDBTags.FirstOrDefault(x => x.StringValue == tag); 
-                                    if (existing == null)
-                                    {
-                                        AllDBTags.Add(new SelectableString() { StringValue = tag, IsSelected = true });
-                                    }
-                                }
-
-                            }
-                        }
-
-                        if (!string.IsNullOrEmpty(sub.CostsErrorMessage))
-                        {
-                            if (!string.IsNullOrEmpty(RestErrorMessage)) RestErrorMessage += "\n";
-                            RestErrorMessage += sub.CostsErrorMessage;
-                        }
-                    });
-                });
-
-                TotalSqlDbCostsText = totalSqlDbCosts.ToString("N2");
-
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-            }
-            IsGetSqlServersBusy = false;
-            Debug.WriteLine("IsGetSqlServersBusy = false");
-            UpdateHttpAccessCountMessage();
-        }
+        
 
         public async Task RefreshStorage()
         {
@@ -814,45 +684,7 @@ namespace Azure.Costs.Ui.Wpf
             UpdateHttpAccessCountMessage();
         }
 
-        private static void MapCostToDb(RestSqlDb db, List<ResourceCost> costs)
-        {
-            bool found = false;
-            if (costs.Count == 0)
-            {
-                _logger.Error("elastic db!");
-            }
-            List<ResourceCost> elasticCosts = new List<ResourceCost>();
-            foreach(ResourceCost cost in costs)
-            {
-                if (cost.ResourceId.EndsWith(db.name.ToLower()) && cost.ResourceId.Contains(db.resourceGroup.ToLower()))
-                {
-                    db.Costs.Add(cost);
-                    db.TotalCostBilling += cost.Cost;
-                    found = true;
-                }
-                if (db.ElasticPool != null && cost.ResourceId.Contains(db.ElasticPool.name.ToLower()))
-                {                                                           
-                    db.Costs.Add(cost);
-                    db.TotalCostBilling += cost.Cost/db.ElasticPool.dbList.Count;
-                    found = true;
-                }
-                if (cost.Meter.Contains("Elastic") 
-                    || cost.MeterSubCategory.Contains("Elastic") 
-                    //|| cost.Product.Contains("Elastic") 
-                    || cost.ServiceName.Contains("Elastic"))
-                {
-                    elasticCosts.Add(cost);
-                }
-            }
-            //if(elasticCosts.Count > 0)
-            //{
-            //    //_logger.Error($"elastic costs");
-            //}
-            if (!found)
-            {
-                _logger.Info($"why no cost for DB {db.name}? Costs.count: {costs.Count}");
-            }
-        }
+        
         private static void MapCostToDF(DataFactory df, List<ResourceCost> costs)
         {
             bool found = false;
@@ -1016,37 +848,7 @@ namespace Azure.Costs.Ui.Wpf
             }
         }
 
-        public async Task AnalyseDbSpend()
-        {
-            if (IsDbSpendAnalysisBusy) return;
-            IsDbSpendAnalysisBusy = true;
-
-            RestErrorMessage = "";
-            //decimal totalPotentialSaving = 0;
-            TotalPotentialDbSavingAmount = 0;
-            try
-            {
-                await Parallel.ForEachAsync(RestSqlDbList.OrderByDescending(x=>x.TotalCostBilling)
-                    , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
-                    , async (db, y) =>
-                    {
-                        db.SpendAnalysisStatus = "Analysing...";
-                        db.OverSpendFromMaxPcString = "?";
-                        await APIAccess.GetDbMetrics(db);
-
-                        db.SpendAnalysisStatus = "Complete";
-                        //await APIAccess.GetSqlServers(sub);
-                    });
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-            }
-            IsDbSpendAnalysisBusy = false;
-            HasDbSpendAnalysisBeenPerformed = true;
-            UpdateHttpAccessCountMessage();
-            TotalPotentialDbSavingAmount = RestSqlDbList.Sum(x => x.PotentialSavingAmount);
-        }
+        
         public async Task AnalyseVmSpend()
         {
             if (IsVmSpendAnalysisBusy) return;
@@ -1132,18 +934,7 @@ namespace Azure.Costs.Ui.Wpf
             }
         }
 
-        public void SetDbTagFilterSummary()
-        {
-            var x = AllDBTags.Where(x => x.IsSelected).Count();
-            var y = AllDBTags.Count;
-            if (x == y)
-            {
-                DbTagFilterSummary = "";
-            }
-            else {
-                DbTagFilterSummary = $"{x}/{y}";
-            }
-        }
+        
 
     }
 

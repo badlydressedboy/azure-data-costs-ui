@@ -42,7 +42,7 @@ namespace Azure.Costs.Ui.Wpf
     public partial class MainWindow : MetroWindow
     {
         List<string> connStrings = new List<string>();
-        MwDataContextVM vm = new MwDataContextVM();
+        MainWindowVm vm = new MainWindowVm();
         
         public MainWindow()
         {
@@ -161,7 +161,7 @@ namespace Azure.Costs.Ui.Wpf
         {            
             try
             {
-                await vm.RefreshDatabases(); 
+                await vm.DBTabVm.RefreshDatabases(vm.SelectedSubscriptions); 
             }catch(Exception ex)
             {
                 Debug.WriteLine(ex);
@@ -192,7 +192,7 @@ namespace Azure.Costs.Ui.Wpf
         {
             if(e.Item == null) return;
 
-            vm.SetDbTagFilterSummary();
+            vm.DBTabVm.SetTagFilterSummary();
 
             var db = e.Item as RestSqlDb;
            
@@ -210,13 +210,13 @@ namespace Azure.Costs.Ui.Wpf
             }
 
             // 2.filter on tag
-            if(vm.AllDBTags.Count > 0) tagFilterMatched = false;
+            if(vm.DBTabVm.AllTags.Count > 0) tagFilterMatched = false;
 
             if (db.TagsList.Count > 0)
             {
                 foreach (var tag in db.TagsList)
                 {
-                    foreach (var allTag in vm.AllDBTags.Where(x => x.IsSelected))
+                    foreach (var allTag in vm.DBTabVm.AllTags.Where(x => x.IsSelected))
                     {
                         if (tag == allTag.StringValue)
                         {
@@ -462,7 +462,7 @@ namespace Azure.Costs.Ui.Wpf
                     {
                         // shouldnt need this BUT the db summary busyindicator wont fire on first activation
                         Cursor = Cursors.Wait;
-                        await vm.RefreshDatabases();
+                        await vm.DBTabVm.RefreshDatabases(vm.SelectedSubscriptions);
                         Cursor = Cursors.Arrow;
                     }   
                     break;
@@ -509,7 +509,7 @@ namespace Azure.Costs.Ui.Wpf
 
         private async void DBAnalyseSpendButton_Click(object sender, RoutedEventArgs e)
         {
-            await vm.AnalyseDbSpend();
+            await vm.DBTabVm.AnalyseDbSpend();
         }
 
         private async void VMDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
@@ -656,7 +656,7 @@ namespace Azure.Costs.Ui.Wpf
 
         private void FilterTagsButton_Click(object sender, RoutedEventArgs e)
         {
-            var tagsWin = new TagsFilter(vm.AllDBTags);
+            var tagsWin = new TagsFilter(vm.DBTabVm.AllTags);
            
             tagsWin.Owner = this;
 
