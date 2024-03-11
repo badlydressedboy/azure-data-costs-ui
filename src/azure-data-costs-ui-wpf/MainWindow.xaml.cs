@@ -199,19 +199,36 @@ namespace Azure.Costs.Ui.Wpf
 
             var db = e.Item as RestSqlDb;
            
-            bool textFilterMatched = true;
+            bool serverFilterMatched = true;
+            bool subFilterMatched = true;
             bool tagFilterMatched = true;
             bool soFilterMatched = true;
 
-            // 1.filter on name text
-            //if (RestDbFilterText.Text.Length > 0)
-            //{
-            //    textFilterMatched = false;
-            //    if (!db.name.Contains(RestDbFilterText.Text))
-            //    {
-            //        textFilterMatched = true;
-            //    }
-            //}
+            // 1.filter on server name
+            var serverFilters = vm.DBTabVm.ServerFilter.Items;
+            if (serverFilters.Count > 0) serverFilterMatched = false;
+
+            foreach (var selectedSF in serverFilters.Where(x => x.IsSelected))
+            {
+                if (db.serverName.ToUpper() == selectedSF.StringValue.ToUpper())
+                {
+                    serverFilterMatched = true;
+                    break;
+                }
+            }
+
+            // subscription
+            var subFilters = vm.DBTabVm.SubscriptionFilter.Items;
+            if (subFilters.Count > 0) subFilterMatched = false;
+
+            foreach (var selectedSub in subFilters.Where(x => x.IsSelected))
+            {
+                if (db.Subscription.displayName.ToUpper() == selectedSub.StringValue.ToUpper())
+                {
+                    subFilterMatched = true;
+                    break;
+                }
+            }
 
             // 2.filter on tag
             var tags = vm.DBTabVm.TagsFilter.Items;
@@ -249,10 +266,8 @@ namespace Azure.Costs.Ui.Wpf
                     break;
                 }
             }
-
-
-            //textFilterMatched && 
-            if (tagFilterMatched && soFilterMatched) { 
+            
+            if (tagFilterMatched && soFilterMatched && serverFilterMatched && subFilterMatched) { 
                 e.Accepted = true;
                 return;
             }

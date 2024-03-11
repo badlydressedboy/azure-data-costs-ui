@@ -42,18 +42,6 @@ namespace Azure.Costs.Ui.Wpf.Vm
             set => SetProperty(ref dbFooterErrorText, value);
         }
 
-        private string? tagFilterSummary;
-        public string? TagFilterSummary
-        {
-            get => tagFilterSummary;
-            set => SetProperty(ref tagFilterSummary, value);
-        } 
-        private string? soFilterSummary;
-        public string? SoFilterSummary
-        {
-            get => soFilterSummary;
-            set => SetProperty(ref soFilterSummary, value);
-        }
         private string restErrorMessage;
         public string RestErrorMessage
         {
@@ -123,6 +111,8 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
         public Filter TagsFilter { get; set; } = new Filter();
         public Filter SoFilter { get; set; } = new Filter();
+        public Filter ServerFilter { get; set; } = new Filter();
+        public Filter SubscriptionFilter { get; set; } = new Filter();
 
         #endregion
 
@@ -140,7 +130,6 @@ namespace Azure.Costs.Ui.Wpf.Vm
             IsGetSqlServersBusy = true;
             Debug.WriteLine("IsGetSqlServersBusy = true...");
             DbFooterErrorText = "";
-            TagFilterSummary = "";
             RestSqlDbList.Clear();
             RestErrorMessage = "";
             decimal totalSqlDbCosts = 0;
@@ -152,6 +141,8 @@ namespace Azure.Costs.Ui.Wpf.Vm
                 TagsFilter.Items.Add(new SelectableString() { StringValue = "", IsSelected = true }); // need option for NO tags
 
                 SoFilter.Items.Clear();
+                ServerFilter.Items.Clear(); 
+                SubscriptionFilter.Items.Clear();
                 
                 //SyncSelectedSubs();// todo
 
@@ -194,7 +185,9 @@ namespace Azure.Costs.Ui.Wpf.Vm
                                     {
                                         TagsFilter.AddSelectableItem(tag);                                        
                                     }
-                                    SoFilter.AddSelectableItem(db.properties.currentServiceObjectiveName);                                    
+                                    SoFilter.AddSelectableItem(db.properties.currentServiceObjectiveName);
+                                    ServerFilter.AddSelectableItem(db.serverName);
+                                    SubscriptionFilter.AddSelectableItem(db.Subscription.displayName);
                                 }
                             }
 
@@ -295,6 +288,8 @@ namespace Azure.Costs.Ui.Wpf.Vm
         {
             TagsFilter.UpdateFilterSummary();
             SoFilter.UpdateFilterSummary();
+            SubscriptionFilter.UpdateFilterSummary();
+            ServerFilter.UpdateFilterSummary(); 
         }
 
         
