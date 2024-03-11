@@ -458,10 +458,10 @@
                                                     <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
                                                     <TextBlock Margin="1" VerticalAlignment="Center" 
                                                        Foreground="DarkOrange"
-                                                       Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.SoFilterSummary}">
+                                                       Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.SoFilter.SummaryText}">
                                                     </TextBlock>
 
-                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.AllServiceObjectives}" Click="DbFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.SoFilter.Items}" Click="DbFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
                                                         <StackPanel Orientation="Horizontal">
                                                             <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
                                                         </StackPanel>
@@ -532,25 +532,25 @@
                                 <DataGridTextColumn Header="Location"  Binding="{Binding location}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Tags"  Binding="{Binding TagsString}" Width="220" >
+                                <DataGridTextColumn Header="Tags" Width="220" >
                                     <DataGridTextColumn.HeaderTemplate>
                                         <DataTemplate>
-                                            <Grid>
+                                            <Grid Background="LightPink" HorizontalAlignment="Stretch">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*" />
                                                 </Grid.ColumnDefinitions>
 
                                                 <TextBlock Text="Tags" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,4,0"/>
 
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Green">
                                                     <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
                                                     <TextBlock Margin="1" VerticalAlignment="Center" 
                                                                Foreground="DarkOrange"
-                                                               Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.TagFilterSummary}">
+                                                               Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.TagsFilter.SummaryText}">
                                                     </TextBlock>
 
-                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.AllTags}" Click="DbFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.TagsFilter.Items}" Click="DbFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
                                                         <StackPanel Orientation="Horizontal">
                                                             <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
                                                         </StackPanel>

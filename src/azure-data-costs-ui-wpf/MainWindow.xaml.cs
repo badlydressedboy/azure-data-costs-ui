@@ -214,13 +214,14 @@ namespace Azure.Costs.Ui.Wpf
             //}
 
             // 2.filter on tag
-            if(vm.DBTabVm.AllTags.Count > 0) tagFilterMatched = false;
+            var tags = vm.DBTabVm.TagsFilter.Items;
+            if (tags.Count > 0) tagFilterMatched = false;
 
             if (db.TagsList.Count > 0)
             {
                 foreach (var tag in db.TagsList)
                 {
-                    foreach (var allTag in vm.DBTabVm.AllTags.Where(x => x.IsSelected))
+                    foreach (var allTag in tags.Where(x => x.IsSelected))
                     {
                         if (tag == allTag.StringValue)
                         {
@@ -230,7 +231,7 @@ namespace Azure.Costs.Ui.Wpf
                 }
             }
             else {
-                var existing = vm.DBTabVm.AllTags.FirstOrDefault(x => x.IsSelected && x.StringValue == "");
+                var existing = tags.FirstOrDefault(x => x.IsSelected && x.StringValue == "");
                 if (existing != null)
                 {
                     tagFilterMatched = true;
@@ -238,10 +239,11 @@ namespace Azure.Costs.Ui.Wpf
             }
 
             // 3.filter on so
-            if (vm.DBTabVm.AllServiceObjectives.Count > 0) soFilterMatched = false;
-            foreach (var allSo in vm.DBTabVm.AllServiceObjectives.Where(x => x.IsSelected))
+            var sos = vm.DBTabVm.SoFilter.Items;
+            if (sos.Count > 0) soFilterMatched = false;
+            foreach (var selectedSo in sos.Where(x => x.IsSelected))
             {
-                if (db.properties.currentServiceObjectiveName.ToUpper() == allSo.StringValue.ToUpper())
+                if (db.properties.currentServiceObjectiveName.ToUpper() == selectedSo.StringValue.ToUpper())
                 {
                     soFilterMatched = true;
                     break;
@@ -249,7 +251,7 @@ namespace Azure.Costs.Ui.Wpf
             }
 
 
-//textFilterMatched && 
+            //textFilterMatched && 
             if (tagFilterMatched && soFilterMatched) { 
                 e.Accepted = true;
                 return;

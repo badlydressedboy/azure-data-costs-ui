@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Azure.Costs.Ui.Wpf;
+using NLog.Filters;
 
 namespace Azure.Costs.Ui.Wpf.Vm
 {
@@ -17,10 +18,13 @@ namespace Azure.Costs.Ui.Wpf.Vm
     {
         #region Properties
         public ObservableCollection<RestSqlDb> RestSqlDbList { get; private set; } = new ObservableCollection<RestSqlDb>();
+        //public Dictionary<string, Filter> Filters { get; set; } = new Dictionary<string, Filter>();
+        
 
-        public List<SelectableString> AllTags { get; set; } = new List<SelectableString>();
+        //public TabFilters Filters { get; set; } = new TabFilters(); 
+        //public List<SelectableString> AllTags { get; set; } = new List<SelectableString>();
 
-        public List<SelectableString> AllServiceObjectives { get; set; } = new List<SelectableString>();
+        //public List<SelectableString> AllServiceObjectives { get; set; } = new List<SelectableString>();
 
         private bool isGetSqlServersBusy;
         public bool IsGetSqlServersBusy
@@ -115,12 +119,18 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
         #endregion
 
+        #region Filters
+
+        public Filter TagsFilter { get; set; } = new Filter();
+        public Filter SoFilter { get; set; } = new Filter();
+
+        #endregion
 
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public DBTabVm()
         {
-            //_logger.Info("DBTabVm ctor");
+            //_logger.Info("DBTabVm ctor");            
         }
 
         public async Task RefreshDatabases(List<Subscription> selectedSubscriptions)
@@ -138,9 +148,11 @@ namespace Azure.Costs.Ui.Wpf.Vm
             try
             {
                 // filter columns clear
-                AllTags.Clear();
-                AllTags.Add(new SelectableString() { StringValue = "", IsSelected = true }); // need option for NO tags
-                AllServiceObjectives.Clear();
+                TagsFilter.Items.Clear();
+                TagsFilter.Items.Add(new SelectableString() { StringValue = "", IsSelected = true }); // need option for NO tags
+
+                SoFilter.Items.Clear();
+                
                 //SyncSelectedSubs();// todo
 
 
@@ -180,9 +192,9 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
                                     foreach (var tag in db.TagsList)
                                     {
-                                        Helpers.AddSelectableString(AllTags, tag);                                        
+                                        TagsFilter.AddSelectableItem(tag);                                        
                                     }
-                                    Helpers.AddSelectableString(AllServiceObjectives, db.properties.currentServiceObjectiveName);
+                                    SoFilter.AddSelectableItem(db.properties.currentServiceObjectiveName);                                    
                                 }
                             }
 
@@ -281,8 +293,8 @@ namespace Azure.Costs.Ui.Wpf.Vm
         }
         public void SetFilterSummaries()
         {
-            TagFilterSummary = Helpers.GetFilterSummary(AllTags);
-            SoFilterSummary = Helpers.GetFilterSummary(AllServiceObjectives);
+            TagsFilter.UpdateFilterSummary();
+            SoFilter.UpdateFilterSummary();
         }
 
         
