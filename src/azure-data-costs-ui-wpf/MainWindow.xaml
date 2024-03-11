@@ -454,8 +454,8 @@
                                                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                                     <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
                                                     <TextBlock Margin="1" VerticalAlignment="Center" 
-                   Foreground="DarkOrange"
-                   Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.ServerFilter.SummaryText}">
+                                                       Foreground="DarkOrange"
+                                                       Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.ServerFilter.SummaryText}">
                                                     </TextBlock>
 
                                                     <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.ServerFilter.Items}" Click="DbFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">

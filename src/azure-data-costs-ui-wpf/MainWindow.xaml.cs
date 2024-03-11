@@ -199,38 +199,9 @@ namespace Azure.Costs.Ui.Wpf
 
             var db = e.Item as RestSqlDb;
            
-            bool serverFilterMatched = true;
-            bool subFilterMatched = true;
             bool tagFilterMatched = true;
-            bool soFilterMatched = true;
-
-            // 1.filter on server name
-            var serverFilters = vm.DBTabVm.ServerFilter.Items;
-            if (serverFilters.Count > 0) serverFilterMatched = false;
-
-            foreach (var selectedSF in serverFilters.Where(x => x.IsSelected))
-            {
-                if (db.serverName.ToUpper() == selectedSF.StringValue.ToUpper())
-                {
-                    serverFilterMatched = true;
-                    break;
-                }
-            }
-
-            // subscription
-            var subFilters = vm.DBTabVm.SubscriptionFilter.Items;
-            if (subFilters.Count > 0) subFilterMatched = false;
-
-            foreach (var selectedSub in subFilters.Where(x => x.IsSelected))
-            {
-                if (db.Subscription.displayName.ToUpper() == selectedSub.StringValue.ToUpper())
-                {
-                    subFilterMatched = true;
-                    break;
-                }
-            }
-
-            // 2.filter on tag
+           
+            // filter on tag - special logic
             var tags = vm.DBTabVm.TagsFilter.Items;
             if (tags.Count > 0) tagFilterMatched = false;
 
@@ -255,24 +226,14 @@ namespace Azure.Costs.Ui.Wpf
                 }
             }
 
-            // 3.filter on so
-            var sos = vm.DBTabVm.SoFilter.Items;
-            if (sos.Count > 0) soFilterMatched = false;
-            foreach (var selectedSo in sos.Where(x => x.IsSelected))
-            {
-                if (db.properties.currentServiceObjectiveName.ToUpper() == selectedSo.StringValue.ToUpper())
-                {
-                    soFilterMatched = true;
-                    break;
-                }
-            }
-            
-            if (tagFilterMatched && soFilterMatched && serverFilterMatched && subFilterMatched) { 
+            if (tagFilterMatched 
+                && vm.DBTabVm.SoFilter.IsValueSelected(db.properties.currentServiceObjectiveName)
+                && vm.DBTabVm.ServerFilter.IsValueSelected(db.serverName) 
+                && vm.DBTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName)) { 
                 e.Accepted = true;
                 return;
             }
-            e.Accepted = false;
-            
+            e.Accepted = false;            
         }
 
 

@@ -52,5 +52,15 @@ namespace Azure.Costs.Ui.Wpf.Vm
             }
         }
 
+        public bool IsValueSelected(string stringValue)
+        {
+            if(Items.Count == 0)
+            {
+                return true;
+            }
+            stringValue = stringValue.ToUpper();    
+            return Items.Any(x => x.IsSelected == true && x.StringValue.ToUpper() == stringValue);
+        }   
+
     }
 }
