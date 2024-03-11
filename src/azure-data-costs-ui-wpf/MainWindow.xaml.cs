@@ -201,16 +201,17 @@ namespace Azure.Costs.Ui.Wpf
            
             bool textFilterMatched = true;
             bool tagFilterMatched = true;
+            bool soFilterMatched = true;
 
             // 1.filter on name text
-            if (RestDbFilterText.Text.Length > 0)
-            {
-                textFilterMatched = false;
-                if (!db.name.Contains(RestDbFilterText.Text))
-                {
-                    textFilterMatched = true;
-                }
-            }
+            //if (RestDbFilterText.Text.Length > 0)
+            //{
+            //    textFilterMatched = false;
+            //    if (!db.name.Contains(RestDbFilterText.Text))
+            //    {
+            //        textFilterMatched = true;
+            //    }
+            //}
 
             // 2.filter on tag
             if(vm.DBTabVm.AllTags.Count > 0) tagFilterMatched = false;
@@ -228,8 +229,28 @@ namespace Azure.Costs.Ui.Wpf
                     }
                 }
             }
+            else {
+                var existing = vm.DBTabVm.AllTags.FirstOrDefault(x => x.IsSelected && x.StringValue == "");
+                if (existing != null)
+                {
+                    tagFilterMatched = true;
+                }
+            }
 
-            if (textFilterMatched && tagFilterMatched) { 
+            // 3.filter on so
+            if (vm.DBTabVm.AllServiceObjectives.Count > 0) soFilterMatched = false;
+            foreach (var allSo in vm.DBTabVm.AllServiceObjectives.Where(x => x.IsSelected))
+            {
+                if (db.properties.currentServiceObjectiveName.ToUpper() == allSo.StringValue.ToUpper())
+                {
+                    soFilterMatched = true;
+                    break;
+                }
+            }
+
+
+//textFilterMatched && 
+            if (tagFilterMatched && soFilterMatched) { 
                 e.Accepted = true;
                 return;
             }

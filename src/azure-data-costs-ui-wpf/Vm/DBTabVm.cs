@@ -139,6 +139,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
             {
                 // filter columns clear
                 AllTags.Clear();
+                AllTags.Add(new SelectableString() { StringValue = "", IsSelected = true }); // need option for NO tags
                 AllServiceObjectives.Clear();
                 //SyncSelectedSubs();// todo
 
@@ -179,13 +180,9 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
                                     foreach (var tag in db.TagsList)
                                     {
-                                        var existing = AllTags.FirstOrDefault(x => x.StringValue == tag);
-                                        if (existing == null)
-                                        {
-                                            AllTags.Add(new SelectableString() { StringValue = tag, IsSelected = true });
-                                        }
+                                        Helpers.AddSelectableString(AllTags, tag);                                        
                                     }
-
+                                    Helpers.AddSelectableString(AllServiceObjectives, db.properties.currentServiceObjectiveName);
                                 }
                             }
 

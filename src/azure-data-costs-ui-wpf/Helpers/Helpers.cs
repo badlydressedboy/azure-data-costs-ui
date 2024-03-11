@@ -19,5 +19,14 @@ namespace Azure.Costs.Ui.Wpf
             }
             return returnString;
         }
+
+        public static void AddSelectableString(List<SelectableString> stringList, string potentialString)
+        {
+            var existing = stringList.FirstOrDefault(x => x.StringValue == potentialString);
+            if (existing == null)
+            {
+                stringList.Add(new SelectableString() { StringValue = potentialString, IsSelected = true });
+            }
+        }
     }
 }
