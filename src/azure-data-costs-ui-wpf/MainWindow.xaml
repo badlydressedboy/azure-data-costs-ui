@@ -443,7 +443,37 @@
                                 <DataGridTextColumn Header="Server"  Binding="{Binding serverName}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}" ></DataGridTextColumn>
 
-                                <DataGridTextColumn Header="Service Objective"  Binding="{Binding properties.currentServiceObjectiveName}" ></DataGridTextColumn>
+                                <DataGridTextColumn Header="Service Objective"  Binding="{Binding properties.currentServiceObjectiveName}" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="Service Objective" VerticalAlignment="Center"/>
+
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+                                                       Foreground="DarkOrange"
+                                                       Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.SoFilterSummary}">
+                                                    </TextBlock>
+
+                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.AllServiceObjectives}" Click="DbFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+
+                                </DataGridTextColumn>
                                 
                                 <DataGridTextColumn Header="Cost (Bill CCY)"  Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);'?'}}" dgx:DataGridFilterColumn.IsFilterVisible="False" >
 
@@ -463,7 +493,6 @@
                                 <DataGridTextColumn Header="Over Provision%"  Binding="{Binding OverSpendFromMaxPc, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
                                 <DataGridTextColumn Header="Potential Saving"  Binding="{Binding PotentialSavingAmount, StringFormat=N0}" CellStyle="{StaticResource NumericGridCellStyle}" local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
                                 <DataGridTextColumn Header="Saving Description"  Binding="{Binding PotentialSavingDescription}"  dgx:DataGridFilterColumn.IsFilterVisible="False"/>
-
 
                                 <DataGridTextColumn Header="DTU %"  Binding="{Binding dtu_consumption_percent, StringFormat=N0}" local:DataGridExtensions.SortDesc="True"  dgx:DataGridFilterColumn.IsFilterVisible="False">
                                     <DataGridTextColumn.CellStyle>
@@ -500,8 +529,6 @@
                                 </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Elastic Pool"  Binding="{Binding properties.elasticPoolName}" ></DataGridTextColumn>
-
-                                
                                 <DataGridTextColumn Header="Location"  Binding="{Binding location}" ></DataGridTextColumn>
                                 <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>
 
@@ -516,25 +543,17 @@
 
                                                 <TextBlock Text="Tags" TextWrapping="Wrap" VerticalAlignment="Center"/>
 
-
                                                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-
                                                     <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
-                                                    
                                                     <TextBlock Margin="1" VerticalAlignment="Center" 
                                                                Foreground="DarkOrange"
                                                                Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.TagFilterSummary}">
-                                                        
                                                     </TextBlock>
-                                                    
-                                                    <Button  Click="FilterTagsButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
 
+                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.AllTags}" Click="DbFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
                                                         <StackPanel Orientation="Horizontal">
-
                                                             <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
-                                                            
                                                         </StackPanel>
-                                                   
                                                     </Button>   
                                                 </StackPanel>
                                               

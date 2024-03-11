@@ -137,8 +137,9 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
             try
             {
+                // filter columns clear
                 AllTags.Clear();
-                
+                AllServiceObjectives.Clear();
                 //SyncSelectedSubs();// todo
 
 

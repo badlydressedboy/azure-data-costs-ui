@@ -33,6 +33,7 @@ using System.Security.Policy;
 using Azure.Costs.Common.Models.Rest;
 using Azure.Costs.Common;
 using DataEstateOverview;
+using NLog;
 
 namespace Azure.Costs.Ui.Wpf
 {
@@ -43,7 +44,9 @@ namespace Azure.Costs.Ui.Wpf
     {
         List<string> connStrings = new List<string>();
         MainWindowVm vm = new MainWindowVm();
-        
+        private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -654,9 +657,15 @@ namespace Azure.Costs.Ui.Wpf
             return;
         }
 
-        private void FilterTagsButton_Click(object sender, RoutedEventArgs e)
+        private void DbFilterButton_Click(object sender, RoutedEventArgs e)
         {
-            var tagsWin = new FilterWindow(vm.DBTabVm.AllTags);
+            Button but = (Button)sender;
+            if(!(but.DataContext is List<SelectableString>))
+            {
+                _logger.Error("Filter button has not had data context set correctly to list");
+                return;
+            }
+            var tagsWin = new FilterWindow((List<SelectableString>)but.DataContext);
            
             tagsWin.Owner = this;
 
