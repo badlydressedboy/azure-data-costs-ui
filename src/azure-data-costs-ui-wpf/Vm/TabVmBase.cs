@@ -11,6 +11,11 @@ namespace Azure.Costs.Ui.Wpf.Vm
     {
         protected List<Filter> _filterList = new List<Filter>();
 
+        public Filter TagsFilter { get; set; } = new Filter();
+        public Filter SubscriptionFilter { get; set; } = new Filter();        
+        public Filter ResourceGroupFilter { get; set; } = new Filter();
+
+
         private string restErrorMessage;
         public string RestErrorMessage
         {
@@ -38,7 +43,12 @@ namespace Azure.Costs.Ui.Wpf.Vm
                 SetProperty(ref isRestErrorMessageVisible, value);
             }
         }
-
+        private string totalCostsText;
+        public string TotalCostsText
+        {
+            get => totalCostsText;
+            set => SetProperty(ref totalCostsText, value);
+        }
         public void SetFilterSummaries()
         {
             foreach (var filter in _filterList)
@@ -52,6 +62,17 @@ namespace Azure.Costs.Ui.Wpf.Vm
             {
                 filter.Items.Clear();
             }
+            TagsFilter.Items.Add(new SelectableString() { StringValue = "", IsSelected = true }); // need option for NO tags
+
+        }
+
+        protected static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
+        public TabVmBase()
+        {
+            _filterList.Add(TagsFilter);            
+            _filterList.Add(ResourceGroupFilter);
+            _filterList.Add(SubscriptionFilter);
         }
     }
 }

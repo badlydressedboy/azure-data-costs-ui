@@ -7,11 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Azure.Costs.Ui.Wpf.Vm
-{
-    public class TabFilters : ObservableObject
-    {
-        public Dictionary<string, Filter> Filters { get; set; } = new Dictionary<string, Filter>(); 
-    }
+{   
 
     public class Filter : ObservableObject
     {
