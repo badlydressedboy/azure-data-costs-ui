@@ -200,8 +200,17 @@ namespace Azure.Costs.Ui.Wpf
             var db = e.Item as RestSqlDb;
            
             bool tagFilterMatched = true;
-           
+
             // filter on tag - special logic
+            // todo - this is not populated yet and needs to be
+            e.Accepted = false;
+            return;
+
+
+
+
+
+
             var tags = vm.DBTabVm.TagsFilter.Items;
             if (tags.Count > 0) tagFilterMatched = false;
 
@@ -442,7 +451,7 @@ namespace Azure.Costs.Ui.Wpf
 
         private async void VMsRefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            await vm.RefreshVMs();
+            await vm.RefreshVms();
         }
 
         private async void PurviewRefreshButton_Click(object sender, RoutedEventArgs e)
@@ -471,7 +480,7 @@ namespace Azure.Costs.Ui.Wpf
 
                     case(2):
                     // adf
-                    if(vm.DataFactoryList.Count == 0)
+                    if(vm.DFTabVm.DataFactoryList.Count == 0)
                     {
                         await vm.RefreshDataFactories();
                     }
@@ -479,29 +488,29 @@ namespace Azure.Costs.Ui.Wpf
 ;
                 case (3):
                     // storage
-                    if (vm.StorageList.Count == 0)
+                    if (vm.StorageTabVm.StorageList.Count == 0)
                     {
                         await vm.RefreshStorage();
                     }
                     break;
                 case (4):
                     // vnets
-                    if (vm.VNetList.Count == 0)
+                    if (vm.VNetTabVm.VNetList.Count == 0)
                     {
                         await vm.RefreshVNets();
                     }
                     break;
                 case (5):
                     // vms
-                    if (vm.VMList.Count == 0)
+                    if (vm.VmTabVm.VMList.Count == 0)
                     {
                         
-                        await vm.RefreshVMs();
+                        await vm.RefreshVms();
                     }
                     break;
                 case (6):
                     // purview
-                    if (vm.PurviewList.Count == 0)
+                    if (vm.PurviewTabVm.PurviewList.Count == 0)
                     {
                         await vm.RefreshPurview();
                     }
@@ -593,7 +602,7 @@ namespace Azure.Costs.Ui.Wpf
 
         private async void VMAnalyseSpendButton_Click(object sender, RoutedEventArgs e)
         {
-            await vm.AnalyseVmSpend();
+            await vm.VmTabVm.AnalyseVmSpend();
         }
 
         

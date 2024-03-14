@@ -78,31 +78,31 @@
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
-        <CollectionViewSource Source="{Binding DataFactoryList}" Filter="DataFactoryDataGridViewSource_Filter"  x:Key="DataFactoryDataGridViewSource">
+        <CollectionViewSource Source="{Binding DFTabVm.DataFactoryList}" Filter="DataFactoryDataGridViewSource_Filter"  x:Key="DataFactoryDataGridViewSource">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
-        <CollectionViewSource Source="{Binding StorageList}" Filter="StorageDataGridViewSource_Filter"  x:Key="StorageDataGridViewSource">
+        <CollectionViewSource Source="{Binding StorageTabVm.StorageList}" Filter="StorageDataGridViewSource_Filter"  x:Key="StorageDataGridViewSource">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
-        <CollectionViewSource Source="{Binding VNetList}" Filter="VNetDataGridViewSource_Filter"  x:Key="VNetDataGridViewSource">
+        <CollectionViewSource Source="{Binding VNetTabVm.VNetList}" Filter="VNetDataGridViewSource_Filter"  x:Key="VNetDataGridViewSource">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
-        <CollectionViewSource Source="{Binding VMList}" Filter="VMDataGridViewSource_Filter"  x:Key="VMDataGridViewSource">
+        <CollectionViewSource Source="{Binding VmTabVm.VMList}" Filter="VMDataGridViewSource_Filter"  x:Key="VMDataGridViewSource">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
 
-        <CollectionViewSource Source="{Binding PurviewList}" Filter="PurviewDataGridViewSource_Filter"  x:Key="PurviewDataGridViewSource">
+        <CollectionViewSource Source="{Binding PurviewTabVm.PurviewList}" Filter="PurviewDataGridViewSource_Filter"  x:Key="PurviewDataGridViewSource">
             <CollectionViewSource.SortDescriptions>
                 <scm:SortDescription PropertyName="TotalCostBilling" Direction="Descending"/>
             </CollectionViewSource.SortDescriptions>

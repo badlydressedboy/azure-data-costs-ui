@@ -126,7 +126,10 @@ namespace Azure.Costs.Ui.Wpf.Vm
                         {
                             sub.SqlServers.ForEach(s =>
                             {
-                                s.Dbs.ForEach(db => RestSqlDbList.Add(db));
+                                s.Dbs.ForEach(db => {
+                                    RestSqlDbList.Add(db);
+                                    Debug.WriteLine($"RestSqlDbList.Add({db.name})");
+                            });
                             });
                         });
 

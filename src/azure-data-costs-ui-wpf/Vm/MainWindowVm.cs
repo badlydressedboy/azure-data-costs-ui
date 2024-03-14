@@ -28,6 +28,12 @@ namespace Azure.Costs.Ui.Wpf
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public DBTabVm DBTabVm { get; set; } = new DBTabVm();
+        public StorageTabVm StorageTabVm { get; set; } = new StorageTabVm();
+        public VNetTabVm VNetTabVm { get; set; } = new VNetTabVm();
+        public PurviewTabVm PurviewTabVm { get; set; } = new PurviewTabVm();
+        public DFTabVm DFTabVm { get; set; } = new DFTabVm();
+        public VmTabVm VmTabVm { get; set; } = new VmTabVm();
+
         public List<Subscription> SelectedSubscriptions { get; set; } = new List<Subscription>();
         public ObservableCollection<Subscription> DetectedSubscriptions { get; set; } = new ObservableCollection<Subscription>();                        
         
@@ -261,7 +267,9 @@ namespace Azure.Costs.Ui.Wpf
 
             //Subscriptions.Add(new Subscription("a5be5e3e-da5c-45f5-abe9-9591a51fccfa"));//, this
             //Subscriptions.Add(new Subscription("151b40b6-6164-4053-9884-58a8d3151fe6"));//, this
-            IsRestErrorMessageVisible = false;            
+            IsRestErrorMessageVisible = false;    
+            
+
         }
         public async Task TestLogin()
         {
@@ -376,6 +384,32 @@ namespace Azure.Costs.Ui.Wpf
             }
             IsQueryingDatabase = false;
             UpdateHttpAccessCountMessage();
+        }
+
+        public async Task RefreshStorage()
+        {
+            await StorageTabVm.RefreshStorage(SelectedSubscriptions);
+        }
+
+
+        public async Task RefreshVNets()
+        {
+            await VNetTabVm.RefreshVNets(SelectedSubscriptions);
+        }
+
+        public async Task RefreshVms()
+        {
+            await VmTabVm.RefreshVMs(SelectedSubscriptions);
+        }
+
+        public async Task RefreshPurview()
+        {
+            await PurviewTabVm.RefreshPurview(SelectedSubscriptions);
+        }
+
+        public async Task RefreshDataFactories()
+        {
+            await DFTabVm.RefreshDataFactories(SelectedSubscriptions);
         }
 
         public void SaveSubscriptionOptions()
