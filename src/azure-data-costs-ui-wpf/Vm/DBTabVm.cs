@@ -128,6 +128,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
                                 {
                                     foreach (var tag in db.TagsList) TagsFilter.AddSelectableItem(tag);
 
+                                    ResourceGroupFilter.AddSelectableItem(db.resourceGroup);
                                     SoFilter.AddSelectableItem(db.properties.currentServiceObjectiveName);
                                     ServerFilter.AddSelectableItem(db.serverName);
                                     SubscriptionFilter.AddSelectableItem(db.Subscription.displayName);

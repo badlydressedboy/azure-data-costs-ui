@@ -28,18 +28,22 @@ namespace Azure.Costs.Ui.Wpf.Vm
                 SetProperty(ref isStorageQueryBusy, value);
             }
         }
-        
+
 
         #endregion
 
         #region Filters
 
-       
+        public Filter SkuFilter { get; set; } = new Filter();
+        public Filter TierFilter { get; set; } = new Filter();
+
         #endregion
 
-       
+
         public StorageTabVm()
         {     
+            _filterList.Add(SkuFilter);
+            _filterList.Add(TierFilter);
         }
 
         public async Task RefreshStorage(List<Subscription> selectedSubscriptions)
@@ -62,11 +66,17 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
                             sub.StorageAccounts.ForEach(sa =>
                             {
-                                foreach (var tag in sa.TagsList) TagsFilter.AddSelectableItem(tag);
+                                lock (TagsFilter)
+                                {
+                                    foreach (var tag in sa.TagsList) TagsFilter.AddSelectableItem(tag);
+                                }
 
                                 ResourceGroupFilter.AddSelectableItem(sa.resourceGroup);
                                 SubscriptionFilter.AddSelectableItem(sa.Subscription.displayName);
-                                
+                                LocationFilter.AddSelectableItem(sa.location);
+                                SkuFilter.AddSelectableItem(sa.sku.name);
+                                TierFilter.AddSelectableItem(sa.sku.tier);  
+
                             });
 
                             App.Current.Dispatcher.Invoke(() =>

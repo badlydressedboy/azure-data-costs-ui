@@ -64,7 +64,10 @@ namespace Azure.Costs.Ui.Wpf.Vm
             {
                 filter.Items.Clear();
             }
-            TagsFilter.Items.Add(new SelectableString() { StringValue = "", IsSelected = true }); // need option for NO tags
+            lock (TagsFilter)
+            {
+                TagsFilter.Items.Add(new SelectableString() { StringValue = "", IsSelected = true }); // need option for NO tags
+            }
 
         }
 
@@ -81,27 +84,30 @@ namespace Azure.Costs.Ui.Wpf.Vm
         public bool IsTagFilterMatched(List<string> objectTags)
         {
             bool matched = true;
-            if (TagsFilter.Items.Count > 0) matched = false;
-
-            if (objectTags.Count > 0)
+            lock (TagsFilter)
             {
-                foreach (var tag in objectTags)
+                if (TagsFilter.Items.Count > 0) matched = false;
+
+                if (objectTags.Count > 0)
                 {
-                    foreach (var allTag in TagsFilter.Items.Where(x => x.IsSelected))
+                    foreach (var tag in objectTags)
                     {
-                        if (tag == allTag.StringValue)
+                        foreach (var allTag in TagsFilter.Items.Where(x => x.IsSelected))
                         {
-                            matched = true;
+                            if (tag == allTag.StringValue)
+                            {
+                                matched = true;
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                var existing = TagsFilter.Items.FirstOrDefault(x => x.IsSelected && x.StringValue == "");
-                if (existing != null)
+                else
                 {
-                    matched = true;
+                    var existing = TagsFilter.Items.FirstOrDefault(x => x.IsSelected && x.StringValue == "");
+                    if (existing != null)
+                    {
+                        matched = true;
+                    }
                 }
             }
             return matched; 

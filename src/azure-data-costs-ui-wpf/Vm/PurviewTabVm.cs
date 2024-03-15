@@ -79,6 +79,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
                         ResourceGroupFilter.AddSelectableItem(purv.resourceGroup);
                         SubscriptionFilter.AddSelectableItem(purv.Subscription.displayName);
+                        LocationFilter.AddSelectableItem(purv.location);
                     }
 
                     // only add to grid after all filters have been added

@@ -207,7 +207,9 @@ namespace Azure.Costs.Ui.Wpf
 
             if (tagFilterMatched 
                 && vm.DBTabVm.SoFilter.IsValueSelected(db.properties.currentServiceObjectiveName)
-                && vm.DBTabVm.ServerFilter.IsValueSelected(db.serverName) 
+                && vm.DBTabVm.ServerFilter.IsValueSelected(db.serverName)
+                && vm.DBTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)                
+                && vm.DBTabVm.LocationFilter.IsValueSelected(db.location)
                 && vm.DBTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName)) { 
                 e.Accepted = true;
                 return;
@@ -364,8 +366,11 @@ namespace Azure.Costs.Ui.Wpf
 
             if (tagFilterMatched
                 && vm.StorageTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)
-                //&& vm.StorageTabVm.ServerFilter.IsValueSelected(db.serverName)
-                && vm.StorageTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName))
+                && vm.StorageTabVm.LocationFilter.IsValueSelected(db.location)
+                && vm.StorageTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName)
+                && vm.StorageTabVm.SkuFilter.IsValueSelected(db.sku.name)   
+                && vm.StorageTabVm.TierFilter.IsValueSelected(db.sku.tier)
+                )
             {
                 e.Accepted = true;
                 return;
@@ -399,7 +404,7 @@ namespace Azure.Costs.Ui.Wpf
 
             if (tagFilterMatched
                 && vm.VNetTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)
-                //&& vm.StorageTabVm.ServerFilter.IsValueSelected(db.serverName)
+                && vm.VNetTabVm.LocationFilter.IsValueSelected(db.location)
                 && vm.VNetTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName))
             {
                 e.Accepted = true;
@@ -429,12 +434,12 @@ namespace Azure.Costs.Ui.Wpf
 
             vm.VmTabVm.SetFilterSummaries();
 
-            var db = e.Item as StorageAccount;
+            var db = e.Item as VM;
             bool tagFilterMatched = vm.VmTabVm.IsTagFilterMatched(db.TagsList);
 
             if (tagFilterMatched
                 && vm.VmTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)
-                //&& vm.StorageTabVm.ServerFilter.IsValueSelected(db.serverName)
+                && vm.VmTabVm.LocationFilter.IsValueSelected(db.location)
                 && vm.VmTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName))
             {
                 e.Accepted = true;
@@ -459,7 +464,7 @@ namespace Azure.Costs.Ui.Wpf
 
             if (tagFilterMatched
                 && vm.PurviewTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)
-                //&& vm.StorageTabVm.ServerFilter.IsValueSelected(db.serverName)
+                && vm.PurviewTabVm.LocationFilter.IsValueSelected(db.location)
                 && vm.PurviewTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName))
             {
                 e.Accepted = true;
@@ -731,6 +736,7 @@ namespace Azure.Costs.Ui.Wpf
             tagsWin.ShowDialog();            
 
             CollectionViewSource.GetDefaultView(dg.ItemsSource).Refresh();
+            Focus(); // filter button looks weirdly bold/focus unless you remove focus
         }
         public static T FindParent<T>(DependencyObject child) where T : DependencyObject
         {

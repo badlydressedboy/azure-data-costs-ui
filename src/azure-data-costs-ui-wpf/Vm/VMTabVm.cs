@@ -103,7 +103,8 @@ namespace Azure.Costs.Ui.Wpf.Vm
                                 foreach (var tag in vm.TagsList) TagsFilter.AddSelectableItem(tag);
 
                                 ResourceGroupFilter.AddSelectableItem(vm.resourceGroup);
-                                SubscriptionFilter.AddSelectableItem(vm.Subscription.displayName);                               
+                                SubscriptionFilter.AddSelectableItem(vm.Subscription.displayName);
+                                LocationFilter.AddSelectableItem(vm.location);
                             });
 
                             App.Current.Dispatcher.Invoke(() =>

@@ -34,7 +34,7 @@ namespace Azure.Costs.Ui.Wpf
             _vm = new FilterWindowVm(tagList);
             DataContext = _vm;
             
-            TagsDataGrid.ItemsSource = _vm.TagList;
+            TagsDataGrid.ItemsSource = _vm.TagList.OrderBy(x=>x.StringValue);
 
             _vm.TestAllChecksSelected();
         }     
