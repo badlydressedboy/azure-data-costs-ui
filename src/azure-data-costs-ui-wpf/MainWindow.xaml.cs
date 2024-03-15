@@ -198,41 +198,11 @@ namespace Azure.Costs.Ui.Wpf
             vm.DBTabVm.SetFilterSummaries();
 
             var db = e.Item as RestSqlDb;
-           
-            bool tagFilterMatched = true;
+            bool tagFilterMatched = vm.DBTabVm.IsTagFilterMatched(db.TagsList);
 
-            // filter on tag - special logic
-            // todo - this is not populated yet and needs to be
-            //e.Accepted = false;
-            //return;
-
-
-
-
-
-
-            var tags = vm.DBTabVm.TagsFilter.Items;
-            if (tags.Count > 0) tagFilterMatched = false;
-
-            if (db.TagsList.Count > 0)
+            if (!tagFilterMatched)
             {
-                foreach (var tag in db.TagsList)
-                {
-                    foreach (var allTag in tags.Where(x => x.IsSelected))
-                    {
-                        if (tag == allTag.StringValue)
-                        {
-                            tagFilterMatched = true;
-                        }
-                    }
-                }
-            }
-            else {
-                var existing = tags.FirstOrDefault(x => x.IsSelected && x.StringValue == "");
-                if (existing != null)
-                {
-                    tagFilterMatched = true;
-                }
+                Debug.WriteLine("tag filter not matched");  
             }
 
             if (tagFilterMatched 
@@ -298,7 +268,22 @@ namespace Azure.Costs.Ui.Wpf
 
         private void DataFactoryDataGridViewSource_Filter(object sender, FilterEventArgs e)
         {
+            if (e.Item == null) return;
 
+            vm.DFTabVm.SetFilterSummaries();
+
+            var db = e.Item as DataFactory;
+            bool tagFilterMatched = vm.DFTabVm.IsTagFilterMatched(db.TagsList);
+
+            if (tagFilterMatched
+                && vm.DFTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup) // how are rgroups names slightly different?
+                && vm.DFTabVm.LocationFilter.IsValueSelected(db.location)
+                && vm.DFTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName))
+            {
+                e.Accepted = true;
+                return;
+            }
+            e.Accepted = false;
         }
 
         private void DataFactoriesCollapseCostsButton_Click(object sender, RoutedEventArgs e)
@@ -370,7 +355,22 @@ namespace Azure.Costs.Ui.Wpf
 
         private void StorageDataGridViewSource_Filter(object sender, FilterEventArgs e)
         {
+            if (e.Item == null) return;
 
+            vm.StorageTabVm.SetFilterSummaries();
+
+            var db = e.Item as StorageAccount;
+            bool tagFilterMatched = vm.StorageTabVm.IsTagFilterMatched(db.TagsList);
+
+            if (tagFilterMatched
+                && vm.StorageTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)
+                //&& vm.StorageTabVm.ServerFilter.IsValueSelected(db.serverName)
+                && vm.StorageTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName))
+            {
+                e.Accepted = true;
+                return;
+            }
+            e.Accepted = false;
         }
 
         private void VNetCollapseCostsButton_Click(object sender, RoutedEventArgs e)
@@ -390,7 +390,22 @@ namespace Azure.Costs.Ui.Wpf
 
         private void VNetDataGridViewSource_Filter(object sender, FilterEventArgs e)
         {
+            if (e.Item == null) return;
 
+            vm.VNetTabVm.SetFilterSummaries();
+
+            var db = e.Item as VNet;
+            bool tagFilterMatched = vm.VNetTabVm.IsTagFilterMatched(db.TagsList);
+
+            if (tagFilterMatched
+                && vm.VNetTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)
+                //&& vm.StorageTabVm.ServerFilter.IsValueSelected(db.serverName)
+                && vm.VNetTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName))
+            {
+                e.Accepted = true;
+                return;
+            }
+            e.Accepted = false;
         }
 
         private void VMCollapseCostsButton_Click(object sender, RoutedEventArgs e)
@@ -410,7 +425,22 @@ namespace Azure.Costs.Ui.Wpf
 
         private void VMDataGridViewSource_Filter(object sender, FilterEventArgs e)
         {
+            if (e.Item == null) return;
 
+            vm.VmTabVm.SetFilterSummaries();
+
+            var db = e.Item as StorageAccount;
+            bool tagFilterMatched = vm.VmTabVm.IsTagFilterMatched(db.TagsList);
+
+            if (tagFilterMatched
+                && vm.VmTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)
+                //&& vm.StorageTabVm.ServerFilter.IsValueSelected(db.serverName)
+                && vm.VmTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName))
+            {
+                e.Accepted = true;
+                return;
+            }
+            e.Accepted = false;
         }
 
         private void PurviewCollapseCostsButton_Click(object sender, RoutedEventArgs e)
@@ -420,7 +450,22 @@ namespace Azure.Costs.Ui.Wpf
 
         private void PurviewDataGridViewSource_Filter(object sender, FilterEventArgs e)
         {
+            if (e.Item == null) return;
 
+            vm.PurviewTabVm.SetFilterSummaries();
+
+            var db = e.Item as Purview;
+            bool tagFilterMatched = vm.PurviewTabVm.IsTagFilterMatched(db.TagsList);
+
+            if (tagFilterMatched
+                && vm.PurviewTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)
+                //&& vm.StorageTabVm.ServerFilter.IsValueSelected(db.serverName)
+                && vm.PurviewTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName))
+            {
+                e.Accepted = true;
+                return;
+            }
+            e.Accepted = false;
         }
 
         private void RefreshDbStatsButton_Click(object sender, RoutedEventArgs e)
@@ -665,7 +710,7 @@ namespace Azure.Costs.Ui.Wpf
             return;
         }
 
-        private void DbFilterButton_Click(object sender, RoutedEventArgs e)
+        private void ColumnFilterButton_Click(object sender, RoutedEventArgs e)
         {
             Button but = (Button)sender;
             if(!(but.DataContext is List<SelectableString>))
@@ -673,15 +718,34 @@ namespace Azure.Costs.Ui.Wpf
                 _logger.Error("Filter button has not had data context set correctly to list");
                 return;
             }
+            DataGrid dg = FindParent<DataGrid>(but);
+            if (dg==null)
+            {
+                Debug.WriteLine("how no dg parent");
+                return;
+            }
             var tagsWin = new FilterWindow((List<SelectableString>)but.DataContext);
            
             tagsWin.Owner = this;
 
-            tagsWin.ShowDialog();                       
+            tagsWin.ShowDialog();            
 
-            // do actual filter: vm.AllDBTags
+            CollectionViewSource.GetDefaultView(dg.ItemsSource).Refresh();
+        }
+        public static T FindParent<T>(DependencyObject child) where T : DependencyObject
+        {
+            //get parent item
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
 
-            CollectionViewSource.GetDefaultView(RestDbDataGrid.ItemsSource).Refresh();
+            //we've reached the end of the tree
+            if (parentObject == null) return null;
+
+            //check if the parent matches the type we're looking for
+            T parent = parentObject as T;
+            if (parent != null)
+                return parent;
+            else
+                return FindParent<T>(parentObject);
         }
     }
     public class ignoresubscriptionnames

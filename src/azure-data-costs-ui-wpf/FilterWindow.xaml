@@ -43,7 +43,7 @@
         <DataGrid x:Name="TagsDataGrid" AutoGenerateColumns="False" >
             <DataGrid.Columns>
 
-                <DataGridTextColumn Header="DB"  Binding="{Binding StringValue}" ></DataGridTextColumn>
+                <DataGridTextColumn Header="Item"  Binding="{Binding StringValue}" ></DataGridTextColumn>
 
                 <DataGridTemplateColumn Header="Select">
 

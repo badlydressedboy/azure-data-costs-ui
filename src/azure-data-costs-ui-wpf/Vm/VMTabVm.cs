@@ -98,9 +98,19 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
                             await APIAccess.GetVirtualMachines(sub);
 
+                            // build filters before adding item to grid
+                            sub.VMs.ForEach(vm => {
+                                foreach (var tag in vm.TagsList) TagsFilter.AddSelectableItem(tag);
+
+                                ResourceGroupFilter.AddSelectableItem(vm.resourceGroup);
+                                SubscriptionFilter.AddSelectableItem(vm.Subscription.displayName);                               
+                            });
+
                             App.Current.Dispatcher.Invoke(() =>
                             {
-                                sub.VMs.ForEach(vm => { VMList.Add(vm); });
+                                sub.VMs.ForEach(vm => {                                 
+                                    VMList.Add(vm); 
+                                });
                             });
 
                             if (sub.VMs.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts)
@@ -117,12 +127,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
                                     foreach (var c in vm.Costs)
                                     {
                                         totalVMCosts += c.Cost;
-                                    }
-
-                                    foreach (var tag in vm.TagsList) TagsFilter.AddSelectableItem(tag);
-
-                                    ResourceGroupFilter.AddSelectableItem(vm.resourceGroup);
-                                    SubscriptionFilter.AddSelectableItem(vm.Subscription.displayName);
+                                    }                                  
                                 }
                             });
                         });

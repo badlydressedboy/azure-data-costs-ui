@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Azure.Costs.Common.Models.Rest;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
         public Filter TagsFilter { get; set; } = new Filter();
         public Filter SubscriptionFilter { get; set; } = new Filter();        
         public Filter ResourceGroupFilter { get; set; } = new Filter();
+        public Filter LocationFilter { get; set; } = new Filter();
 
 
         private string restErrorMessage;
@@ -73,6 +75,36 @@ namespace Azure.Costs.Ui.Wpf.Vm
             _filterList.Add(TagsFilter);            
             _filterList.Add(ResourceGroupFilter);
             _filterList.Add(SubscriptionFilter);
+            _filterList.Add(LocationFilter);
+        }
+
+        public bool IsTagFilterMatched(List<string> objectTags)
+        {
+            bool matched = true;
+            if (TagsFilter.Items.Count > 0) matched = false;
+
+            if (objectTags.Count > 0)
+            {
+                foreach (var tag in objectTags)
+                {
+                    foreach (var allTag in TagsFilter.Items.Where(x => x.IsSelected))
+                    {
+                        if (tag == allTag.StringValue)
+                        {
+                            matched = true;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var existing = TagsFilter.Items.FirstOrDefault(x => x.IsSelected && x.StringValue == "");
+                if (existing != null)
+                {
+                    matched = true;
+                }
+            }
+            return matched; 
         }
     }
 }

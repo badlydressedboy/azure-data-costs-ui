@@ -65,6 +65,14 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
                             await APIAccess.GetVirtualNetworks(sub);
 
+                            foreach (var vnet in sub.VNets)
+                            {                              
+                                foreach (var tag in vnet.TagsList) TagsFilter.AddSelectableItem(tag);
+
+                                ResourceGroupFilter.AddSelectableItem(vnet.resourceGroup);
+                                SubscriptionFilter.AddSelectableItem(vnet.Subscription.displayName);
+                            }
+
                             App.Current.Dispatcher.Invoke(() =>
                             {
                                 sub.VNets.ForEach(vnet => { VNetList.Add(vnet); });
@@ -81,12 +89,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
                                     foreach (var c in vnet.Costs)
                                     {
                                         totalVNetCosts += c.Cost;
-                                    }
-
-                                    foreach (var tag in vnet.TagsList) TagsFilter.AddSelectableItem(tag);
-
-                                    ResourceGroupFilter.AddSelectableItem(vnet.resourceGroup);
-                                    SubscriptionFilter.AddSelectableItem(vnet.Subscription.displayName);
+                                    }                               
                                 }
                             });
                         });

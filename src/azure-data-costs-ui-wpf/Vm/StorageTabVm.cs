@@ -60,12 +60,18 @@ namespace Azure.Costs.Ui.Wpf.Vm
                         {
                             await APIAccess.GetStorageAccounts(sub);
 
+                            sub.StorageAccounts.ForEach(sa =>
+                            {
+                                foreach (var tag in sa.TagsList) TagsFilter.AddSelectableItem(tag);
+
+                                ResourceGroupFilter.AddSelectableItem(sa.resourceGroup);
+                                SubscriptionFilter.AddSelectableItem(sa.Subscription.displayName);
+                                
+                            });
+
                             App.Current.Dispatcher.Invoke(() =>
                             {
-                                sub.StorageAccounts.ForEach(sa =>
-                                {
-                                    StorageList.Add(sa);
-                                });
+                                sub.StorageAccounts.ForEach(sa => StorageList.Add(sa));
                             });
 
                             if (sub.StorageAccounts.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts)
@@ -84,10 +90,6 @@ namespace Azure.Costs.Ui.Wpf.Vm
                                         totalStorageCosts += c.Cost;
                                     }
 
-                                    foreach (var tag in sa.TagsList) TagsFilter.AddSelectableItem(tag);
-
-                                    ResourceGroupFilter.AddSelectableItem(sa.resourceGroup);
-                                    SubscriptionFilter.AddSelectableItem(sa.Subscription.displayName);
                                 }
                             });
                         });

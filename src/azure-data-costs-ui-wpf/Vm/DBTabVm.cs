@@ -75,11 +75,10 @@ namespace Azure.Costs.Ui.Wpf.Vm
         #endregion
 
         #region Filters
-        
-        public Filter TagsFilter { get; set; } = new Filter();
+                
         public Filter SoFilter { get; set; } = new Filter();
         public Filter ServerFilter { get; set; } = new Filter();
-        public Filter SubscriptionFilter { get; set; } = new Filter();
+        
 
         
         #endregion
@@ -88,12 +87,9 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
         public DBTabVm()
         {
-            //_logger.Info("DBTabVm ctor");
-
-            _filterList.Add(TagsFilter);
+            //_logger.Info("DBTabVm ctor");        
             _filterList.Add(SoFilter);
-            _filterList.Add(ServerFilter);
-            _filterList.Add(SubscriptionFilter);        
+            _filterList.Add(ServerFilter);            
         }
 
         public async Task RefreshDatabases(List<Subscription> selectedSubscriptions)
@@ -120,15 +116,30 @@ namespace Azure.Costs.Ui.Wpf.Vm
                     {
                         await APIAccess.GetSqlServers(sub);
 
+                        // build filters before adding item to grid
+                       
+
                         // add servers to ui quickly, dont wait for costs
                         App.Current.Dispatcher.Invoke(() =>
-                        {
+                        { 
                             sub.SqlServers.ForEach(s =>
                             {
-                                s.Dbs.ForEach(db => {
-                                    RestSqlDbList.Add(db);
-                                    Debug.WriteLine($"RestSqlDbList.Add({db.name})");
+                                s.Dbs.ForEach(db =>
+                                {
+                                    foreach (var tag in db.TagsList) TagsFilter.AddSelectableItem(tag);
+
+                                    SoFilter.AddSelectableItem(db.properties.currentServiceObjectiveName);
+                                    ServerFilter.AddSelectableItem(db.serverName);
+                                    SubscriptionFilter.AddSelectableItem(db.Subscription.displayName);
+                                    LocationFilter.AddSelectableItem(db.location);
+                                });
                             });
+                            sub.SqlServers.ForEach(s =>
+                            {
+                                s.Dbs.ForEach(db => {                                  
+
+                                    RestSqlDbList.Add(db); // filters set before adding to list                                    
+                                });
                             });
                         });
 
@@ -149,15 +160,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
                                 {
                                     MapCostToDb(db, sub.ResourceCosts);
 
-                                    totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool
-
-                                    foreach (var tag in db.TagsList)
-                                    {
-                                        TagsFilter.AddSelectableItem(tag);                                        
-                                    }
-                                    SoFilter.AddSelectableItem(db.properties.currentServiceObjectiveName);
-                                    ServerFilter.AddSelectableItem(db.serverName);
-                                    SubscriptionFilter.AddSelectableItem(db.Subscription.displayName);
+                                    totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool                                    
                                 }
                             }
 

@@ -57,7 +57,6 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
                 decimal totalPurviewCosts = 0;
 
-
                 var subsCopy = selectedSubscriptions.ToList();
                 await Parallel.ForEachAsync(subsCopy
                         , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
@@ -73,18 +72,17 @@ namespace Azure.Costs.Ui.Wpf.Vm
                     foreach (var purv in sub.Purviews)
                     {
                         MapCostToPurview(purv, sub.ResourceCosts);
-                        PurviewList.Add(purv);
-
-                        foreach (var c in purv.Costs)
-                        {
-                            totalPurviewCosts += c.Cost;
-                        }
-
+                        
+                        foreach (var c in purv.Costs) totalPurviewCosts += c.Cost;
+                        
                         foreach (var tag in purv.TagsList) TagsFilter.AddSelectableItem(tag);
 
                         ResourceGroupFilter.AddSelectableItem(purv.resourceGroup);
                         SubscriptionFilter.AddSelectableItem(purv.Subscription.displayName);
                     }
+
+                    // only add to grid after all filters have been added
+                    sub.Purviews.ForEach(purv=> PurviewList.Add(purv));
                 }
                 TotalCostsText = totalPurviewCosts.ToString("N2");
             }

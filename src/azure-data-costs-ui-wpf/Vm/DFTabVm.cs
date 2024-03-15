@@ -34,7 +34,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
         #region Specific Filters
 
-        public Filter DFNameFilter { get; set; } = new Filter();
+        //public Filter DFNameFilter { get; set; } = new Filter();
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
         {
             //_logger.Info("DBTabVm ctor");
 
-            _filterList.Add(DFNameFilter);
+            //_filterList.Add(DFNameFilter);
        
         }
 
@@ -72,19 +72,22 @@ namespace Azure.Costs.Ui.Wpf.Vm
                 foreach (var sub in selectedSubscriptions)
                 {
                     if (!sub.ReadObjects) continue; // ignore this subscription
+
+                    // build filters before adding item to grid
                     foreach (var df in sub.DataFactories)
-                    {
-                        MapCostToDF(df, sub.ResourceCosts);
-                        DataFactoryList.Add(df);
-
-                        foreach (var c in df.Costs) totalADFCosts += c.Cost;                        
-
-                        foreach (var tag in df.TagsList) TagsFilter.AddSelectableItem(tag);
+                    { 
+                        MapCostToDF(df, sub.ResourceCosts);                        
+                        foreach (var c in df.Costs) totalADFCosts += c.Cost;       
                         
+                        foreach (var tag in df.TagsList) TagsFilter.AddSelectableItem(tag);
+
                         ResourceGroupFilter.AddSelectableItem(df.resourceGroup);
-                        DFNameFilter.AddSelectableItem(df.name);
+                        LocationFilter.AddSelectableItem(df.location);
                         SubscriptionFilter.AddSelectableItem(df.Subscription.displayName);
                     }
+                    
+                    sub.DataFactories.ForEach(df => DataFactoryList.Add(df));
+                    
                 }
             }
             catch (Exception ex)

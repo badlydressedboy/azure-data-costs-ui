@@ -377,38 +377,7 @@
                                   
                             >
 
-                            <DataGrid.Resources>
-
-                               
-                                <DataTemplate x:Key="HeaderTemplate">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <ContentControl Content="{Binding}" VerticalAlignment="Center"/>
-                                        <ToggleButton Name="FilterButton" Grid.Column="1" Content="▼" Margin="2, 1, 1, 1" Padding="1, 0"/>
-                                        <Popup IsOpen="{Binding ElementName=FilterButton, Path=IsChecked}" PlacementTarget="{Binding ElementName=FilterButton}" StaysOpen="False" Opened="Popup_Opened">
-                                            <Border Background="White" Padding="3">
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto"/>
-                                                        <RowDefinition Height="Auto"/>
-                                                        <RowDefinition Height="Auto"/>
-                                                    </Grid.RowDefinitions>
-
-                                                    <TextBlock>Some Filters Here</TextBlock>
-
-                                                    <Button x:Name="FilterPopupOkButton" Margin="2" Click="FilterPopupOkButton_Click"/>
-                                                </Grid>
-
-                                            </Border>
-                                        </Popup>
-                                    </Grid>
-                                </DataTemplate>
-                            </DataGrid.Resources>
-
+                      
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
@@ -458,7 +427,7 @@
                                                        Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.ServerFilter.SummaryText}">
                                                     </TextBlock>
 
-                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.ServerFilter.Items}" Click="DbFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.ServerFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
                                                         <StackPanel Orientation="Horizontal">
                                                             <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
                                                         </StackPanel>
@@ -489,7 +458,7 @@
                                                        Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.SubscriptionFilter.SummaryText}">
                                                     </TextBlock>
 
-                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.SubscriptionFilter.Items}" Click="DbFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.SubscriptionFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
                                                         <StackPanel Orientation="Horizontal">
                                                             <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
                                                         </StackPanel>
@@ -520,7 +489,7 @@
                                                        Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.SoFilter.SummaryText}">
                                                     </TextBlock>
 
-                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.SoFilter.Items}" Click="DbFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.SoFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
                                                         <StackPanel Orientation="Horizontal">
                                                             <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
                                                         </StackPanel>
@@ -588,7 +557,38 @@
                                 </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Elastic Pool"  Binding="{Binding properties.elasticPoolName}" ></DataGridTextColumn>
-                                <DataGridTextColumn Header="Location"  Binding="{Binding location}" ></DataGridTextColumn>
+                                
+                                <DataGridTextColumn  Binding="{Binding location}" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="Location" VerticalAlignment="Center" Margin="0,0,4,0"/>
+
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+                       Foreground="DarkOrange"
+                       Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.LocationFilter.SummaryText}">
+                                                    </TextBlock>
+
+                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.LocationFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+                                </DataGridTextColumn>
+                                
                                 <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Tags" Width="220" Binding="{Binding TagsString}">
@@ -609,7 +609,7 @@
                                                                Text="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.TagsFilter.SummaryText}">
                                                     </TextBlock>
 
-                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.TagsFilter.Items}" Click="DbFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                    <Button DataContext="{Binding ElementName=RestDbDataGrid, Path=DataContext.DBTabVm.TagsFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
                                                         <StackPanel Orientation="Horizontal">
                                                             <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
                                                         </StackPanel>
@@ -1280,12 +1280,99 @@
                             <DataGrid.Columns>
 
                                 <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
+                                
+                                <DataGridTextColumn  Binding="{Binding resourceGroup}" CellStyle="{StaticResource DataGridParentCell}" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
 
-                                <DataGridTextColumn Header="Resource Group"  Binding="{Binding resourceGroup}"  CellStyle="{StaticResource DataGridParentCell}"></DataGridTextColumn>
+                                                <TextBlock Text="Resource Group" VerticalAlignment="Center" Margin="0,0,4,0"/>
 
-                                <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}"  CellStyle="{StaticResource DataGridParentCell}" />
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+Foreground="DarkOrange"
+Text="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.ResourceGroupFilter.SummaryText}">
+                                                    </TextBlock>
 
-                                <DataGridTextColumn Header="Location"  Binding="{Binding location}"  CellStyle="{StaticResource DataGridParentCell}" />
+                                                    <Button DataContext="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.ResourceGroupFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn  Binding="{Binding Subscription.displayName}" CellStyle="{StaticResource DataGridParentCell}" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="Subscription" VerticalAlignment="Center" Margin="0,0,4,0"/>
+
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+                        Foreground="DarkOrange"
+                        Text="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.SubscriptionFilter.SummaryText}">
+                                                    </TextBlock>
+
+                                                    <Button DataContext="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.SubscriptionFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn  Binding="{Binding location}" CellStyle="{StaticResource DataGridParentCell}" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="Location" VerticalAlignment="Center" Margin="0,0,4,0"/>
+
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+Foreground="DarkOrange"
+Text="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.LocationFilter.SummaryText}">
+                                                    </TextBlock>
+
+                                                    <Button DataContext="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.LocationFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+                                </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Cost (Bill CCY)" Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);}}"  >
                                     <DataGridTextColumn.CellStyle>
@@ -1433,16 +1520,103 @@
 
                                 <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
 
-                                <DataGridTextColumn Header="Resource Group"  Binding="{Binding resourceGroup}"  CellStyle="{StaticResource DataGridParentCell}"></DataGridTextColumn>
+                                <DataGridTextColumn  Binding="{Binding resourceGroup}" CellStyle="{StaticResource DataGridParentCell}" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
 
-                                <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}"  CellStyle="{StaticResource DataGridParentCell}" />
+                                                <TextBlock Text="Resource Group" VerticalAlignment="Center" Margin="0,0,4,0"/>
+
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+Foreground="DarkOrange"
+Text="{Binding ElementName=StorageDataGrid, Path=DataContext.DFTabVm.ResourceGroupFilter.SummaryText}">
+                                                    </TextBlock>
+
+                                                    <Button DataContext="{Binding ElementName=StorageDataGrid, Path=DataContext.DFTabVm.ResourceGroupFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn  Binding="{Binding Subscription.displayName}" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="Subscription" VerticalAlignment="Center" Margin="0,0,4,0"/>
+
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+                       Foreground="DarkOrange"
+                       Text="{Binding ElementName=StorageDataGrid, Path=DataContext.StorageTabVm.SubscriptionFilter.SummaryText}">
+                                                    </TextBlock>
+
+                                                    <Button DataContext="{Binding ElementName=StorageDataGrid, Path=DataContext.StorageTabVm.SubscriptionFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+                                </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Sku"  Binding="{Binding sku.name}"  CellStyle="{StaticResource DataGridParentCell}" />
 
                                 <DataGridTextColumn Header="Tier"  Binding="{Binding sku.tier}"  CellStyle="{StaticResource DataGridParentCell}" />
 
+                                <DataGridTextColumn  Binding="{Binding location}" CellStyle="{StaticResource DataGridParentCell}" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
 
-                                <DataGridTextColumn Header="Location"  Binding="{Binding location}"  CellStyle="{StaticResource DataGridParentCell}" />
+                                                <TextBlock Text="Location" VerticalAlignment="Center" Margin="0,0,4,0"/>
+
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+Foreground="DarkOrange"
+Text="{Binding ElementName=StorageDataGrid, Path=DataContext.StorageTabVm.LocationFilter.SummaryText}">
+                                                    </TextBlock>
+
+                                                    <Button DataContext="{Binding ElementName=StorageDataGrid, Path=DataContext.StorageTabVm.LocationFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+                                </DataGridTextColumn>
+
 
                                 <DataGridTextColumn Header="Cost (Bill CCY)" Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);}}"  >
                                     <DataGridTextColumn.CellStyle>
@@ -1596,7 +1770,36 @@
 
                                 <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
 
-                                <DataGridTextColumn Header="Resource Group"  Binding="{Binding resourceGroup}"  CellStyle="{StaticResource DataGridParentCell}"></DataGridTextColumn>
+                                <DataGridTextColumn  Binding="{Binding resourceGroup}" CellStyle="{StaticResource DataGridParentCell}" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="Resource Group" VerticalAlignment="Center" Margin="0,0,4,0"/>
+
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+Foreground="DarkOrange"
+Text="{Binding ElementName=VNetDataGrid, Path=DataContext.VnetTabVm.ResourceGroupFilter.SummaryText}">
+                                                    </TextBlock>
+
+                                                    <Button DataContext="{Binding ElementName=VNetDataGrid, Path=DataContext.VnetTabVm.ResourceGroupFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+                                </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}"  CellStyle="{StaticResource DataGridParentCell}" />
 
@@ -1768,7 +1971,36 @@
 
                                 <DataGridTextColumn Header="VM Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
 
-                                <DataGridTextColumn Header="Resource Group"  Binding="{Binding resourceGroup}"  CellStyle="{StaticResource DataGridParentCell}"></DataGridTextColumn>
+                                <DataGridTextColumn  Binding="{Binding resourceGroup}" CellStyle="{StaticResource DataGridParentCell}" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="Resource Group" VerticalAlignment="Center" Margin="0,0,4,0"/>
+
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+Foreground="DarkOrange"
+Text="{Binding ElementName=VMDataGrid, Path=DataContext.VmTabVm.ResourceGroupFilter.SummaryText}">
+                                                    </TextBlock>
+
+                                                    <Button DataContext="{Binding ElementName=VMDataGrid, Path=DataContext.VmTabVm.ResourceGroupFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+                                </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}"  CellStyle="{StaticResource DataGridParentCell}" />
 
@@ -2018,7 +2250,36 @@
 
                                 <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
 
-                                <DataGridTextColumn Header="Resource Group"  Binding="{Binding resourceGroup}"  CellStyle="{StaticResource DataGridParentCell}"></DataGridTextColumn>
+                                <DataGridTextColumn  Binding="{Binding resourceGroup}" CellStyle="{StaticResource DataGridParentCell}" >
+                                    <DataGridTextColumn.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Text="Resource Group" VerticalAlignment="Center" Margin="0,0,4,0"/>
+
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
+                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
+Foreground="DarkOrange"
+Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.ResourceGroupFilter.SummaryText}">
+                                                    </TextBlock>
+
+                                                    <Button DataContext="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.ResourceGroupFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </DataTemplate>
+                                    </DataGridTextColumn.HeaderTemplate>
+                                </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Subscription"  Binding="{Binding Subscription.displayName}"  CellStyle="{StaticResource DataGridParentCell}" />
 
