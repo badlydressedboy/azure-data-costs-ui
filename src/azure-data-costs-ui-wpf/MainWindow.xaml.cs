@@ -203,8 +203,8 @@ namespace Azure.Costs.Ui.Wpf
 
             // filter on tag - special logic
             // todo - this is not populated yet and needs to be
-            e.Accepted = false;
-            return;
+            //e.Accepted = false;
+            //return;
 
 
 

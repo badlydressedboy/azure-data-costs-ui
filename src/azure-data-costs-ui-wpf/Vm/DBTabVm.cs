@@ -111,8 +111,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
             {
                 // repopulate filters from empty
                 ClearFilterItems();                
-                TagsFilter.Items.Add(new SelectableString() { StringValue = "", IsSelected = true }); // need option for NO tags
-                
+
                 //SyncSelectedSubs();// todo
 
                 await Parallel.ForEachAsync(selectedSubscriptions
