@@ -1114,7 +1114,7 @@ namespace Azure.Costs.Common
                 , VNet
                 , VM
         }
-        public static async Task GetSubscriptionCosts(Subscription subscription, CostRequestType costType)
+        public static async Task GetSubscriptionCosts(Subscription subscription, CostRequestType costType, bool forceRead = false)
         {
             /* How this authentication works:
              * https://learn.microsoft.com/en-gb/dotnet/api/overview/azure/service-to-service-authentication?view=azure-dotnet
@@ -1129,7 +1129,7 @@ namespace Azure.Costs.Common
              *  - az account get-access-token --resource https://vault.azure.net
              */
 
-            if (!subscription.ReadCosts) return;
+            if ((!subscription.ReadCosts) && (!forceRead)) return;
             if (!subscription.NeedsNewCosts()) return;
 
             _logger.Info($"Starting GetSubscriptionCosts() for {subscription.displayName}...");

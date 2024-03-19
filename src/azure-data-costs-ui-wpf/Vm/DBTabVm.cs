@@ -204,7 +204,8 @@ namespace Azure.Costs.Ui.Wpf.Vm
                 , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                 , async (sub, y) =>
             {
-                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.SqlDatabase);
+                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.SqlDatabase, true);
+                Debug.WriteLine($"Got sub costs for {sub.displayName}, count: {sub.ResourceCosts.Count}");
             });
 
             // on ui thread
@@ -213,8 +214,12 @@ namespace Azure.Costs.Ui.Wpf.Vm
                 decimal totalSqlDbCosts = 0;
                 foreach (var db in RestSqlDbList)
                 {
+                    
                     MapCostToDb(db);
-
+                    if(db.TotalCostBilling == 0)
+                    {
+                        Debug.WriteLine("How?");
+                    }
                     totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool                                    
                 }
 
@@ -263,7 +268,10 @@ namespace Azure.Costs.Ui.Wpf.Vm
             //}
             if (!found)
             {
-                _logger.Info($"why no cost for DB {db.name}? Costs.count: {db.Subscription.ResourceCosts.Count}");
+                if (db.Subscription.ReadCosts)
+                {
+                    _logger.Info($"why no cost for DB {db.name}? Costs.count: {db.Subscription.ResourceCosts.Count}");
+                }
             }
         }
 
@@ -285,13 +293,6 @@ namespace Azure.Costs.Ui.Wpf.Vm
                     {
                         db.SpendAnalysisStatus = "Analysing...";
                         db.OverSpendFromMaxPcString = "?";
-
-                        // get sub costs if havent been got yet
-                        // this is when subs tab has NOT has costs check selected but wants costs after going into DB tab
-                        if(db.Subscription.LastCostGetDate == DateTime.MinValue)
-                        {
-                            await APIAccess.GetSubscriptionCosts(db.Subscription, APIAccess.CostRequestType.SqlDatabase);
-                        }
 
                         await APIAccess.GetDbMetrics(db);
 
