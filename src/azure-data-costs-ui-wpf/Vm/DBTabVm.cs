@@ -159,7 +159,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
                             {
                                 foreach (var db in s.Dbs)
                                 {
-                                    MapCostToDb(db, sub.ResourceCosts);
+                                    MapCostToDb(db);
 
                                     totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool                                    
                                 }
@@ -187,15 +187,55 @@ namespace Azure.Costs.Ui.Wpf.Vm
             //UpdateHttpAccessCountMessage(); // todo
         }
 
-        private static void MapCostToDb(RestSqlDb db, List<ResourceCost> costs)
+        // Refresh all or subset of selected subscriptions
+        // Support TotalSqlDbCostsText updating so need to sum all db costs after get costs 
+        public async Task GetMissingDbCosts()
+        {
+            var subs = new List<Subscription>();
+            foreach (var db in RestSqlDbList)
+            {
+                if (db.Subscription.SqlServers.Count > 0 && db.Subscription.ResourceCosts.Count == 0) // read costs regardless of main screen cost selection
+                {
+                    if (!subs.Contains(db.Subscription)) subs.Add(db.Subscription);
+                }
+            }
+
+            await Parallel.ForEachAsync(subs
+                , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                , async (sub, y) =>
+            {
+                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.SqlDatabase);
+            });
+
+            // on ui thread
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                decimal totalSqlDbCosts = 0;
+                foreach (var db in RestSqlDbList)
+                {
+                    MapCostToDb(db);
+
+                    totalSqlDbCosts += db.TotalCostBilling; // TotalCostBilling has already been divided by db count if elastic pool                                    
+                }
+
+                TotalSqlDbCostsText = totalSqlDbCosts.ToString("N2");
+                //if (!string.IsNullOrEmpty(dbFooterErrorText.sub.CostsErrorMessage))
+                //{
+                //    if (!string.IsNullOrEmpty(RestErrorMessage)) RestErrorMessage += "\n";
+                //    RestErrorMessage += sub.CostsErrorMessage;
+                //}
+            });
+        }
+
+        private static void MapCostToDb(RestSqlDb db)
         {
             bool found = false;
-            if (costs.Count == 0)
+            if (db.Subscription.ResourceCosts.Count == 0)
             {
                 _logger.Error("elastic db!");
             }
             List<ResourceCost> elasticCosts = new List<ResourceCost>();
-            foreach (ResourceCost cost in costs)
+            foreach (ResourceCost cost in db.Subscription.ResourceCosts)
             {
                 if (cost.ResourceId.EndsWith(db.name.ToLower()) && cost.ResourceId.Contains(db.resourceGroup.ToLower()))
                 {
@@ -223,7 +263,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
             //}
             if (!found)
             {
-                _logger.Info($"why no cost for DB {db.name}? Costs.count: {costs.Count}");
+                _logger.Info($"why no cost for DB {db.name}? Costs.count: {db.Subscription.ResourceCosts.Count}");
             }
         }
 
@@ -237,12 +277,22 @@ namespace Azure.Costs.Ui.Wpf.Vm
             TotalPotentialDbSavingAmount = 0;
             try
             {
+                await GetMissingDbCosts(); // if any subs not already selected for costs their costs will be got here
+
                 await Parallel.ForEachAsync(RestSqlDbList.OrderByDescending(x => x.TotalCostBilling)
                     , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
                     , async (db, y) =>
                     {
                         db.SpendAnalysisStatus = "Analysing...";
                         db.OverSpendFromMaxPcString = "?";
+
+                        // get sub costs if havent been got yet
+                        // this is when subs tab has NOT has costs check selected but wants costs after going into DB tab
+                        if(db.Subscription.LastCostGetDate == DateTime.MinValue)
+                        {
+                            await APIAccess.GetSubscriptionCosts(db.Subscription, APIAccess.CostRequestType.SqlDatabase);
+                        }
+
                         await APIAccess.GetDbMetrics(db);
 
                         db.SpendAnalysisStatus = "Complete";

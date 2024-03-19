@@ -198,7 +198,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Margin="0,18,2,0" FontSize="13" Padding="6" Background="LightGray">Detected Subscriptions</TextBlock>
+                            <TextBlock Margin="0,18,2,0" FontSize="13" Padding="6" Background="LightGray">Detected Subscriptions - There are caps on the amount of calls per minute/hour that can be made for objects and costs so only request what you need</TextBlock>
 
                             <DataGrid Grid.Row="1" IsReadOnly="True" x:Name="SubscriptionsGrid" 
                        AutoGenerateColumns="False" 
