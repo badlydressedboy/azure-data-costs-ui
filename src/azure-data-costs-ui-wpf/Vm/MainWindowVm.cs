@@ -284,6 +284,8 @@ namespace Azure.Costs.Ui.Wpf
             IsTestLoginBusy = false;
             IsRestQueryBusy = false;
             UpdateHttpAccessCountMessage();
+
+            var o = await ResourceGraphAccess.GetResources(" ", "61cc37c3-c8fd-463f-868b-49306e58fba6");
         }
         public async Task GetSubscriptions()
         {

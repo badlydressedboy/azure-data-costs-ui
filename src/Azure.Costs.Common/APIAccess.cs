@@ -1116,6 +1116,10 @@ namespace Azure.Costs.Common
         }
         public static async Task GetSubscriptionCosts(Subscription subscription, CostRequestType costType, bool forceRead = false)
         {
+
+            // Resource Explorer: https://portal.azure.com/#view/HubsExtension/ArgQueryBlade
+
+
             /* How this authentication works:
              * https://learn.microsoft.com/en-gb/dotnet/api/overview/azure/service-to-service-authentication?view=azure-dotnet
              * 
@@ -1547,6 +1551,9 @@ namespace Azure.Costs.Common
                 var remainingResourceRequests = GetHeaderValue(response, "x-ms-ratelimit-remaining-subscription-resource-requests");
                 if (remainingResourceRequests != null) _logger.Info($"HTTP Header x-ms-ratelimit-remaining-subscription-resource-requests: {remainingResourceRequests}");
 
+                // also? x-ms-user-quota-remaining
+                // x-ms-user-quota-resets-after
+                // https://learn.microsoft.com/en-us/azure/governance/resource-graph/overview
             }
             catch (Exception ex)
             {
