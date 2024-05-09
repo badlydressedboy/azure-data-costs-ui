@@ -33,6 +33,7 @@ namespace Azure.Costs.Ui.Wpf
         public PurviewTabVm PurviewTabVm { get; set; } = new PurviewTabVm();
         public DFTabVm DFTabVm { get; set; } = new DFTabVm();
         public VmTabVm VmTabVm { get; set; } = new VmTabVm();
+        public ResourcesTabVm ResourcesTabVm { get; set; } = new ResourcesTabVm();
 
         public List<Subscription> SelectedSubscriptions { get; set; } = new List<Subscription>();
         public ObservableCollection<Subscription> DetectedSubscriptions { get; set; } = new ObservableCollection<Subscription>();                        
@@ -285,7 +286,7 @@ namespace Azure.Costs.Ui.Wpf
             IsRestQueryBusy = false;
             UpdateHttpAccessCountMessage();
 
-            var o = await ResourceGraphAccess.GetResources(" ", "61cc37c3-c8fd-463f-868b-49306e58fba6");
+            var o = await ResourceGraphAccess.GetPublicIps(" ", "61cc37c3-c8fd-463f-868b-49306e58fba6");
         }
         public async Task GetSubscriptions()
         {
@@ -412,6 +413,11 @@ namespace Azure.Costs.Ui.Wpf
         public async Task RefreshDataFactories()
         {
             await DFTabVm.RefreshDataFactories(SelectedSubscriptions);
+        }
+
+        public async Task RefreshResources()
+        {
+            await ResourcesTabVm.RefreshResources(SelectedSubscriptions);
         }
 
         public void SaveSubscriptionOptions()

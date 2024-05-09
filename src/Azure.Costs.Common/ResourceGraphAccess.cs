@@ -1,13 +1,20 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http.Json;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 using Azure.Core;
+using Azure.Costs.Common.Models.ResourceGraph;
 using Azure.Costs.Common.Models.Rest;
+using Azure.Identity;
+using Azure.ResourceManager;
 using Microsoft.Azure.Services.AppAuthentication;
+using System.Text.Json;
+
 
 namespace Azure.Costs.Common
 {
@@ -131,7 +138,7 @@ Resources
 | where type == "microsoft.network/publicipaddresses"
 | where properties.ipConfiguration == "" and properties.natGateway == "" and properties.publicIPPrefix == ""
 | extend Details = pack_all()
-| project Resource=id, resourceGroup, location, subscriptionId, sku.name, tags ,Details
+| project Resource=id, resourceGroup, location, subscriptionId, sku.name=skuName, tags ,Details
 ```
 
 #### Network Interfaces
@@ -460,7 +467,66 @@ resources
             return null;
         }
 
-        public static async Task<string> GetResources(string kql, string subscriptionId)
+        public static async Task<List<Resource>> GetResourcesSDK(string kql, string subscriptionId)
+        {
+            // SDK 
+            // https://github.com/Azure/azure-sdk-for-net/blob/Azure.ResourceManager.ResourceGraph_1.0.1/doc/dev/mgmt_quickstart.md
+            
+
+            List<Resource> returnList = new List<Resource>();
+            try
+            {
+                ArmClient client = new ArmClient(new DefaultAzureCredential());
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger?.Error(ex);
+            }
+            return returnList;
+        }
+
+        public static async Task<List<Resource>> GetResources(string kql, string subscriptionId)
+        {
+            var returnList = new List<Resource>();
+
+            // https://learn.microsoft.com/en-us/azure/governance/resource-graph/first-query-rest-api
+
+            try
+            {
+                _logger.Info($"Starting GetResources()...");
+
+                string url = $"https://management.azure.com/providers/Microsoft.ResourceGraph/resources?api-version=2021-03-01";
+
+                KqlJson kq = new KqlJson() { query = kql };
+                string jsonContent = JsonSerializer.Serialize(kq);
+
+                HttpResponseMessage response = await GetHttpClientAsync(url, jsonContent);
+                if (response == null)
+                {
+                    return returnList;
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+                var metrics = await response?.Content?.ReadFromJsonAsync<RootResource>();
+                returnList = metrics.data.ToList();
+                _logger.Info($"Complete GetResources().");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                _logger.Error(ex);
+            }
+            Debug.WriteLine("fin getting resources");
+            return returnList;
+            
+        }
+        public class KqlJson
+        {
+            public string query { get; set;  }
+        }
+        public static async Task<string> GetPublicIps(string kql, string subscriptionId)
         {
             // https://learn.microsoft.com/en-us/azure/governance/resource-graph/first-query-rest-api
 
@@ -471,11 +537,26 @@ resources
                 // POST https://management.azure.com/providers/Microsoft.ResourceGraph/resources?api-version=2021-03-01
                 string url = $"https://management.azure.com/providers/Microsoft.ResourceGraph/resources?api-version=2021-03-01";
 
-                string jsonContent = @"{
-                    
-                    ""query"": ""Resources | project name, type | order by name asc | limit 5""
-                }";
+                KqlJson kq = new KqlJson() { query = "resources\r\n | where type == 'microsoft.network/publicipaddresses'\r\n                        | where  properties.natGateway == '' and properties.publicIPPrefix == ''\r\n                        | project Resource = id, resourceGroup, location, subscriptionId, sku.name, tags " };
 
+                string jsonContent = JsonSerializer.Serialize(kq);
+
+
+
+
+                //string jsonContent = @"{
+                    
+                //    ""query"": ""resources
+                //        | where type == 'microsoft.network/publicipaddresses'
+                //        | where  properties.natGateway == '' and properties.publicIPPrefix == ''
+                //        | project Resource = id, resourceGroup, location, subscriptionId, sku.name, tags 
+                //      ""
+                //}";
+                //""query"": ""resources
+                //      | where type == 'microsoft.network/publicipaddresses'
+                //      | where properties.ipConfiguration == '' and properties.natGateway == '' and properties.publicIPPrefix == ''
+                //      | extend Details = pack_all()
+                //      | project Resource = id, resourceGroup, location, subscriptionId, sku.name, tags ,Details""
 
                 HttpResponseMessage response = await GetHttpClientAsync(url, jsonContent);
                 if (response == null)
@@ -484,7 +565,16 @@ resources
                 }
 
                 var json = await response.Content.ReadAsStringAsync();
-                // get location and name properties from list of servers
+
+                var metrics = await response?.Content?.ReadFromJsonAsync<RootResource>();
+
+                // {"totalRecords":0,"count":0,"data":[],"facets":[],"resultTruncated":"false"}
+
+                //if (metrics?.value != null)
+                //{
+
+
+                //}
 
                 _logger.Info($"Complete GetResources().");
             }

@@ -753,6 +753,11 @@ namespace Azure.Costs.Ui.Wpf
             else
                 return FindParent<T>(parentObject);
         }
+
+        private async void ResourcesRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await vm.RefreshResources();
+        }
     }
     public class ignoresubscriptionnames
     {
