@@ -35,7 +35,16 @@ namespace Azure.Costs.Ui.Wpf.Vm
             set => SetProperty(ref dbFooterErrorText, value);
         }
 
+        private string dbRecsButtonBaseText = "DB RECOMMENDATIONS";
+        private string dbRecsButtonText;
+        public string DbRecsButtonText
+        {
+            get => dbRecsButtonText;
+            set => SetProperty(ref dbRecsButtonText, value);
+        }
+
         
+
         private string totalSqlDbCostsText;
         public string TotalSqlDbCostsText
         {
@@ -83,13 +92,23 @@ namespace Azure.Costs.Ui.Wpf.Vm
         
         #endregion
 
+        private static int _recsCount = 0;  
+
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
         public DBTabVm()
         {
             //_logger.Info("DBTabVm ctor");        
             _filterList.Add(SoFilter);
-            _filterList.Add(ServerFilter);            
+            _filterList.Add(ServerFilter);
+
+            DbRecsButtonText = dbRecsButtonBaseText;
+        }
+
+        private void UpdateRecsCount(int additionalRecsCount)
+        {
+            _recsCount += additionalRecsCount; 
+            DbRecsButtonText = $"{dbRecsButtonBaseText} ({_recsCount})";
         }
 
         public async Task RefreshDatabases(List<Subscription> selectedSubscriptions)
@@ -101,6 +120,9 @@ namespace Azure.Costs.Ui.Wpf.Vm
             DbFooterErrorText = "";
             RestSqlDbList.Clear();
             RestErrorMessage = "";
+            _recsCount = 0;
+            UpdateRecsCount(0);
+
             decimal totalSqlDbCosts = 0;
 
             try
@@ -139,7 +161,9 @@ namespace Azure.Costs.Ui.Wpf.Vm
                             {
                                 s.Dbs.ForEach(db => {                                  
 
-                                    RestSqlDbList.Add(db); // filters set before adding to list                                    
+                                    RestSqlDbList.Add(db); // filters set before adding to list
+                                                           // 
+                                    UpdateRecsCount(db.AdvisorRecommendationCount);
                                 });
                             });
                         });

@@ -758,6 +758,13 @@ namespace Azure.Costs.Ui.Wpf
         {
             await vm.RefreshResources();
         }
+
+        private void DBRecomendationsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var recWindow = new RecommendationsWindow(vm.DBTabVm);
+            recWindow.Owner = this; 
+            recWindow.ShowDialog();
+        }
     }
     public class ignoresubscriptionnames
     {

@@ -345,6 +345,14 @@
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center" Visibility="{Binding DBTabVm.HasDbSpendAnalysisBeenPerformed, Converter={StaticResource BooleanToVisibilityConverter}}">Total Potential Saving:</TextBlock>
                             <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding DBTabVm.TotalPotentialDbSavingAmount, StringFormat=N0}" Visibility="{Binding DBTabVm.HasDbSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}"></TextBlock>
 
+
+                            <Button x:Name="DBRecomendationsButton" Margin="28,2,2,2" Padding="8,1,8,1" Click="DBRecomendationsButton_Click" >
+                                <StackPanel Orientation="Horizontal" >
+
+                                    <Image Source="/AzureDataCosts;component/Images/recommendations.png" Style="{StaticResource ButtonImageStyle}"/>
+                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center" Name="DbRecsButtonText" Text="{Binding DBTabVm.DbRecsButtonText}"></TextBlock>
+                                </StackPanel>
+                            </Button>
                         </StackPanel>
 
                         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="4,4,4,4" Visibility="{Binding IsRestErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">

@@ -543,11 +543,15 @@ namespace Azure.Costs.Common
                     return;
                 }
                 var advisors = await response?.Content?.ReadFromJsonAsync<List<Advisor>>();
+                
 
                 if (advisors != null)
                 {
+                    sqlDb.AdvisorsList = advisors;
+
                     foreach (var a in advisors)
                     {
+                        
                         sqlDb.AdvisorRecommendationCount += a.properties.recommendedActions.Count;
 
                         foreach (var ra in a.properties.recommendedActions)

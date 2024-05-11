@@ -20,6 +20,7 @@
     <None Remove="Images\filter.png" />
     <None Remove="Images\info.png" />
     <None Remove="Images\loading.gif" />
+    <None Remove="Images\recommendations.png" />
     <None Remove="Images\refresh.png" />
     <None Remove="Images\zoom.png" />
     <None Remove="nlog.config" />
@@ -86,6 +87,7 @@
   <ItemGroup>
     <Resource Include="Images\info.png" />
     <Resource Include="Images\loading.gif" />
+    <Resource Include="Images\recommendations.png" />
     <Resource Include="Images\refresh.png" />
     <Resource Include="Images\zoom.png" />
     <Content Include="NLog.config">
