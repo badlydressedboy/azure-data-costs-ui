@@ -22,7 +22,9 @@ namespace Azure.Costs.Common.Models.Rest
         public RecommendedActionProperties properties { get; set; }        
     }
     public class RecommendedActionProperties
-    {      
+    {
+        public string recommendationReason { get; set; }
+        public DateTime validSince { get; set; }
         public RecommendedActionImplementationDetails implementationDetails { get; set; }
     }
     public class RecommendedActionImplementationDetails

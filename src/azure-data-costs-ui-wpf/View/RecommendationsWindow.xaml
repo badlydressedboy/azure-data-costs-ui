@@ -67,7 +67,11 @@
             
         </Grid.Resources>
 
-        <DataGrid x:Name="DbRecsDataGrid" AutoGenerateColumns="False" RowDetailsVisibilityMode="VisibleWhenSelected" >
+        <DataGrid x:Name="DbRecsDataGrid" 
+                  AutoGenerateColumns="False" 
+                  RowDetailsVisibilityMode="VisibleWhenSelected" 
+                  HeadersVisibility="All"
+                  >
 
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
@@ -76,9 +80,18 @@
                 </Style>
             </DataGrid.RowStyle>
 
+            <DataGrid.RowHeaderTemplate>
+                <DataTemplate>
+                    <Expander VerticalAlignment="Top" Margin="0" Padding="0" Expanded="Expander_Process"  Collapsed="Expander_Process" Cursor="Hand">
+                    </Expander>
+                </DataTemplate>
+            </DataGrid.RowHeaderTemplate>
+
             <DataGrid.Columns>
 
                 <DataGridTextColumn Header="DB"  Binding="{Binding Db}" ></DataGridTextColumn>
+                <DataGridTextColumn Header="Reason"  Binding="{Binding RecommendationReason}" ></DataGridTextColumn>
+                <DataGridTextColumn Header="ValidSince"  Binding="{Binding ValidSince}" ></DataGridTextColumn>
                 <DataGridTextColumn Header="SQL"  Binding="{Binding Script}" ></DataGridTextColumn>
 
             </DataGrid.Columns>

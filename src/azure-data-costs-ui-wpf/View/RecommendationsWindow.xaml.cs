@@ -50,6 +50,8 @@ namespace Azure.Costs.Ui.Wpf
                         newRec.Db = $"{db.serverName}.{db.name}";
                         newRec.Method = rec.properties.implementationDetails.method;
                         newRec.Script = rec.properties.implementationDetails.script;
+                        newRec.RecommendationReason = rec.properties.recommendationReason;
+                        newRec.ValidSince = rec.properties.validSince;
                         newRec.SqlDb = db;
 
                         recsList.Add(newRec);
@@ -83,6 +85,17 @@ namespace Azure.Costs.Ui.Wpf
             row.DetailsVisibility = row.DetailsVisibility == Visibility.Collapsed ?
                 Visibility.Visible : Visibility.Collapsed;
         }
+
+        private void Expander_Process(object sender, RoutedEventArgs e)
+        {
+            if (sender is Expander expander)
+            {
+                var row = DataGridRow.GetRowContainingElement(expander);
+
+                row.DetailsVisibility = expander.IsExpanded ? Visibility.Visible
+                                                            : Visibility.Collapsed;
+            }
+        }
     }
 
     public class DbRecommendation
@@ -90,6 +103,9 @@ namespace Azure.Costs.Ui.Wpf
         public string Db {  get; set; }
         public string Method { get; set; }
         public string Script { get; set; }
+
+        public string RecommendationReason { get; set; }
+        public DateTime ValidSince { get; set; }
 
         public RestSqlDb SqlDb { get; set; }
 
