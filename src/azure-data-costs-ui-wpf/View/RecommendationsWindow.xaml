@@ -90,6 +90,7 @@
             <DataGrid.Columns>
 
                 <DataGridTextColumn Header="DB"  Binding="{Binding Db}" ></DataGridTextColumn>
+                <DataGridTextColumn Header="Score"  Binding="{Binding Score}" SortDirection="Descending"></DataGridTextColumn>
                 <DataGridTextColumn Header="Reason"  Binding="{Binding RecommendationReason}" ></DataGridTextColumn>
                 <DataGridTextColumn Header="ValidSince"  Binding="{Binding ValidSince}" ></DataGridTextColumn>
                 <DataGridTextColumn Header="SQL"  Binding="{Binding Script}" ></DataGridTextColumn>

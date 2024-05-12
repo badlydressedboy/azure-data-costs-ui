@@ -25,6 +25,7 @@ namespace Azure.Costs.Common.Models.Rest
     {
         public string recommendationReason { get; set; }
         public DateTime validSince { get; set; }
+        public int score { get; set; }
         public RecommendedActionImplementationDetails implementationDetails { get; set; }
     }
     public class RecommendedActionImplementationDetails

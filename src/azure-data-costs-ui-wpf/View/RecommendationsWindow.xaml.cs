@@ -28,7 +28,7 @@ namespace Azure.Costs.Ui.Wpf
         private DBTabVm _vm;
 
         
-        public RecommendationsWindow(DBTabVm vm)
+        public RecommendationsWindow(DBTabVm vm, RestSqlDb filterDb = null)
         {
             InitializeComponent();
 
@@ -39,33 +39,45 @@ namespace Azure.Costs.Ui.Wpf
             List<DbRecommendation> recsList = new List<DbRecommendation>();
 
             // convert all vm database recommendation into DbRecommendation
-            foreach(var db in _vm.RestSqlDbList)
+
+            if (filterDb != null)
             {
-                foreach (var advisor in db.AdvisorsList) {
-                    //var rec = advisor.
-
-                    foreach(var rec in advisor.properties.recommendedActions)
-                    {
-                        DbRecommendation newRec = new DbRecommendation();
-                        newRec.Db = $"{db.serverName}.{db.name}";
-                        newRec.Method = rec.properties.implementationDetails.method;
-                        newRec.Script = rec.properties.implementationDetails.script;
-                        newRec.RecommendationReason = rec.properties.recommendationReason;
-                        newRec.ValidSince = rec.properties.validSince;
-                        newRec.SqlDb = db;
-
-                        recsList.Add(newRec);
-                    }
+                AddDbRecs(recsList, filterDb);
+            }
+            else
+            {
+                foreach (var db in _vm.RestSqlDbList)
+                {
+                    AddDbRecs(recsList, db);
                 }
             }
+            DbRecsDataGrid.ItemsSource = recsList.OrderByDescending(x=>x.Score);
+            
+        }
 
-            Debug.WriteLine("xx");
-            DbRecsDataGrid.ItemsSource = recsList;
+        private static void AddDbRecs(List<DbRecommendation> recsList, RestSqlDb db)
+        {
+            foreach (var advisor in db.AdvisorsList)
+            {
+                foreach (var rec in advisor.properties.recommendedActions)
+                {
+                    DbRecommendation newRec = new DbRecommendation();
+                    newRec.Db = $"{db.serverName}.{db.name}";
+                    newRec.Method = rec.properties.implementationDetails.method;
+                    newRec.Script = rec.properties.implementationDetails.script;
+                    newRec.RecommendationReason = rec.properties.recommendationReason;
+                    newRec.ValidSince = rec.properties.validSince;
+                    newRec.Score = rec.properties.score;
+                    newRec.SqlDb = db;
+
+                    recsList.Add(newRec);
+                }
+            }
         }
 
         private void ButtonOK_Click(object sender, RoutedEventArgs e)
         {
-
+            Close();
         }
 
         private void ViewPortalDbButton_Click(object sender, RoutedEventArgs e)
@@ -106,6 +118,7 @@ namespace Azure.Costs.Ui.Wpf
 
         public string RecommendationReason { get; set; }
         public DateTime ValidSince { get; set; }
+        public int Score { get; set; }
 
         public RestSqlDb SqlDb { get; set; }
 

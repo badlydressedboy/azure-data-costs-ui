@@ -673,11 +673,14 @@
 
 
 
-                                <DataGridTextColumn Header="Advisor Recommendations"  Binding="{Binding AdvisorRecommendationCount, StringFormat=N0}" >
+                                <DataGridTextColumn Header="Advisor Recommendations" Binding="{Binding AdvisorRecommendationCount, StringFormat=N0}" >
 
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                            
                                             <Style.Setters>
+                                                <EventSetter Event="GotFocus" Handler="RecoCellClick"/>
+                                                
                                                 <Setter Property="ToolTip" Value="{Binding advisorRecommendationDetails}"/>
                                                 <Setter Property="Cursor" Value="Hand"/>
                                             </Style.Setters>

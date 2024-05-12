@@ -765,6 +765,14 @@ namespace Azure.Costs.Ui.Wpf
             recWindow.Owner = this; 
             recWindow.ShowDialog();
         }
+
+        private void RecoCellClick(object sender, RoutedEventArgs e)
+        {
+            var db = (RestSqlDb)((DataGridCell)sender).DataContext;
+            var recWindow = new RecommendationsWindow(vm.DBTabVm, db);
+            recWindow.Owner = this;
+            recWindow.ShowDialog();
+        }
     }
     public class ignoresubscriptionnames
     {
