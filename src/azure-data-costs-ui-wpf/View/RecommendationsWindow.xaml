@@ -12,7 +12,7 @@
             ShowCloseButton="True"
             ResizeMode="CanResizeWithGrip"
             WindowStartupLocation="CenterOwner"
-        Title="DB Recommendations" Height="550" Width="850">
+        Title="DB Recommendations" Height="600" Width="950">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -72,6 +72,7 @@
                   AutoGenerateColumns="False" 
                   RowDetailsVisibilityMode="VisibleWhenSelected" 
                   HeadersVisibility="All"
+                  ClipboardCopyMode="IncludeHeader"
                  
                   >
 
@@ -93,7 +94,29 @@
             <DataGrid.Columns>
 
                 <DataGridTextColumn Header="DB"  Binding="{Binding Db}" ></DataGridTextColumn>
-                <DataGridTextColumn Header="Score"  Binding="{Binding Score}" SortDirection="Descending"></DataGridTextColumn>
+                <DataGridTextColumn Header="Score" Binding="{Binding Score}" SortDirection="Descending" >
+
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+
+                            <Style.Setters>
+                                <Setter Property="Opacity" Value=".9"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="Width" Value="30"/>
+                            </Style.Setters>
+                            
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsHighImpact}" Value="True">
+                                    <Setter Property="Background" Value="OrangeRed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsMediumImpact}" Value="True">
+                                    <Setter Property="Background" Value="Yellow"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+
+                </DataGridTextColumn>
                 <DataGridTextColumn Header="Reason"  Binding="{Binding RecommendationReason}" ></DataGridTextColumn>
                 <DataGridTextColumn Header="ValidSince"  Binding="{Binding ValidSince}" ></DataGridTextColumn>
                 <DataGridTextColumn Header="SQL"  Binding="{Binding Script}" ></DataGridTextColumn>
@@ -140,7 +163,9 @@
             </DataGrid.RowDetailsTemplate>
 
         </DataGrid>
-      
+
+        <Button Grid.Row="1" Content="Copy HTML" HorizontalAlignment="Left" Margin="4,4,10,6" Click="ButtonExportHtml_Click"/>
+
         <Button Grid.Row="1" Content="OK" HorizontalAlignment="Center" Margin="0,4,10,6" Width="45" Click="ButtonOK_Click"/>  
     </Grid>
 </mah:MetroWindow>

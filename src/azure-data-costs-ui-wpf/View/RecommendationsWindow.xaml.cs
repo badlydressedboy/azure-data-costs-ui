@@ -6,6 +6,7 @@ using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -114,6 +115,26 @@ namespace Azure.Costs.Ui.Wpf
             row.DetailsVisibility = row.DetailsVisibility == Visibility.Collapsed ?
                 Visibility.Visible : Visibility.Collapsed;
         }
+
+        private void ButtonExportHtml_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string html = "<!DOCTYPE html><html><body><table><th>DB</th><th>Score</th><th>Since</th><th>SQL</th>";
+
+                var recs = DbRecsDataGrid.ItemsSource as IEnumerable<DbRecommendation>; 
+                foreach (var rec in recs)
+                {
+                    html += $"<tr><td>{rec.Db}</td><td>{rec.Score}</td><td>{rec.ValidSince}</td><td>{rec.Script}</td></tr>";
+                }
+                html += "</table></body></html>";
+                Clipboard.SetText(html);
+            }
+            catch( Exception ex)
+            {
+                Debug.WriteLine(ex);    
+            }
+        }
     }
 
     public class DbRecommendation
@@ -124,7 +145,20 @@ namespace Azure.Costs.Ui.Wpf
 
         public string RecommendationReason { get; set; }
         public DateTime ValidSince { get; set; }
-        public int Score { get; set; }
+
+        private int _score = 0; 
+        public int Score { 
+            get { return _score;  }
+            set { 
+                _score = value;
+                if(_score == 3) IsHighImpact = true;
+                if (_score == 2) IsMediumImpact = true;
+            }
+        }
+
+        public bool IsHighImpact { get; set; }
+
+        public bool IsMediumImpact { get; set; }
 
         public RestSqlDb SqlDb { get; set; }
 
