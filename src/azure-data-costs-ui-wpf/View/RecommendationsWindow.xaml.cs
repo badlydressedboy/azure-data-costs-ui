@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -82,6 +83,11 @@ namespace Azure.Costs.Ui.Wpf
 
         private void ViewPortalDbButton_Click(object sender, RoutedEventArgs e)
         {
+            OpenPortalFromButton(sender);
+        }
+
+        private void OpenPortalFromButton(object sender)
+        {
             DbRecommendation rec = (DbRecommendation)((Button)sender).DataContext;
             PortalResource pr = (PortalResource)rec.SqlDb;
 
@@ -107,6 +113,43 @@ namespace Azure.Costs.Ui.Wpf
                 row.DetailsVisibility = expander.IsExpanded ? Visibility.Visible
                                                             : Visibility.Collapsed;
             }
+        }
+
+        private void SelectRowDetails(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Source is DataGridDetailsPresenter) // Like this
+            {
+                var row = sender as DataGridRow;
+                if (row == null)
+                {
+                    return;
+                }
+                row.Focusable = true;
+                row.Focus();
+
+                var elementWithFocus = Keyboard.FocusedElement as UIElement;
+                if (elementWithFocus != null)
+                {
+                    elementWithFocus.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                }
+            }
+        }
+
+        private void DbRecsDataGrid_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e)
+        {
+            Debug.WriteLine("DbRecsDataGrid_RowDetailsVisibilityChanged");
+
+            Grid gr = (Grid)e.DetailsElement;
+            gr.Focus();
+        }
+
+        private void ViewPortalDbButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Debug.WriteLine("ViewPortalDbButton_PreviewMouseLeftButtonDown");
+           
+            e.Handled = true;
+
+            OpenPortalFromButton(sender);
         }
     }
 

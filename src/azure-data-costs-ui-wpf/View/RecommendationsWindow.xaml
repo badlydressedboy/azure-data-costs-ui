@@ -10,8 +10,9 @@
             ShowMinButton="False" 
             ShowMaxRestoreButton="False" 
             ShowCloseButton="True"
+            ResizeMode="CanResizeWithGrip"
             WindowStartupLocation="CenterOwner"
-        Title="DB Recommendations" Height="480" Width="760">
+        Title="DB Recommendations" Height="550" Width="850">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -71,7 +72,15 @@
                   AutoGenerateColumns="False" 
                   RowDetailsVisibilityMode="VisibleWhenSelected" 
                   HeadersVisibility="All"
+                  RowDetailsVisibilityChanged="DbRecsDataGrid_RowDetailsVisibilityChanged"
                   >
+
+            <DataGrid.Resources>
+                <Style TargetType="DataGridRow">
+                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectRowDetails"/>
+                    
+                </Style>
+            </DataGrid.Resources>
 
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
@@ -113,7 +122,7 @@
                         <StackPanel Orientation="Horizontal" Margin="2,2,2,4">
 
 
-                            <Button x:Name="ViewPortalDbButton" Margin="8,2,2,2" Click="ViewPortalDbButton_Click" >
+                            <Button x:Name="ViewPortalDbButton" Margin="8,2,2,2" Click="ViewPortalDbButton_Click" PreviewMouseLeftButtonDown="ViewPortalDbButton_PreviewMouseLeftButtonDown" >
                                 <StackPanel Orientation="Horizontal" >
 
                                     <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
