@@ -773,6 +773,20 @@ namespace Azure.Costs.Ui.Wpf
             recWindow.Owner = this;
             recWindow.ShowDialog();
         }
+
+        private void RefreshDbStatsButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            GetDbMetrics();
+        }
+
+        private void ViewPortalDbButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            PortalResource pr = (PortalResource)((Button)sender).DataContext;
+
+            // dotnet core
+            Process.Start(new ProcessStartInfo { FileName = pr.PortalResourceUrl, UseShellExecute = true });
+
+        }
     }
     public class ignoresubscriptionnames
     {

@@ -747,7 +747,7 @@
                                                              ></TextBox>
                                                     <TextBlock Margin="4,2,2,2" Text="Days" VerticalAlignment="Center"></TextBlock>
 
-                                                    <Button x:Name="RefreshDbStatsButton" Margin="8,2,2,2" Click="RefreshDbStatsButton_Click" >
+                                                    <Button x:Name="RefreshDbStatsButton" Margin="8,2,2,2" PreviewMouseLeftButtonDown="RefreshDbStatsButton_PreviewMouseLeftButtonDown" >
                                                         <StackPanel Orientation="Horizontal" >
 
                                                             <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
@@ -755,7 +755,7 @@
                                                         </StackPanel>
                                                     </Button>
                                                     
-                                                    <Button x:Name="ViewPortalDbButton" Margin="8,2,2,2" Click="ViewPortalDbButton_Click" >
+                                                    <Button x:Name="ViewPortalDbButton" Margin="8,2,2,2" PreviewMouseLeftButtonDown="ViewPortalDbButton_PreviewMouseLeftButtonDown" >
                                                         <StackPanel Orientation="Horizontal" >
 
                                                             <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>

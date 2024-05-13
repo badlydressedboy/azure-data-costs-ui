@@ -79,7 +79,7 @@ namespace Azure.Costs.Common.Models.Rest
         public string VulnerabilityScanError { get; set; }
         public string RecommendationsError { get; set; }
 
-        public List<Advisor> AdvisorsList { get; set; }
+        public List<Advisor> AdvisorsList { get; set; } = new List<Advisor> { };
 
         //public int advisorRecommendationCount { get; set; }
         public string advisorRecommendationDetails { get; set; } = "";

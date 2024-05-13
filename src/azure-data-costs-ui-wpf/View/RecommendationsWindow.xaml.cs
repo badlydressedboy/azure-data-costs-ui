@@ -81,29 +81,6 @@ namespace Azure.Costs.Ui.Wpf
             Close();
         }
 
-        private void ViewPortalDbButton_Click(object sender, RoutedEventArgs e)
-        {
-            OpenPortalFromButton(sender);
-        }
-
-        private void OpenPortalFromButton(object sender)
-        {
-            DbRecommendation rec = (DbRecommendation)((Button)sender).DataContext;
-            PortalResource pr = (PortalResource)rec.SqlDb;
-
-            // + "/recommendations"
-            // dotnet core
-            string url = pr.PortalResourceUrl.Replace("overview", "recommendations");
-            Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
-        }
-
-        private void RowDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            var row = (DataGridRow)sender;
-            row.DetailsVisibility = row.DetailsVisibility == Visibility.Collapsed ?
-                Visibility.Visible : Visibility.Collapsed;
-        }
-
         private void Expander_Process(object sender, RoutedEventArgs e)
         {
             if (sender is Expander expander)
@@ -115,41 +92,27 @@ namespace Azure.Costs.Ui.Wpf
             }
         }
 
-        private void SelectRowDetails(object sender, MouseButtonEventArgs e)
-        {
-            if (e.Source is DataGridDetailsPresenter) // Like this
-            {
-                var row = sender as DataGridRow;
-                if (row == null)
-                {
-                    return;
-                }
-                row.Focusable = true;
-                row.Focus();
-
-                var elementWithFocus = Keyboard.FocusedElement as UIElement;
-                if (elementWithFocus != null)
-                {
-                    elementWithFocus.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
-                }
-            }
-        }
-
-        private void DbRecsDataGrid_RowDetailsVisibilityChanged(object sender, DataGridRowDetailsEventArgs e)
-        {
-            Debug.WriteLine("DbRecsDataGrid_RowDetailsVisibilityChanged");
-
-            Grid gr = (Grid)e.DetailsElement;
-            gr.Focus();
-        }
-
         private void ViewPortalDbButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine("ViewPortalDbButton_PreviewMouseLeftButtonDown");
-           
             e.Handled = true;
 
-            OpenPortalFromButton(sender);
+            DbRecommendation rec = (DbRecommendation)((Button)sender).DataContext;
+            PortalResource pr = (PortalResource)rec.SqlDb;
+
+            // + "/recommendations"
+            // dotnet core
+            string url = pr.PortalResourceUrl.Replace("overview", "recommendations");
+            Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
+        }
+
+        private new void PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            // preview used as MouseDoubleClick event wont fire - unsure why 
+            e.Handled = true;
+
+            var row = (DataGridRow)sender;
+            row.DetailsVisibility = row.DetailsVisibility == Visibility.Collapsed ?
+                Visibility.Visible : Visibility.Collapsed;
         }
     }
 
