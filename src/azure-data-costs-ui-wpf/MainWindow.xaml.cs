@@ -54,7 +54,7 @@ namespace Azure.Costs.Ui.Wpf
             connStrings.Add("");
 
             DataContext = vm;
-            CostDaysText.Text = APIAccess.CostDays.ToString();  
+            CostDaysText.Text = APIAccess.CostDays.ToString();
         }
 
         private async void SQLDBRefreshButton_Click(object sender, RoutedEventArgs e)
@@ -95,15 +95,15 @@ namespace Azure.Costs.Ui.Wpf
         }
         private async Task LoadSelectedAzSqlDB()
         {
-         
+
             try
             {
-             
-                await vm.RefreshSqlDb();             
+
+                await vm.RefreshSqlDb();
 
             }
             catch (Exception ex) { }
-           
+
         }
 
         private void ConfigButton_Click(object sender, RoutedEventArgs e)
@@ -120,14 +120,14 @@ namespace Azure.Costs.Ui.Wpf
         {
             DataGrid dg = (DataGrid)sender;
             //if (dg?.CurrentColumn?.DisplayIndex == 0)
-            if(e.OriginalSource is TextBlock)
+            if (e.OriginalSource is TextBlock)
             {
                 var tb = (TextBlock)e.OriginalSource;
                 if (tb.DataContext is RestSqlDb)
                 {
                     var db = (RestSqlDb)tb.DataContext;
                     SetAndLoadAzDB(db);
-                    
+
                 }
             }
         }
@@ -136,7 +136,7 @@ namespace Azure.Costs.Ui.Wpf
         {
             var db = (RestSqlDb)e.Row.DataContext;
 
-            SetAndLoadAzDB(db);    
+            SetAndLoadAzDB(db);
             if (!db.GotMetricsHistory)
             {
                 GetDbMetrics(db);
@@ -161,11 +161,12 @@ namespace Azure.Costs.Ui.Wpf
         }
 
         private async Task RefreshDBs()
-        {            
+        {
             try
             {
-                await vm.DBTabVm.RefreshDatabases(vm.SelectedSubscriptions); 
-            }catch(Exception ex)
+                await vm.DBTabVm.RefreshDatabases(vm.SelectedSubscriptions);
+            }
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex);
             }
@@ -183,7 +184,7 @@ namespace Azure.Costs.Ui.Wpf
 
         private void RestGridMenuItemSqlDetails_Click(object sender, RoutedEventArgs e)
         {
-            LoadSelectedAzSqlDB();            
+            LoadSelectedAzSqlDB();
         }
 
         private void SQLDBBackButton_Click(object sender, RoutedEventArgs e)
@@ -193,7 +194,7 @@ namespace Azure.Costs.Ui.Wpf
 
         private void RestDbDataGridViewSource_Filter(object sender, FilterEventArgs e)
         {
-            if(e.Item == null) return;
+            if (e.Item == null) return;
 
             vm.DBTabVm.SetFilterSummaries();
 
@@ -202,19 +203,20 @@ namespace Azure.Costs.Ui.Wpf
 
             if (!tagFilterMatched)
             {
-                Debug.WriteLine("tag filter not matched");  
+                Debug.WriteLine("tag filter not matched");
             }
 
-            if (tagFilterMatched 
+            if (tagFilterMatched
                 && vm.DBTabVm.SoFilter.IsValueSelected(db.properties.currentServiceObjectiveName)
                 && vm.DBTabVm.ServerFilter.IsValueSelected(db.serverName)
-                && vm.DBTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)                
+                && vm.DBTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)
                 && vm.DBTabVm.LocationFilter.IsValueSelected(db.location)
-                && vm.DBTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName)) { 
+                && vm.DBTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName))
+            {
                 e.Accepted = true;
                 return;
             }
-            e.Accepted = false;            
+            e.Accepted = false;
         }
 
 
@@ -298,18 +300,18 @@ namespace Azure.Costs.Ui.Wpf
             Regex regex = new Regex("[^0-9]+");
             if (regex.IsMatch(e.Text))
             {
-                e.Handled = true;                
+                e.Handled = true;
             }
             else
-            {        
+            {
                 int days = int.Parse(CostDaysText.Text + e.Text);
-                if(days<1 || days > 90)
+                if (days < 1 || days > 90)
                 {
                     e.Handled = true;
                     return;
                 }
                 APIAccess.CostDays = days;
-            }       
+            }
         }
 
         private async void TestLoginButton_Click(object sender, RoutedEventArgs e)
@@ -320,18 +322,18 @@ namespace Azure.Costs.Ui.Wpf
         void IgnoreOnChecked(object sender, RoutedEventArgs e)
         {
             throw new NotImplementedException();
-        }    
+        }
 
         private void IgnoreCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            if(e.OriginalSource is CheckBox)
+            if (e.OriginalSource is CheckBox)
             {
-                var clickedSub = (Subscription)((CheckBox)e.OriginalSource).DataContext;   
+                var clickedSub = (Subscription)((CheckBox)e.OriginalSource).DataContext;
                 var subName = clickedSub.displayName;
                 var configSub = App.Config.Subscriptions.FirstOrDefault(x => x.Name == subName);
-                if(configSub == null)
+                if (configSub == null)
                 {
-                    configSub = new ConfigSubscription() { Name=subName};
+                    configSub = new ConfigSubscription() { Name = subName };
                     App.Config.Subscriptions.Add(configSub);
                 }
                 configSub.ReadObjects = clickedSub.ReadObjects;
@@ -368,7 +370,7 @@ namespace Azure.Costs.Ui.Wpf
                 && vm.StorageTabVm.ResourceGroupFilter.IsValueSelected(db.resourceGroup)
                 && vm.StorageTabVm.LocationFilter.IsValueSelected(db.location)
                 && vm.StorageTabVm.SubscriptionFilter.IsValueSelected(db.Subscription.displayName)
-                && vm.StorageTabVm.SkuFilter.IsValueSelected(db.sku.name)   
+                && vm.StorageTabVm.SkuFilter.IsValueSelected(db.sku.name)
                 && vm.StorageTabVm.TierFilter.IsValueSelected(db.sku.tier)
                 )
             {
@@ -478,14 +480,14 @@ namespace Azure.Costs.Ui.Wpf
             GetDbMetrics();
         }
 
-        private async void GetDbMetrics(RestSqlDb db  = null)
+        private async void GetDbMetrics(RestSqlDb db = null)
         {
             if (db == null)
             {
                 if (RestDbDataGrid.CurrentItem == null) return;
                 db = (RestSqlDb)RestDbDataGrid.CurrentItem;
             }
-            
+
             await APIAccess.GetDbMetrics(db); // no minutes param passed so sqlDb.MetricsHistoryDays is used            
         }
 
@@ -513,10 +515,10 @@ namespace Azure.Costs.Ui.Wpf
         {
             switch (MainTabControl.SelectedIndex)
             {
-                case(0):
+                case (0):
                     // db summary
                     break;
-                    case(1):
+                case (1):
                     // db details
                     // have any subscriptions never had sql servers queried?
                     if (vm.SelectedSubscriptions.Any(x => !x.HasEverGotSqlServers))
@@ -525,17 +527,17 @@ namespace Azure.Costs.Ui.Wpf
                         Cursor = Cursors.Wait;
                         await vm.DBTabVm.RefreshDatabases(vm.SelectedSubscriptions);
                         Cursor = Cursors.Arrow;
-                    }   
+                    }
                     break;
 
-                    case(2):
+                case (2):
                     // adf
-                    if(vm.DFTabVm.DataFactoryList.Count == 0)
+                    if (vm.DFTabVm.DataFactoryList.Count == 0)
                     {
                         await vm.RefreshDataFactories();
                     }
                     break;
-;
+                    ;
                 case (3):
                     // storage
                     if (vm.StorageTabVm.StorageList.Count == 0)
@@ -554,7 +556,7 @@ namespace Azure.Costs.Ui.Wpf
                     // vms
                     if (vm.VmTabVm.VMList.Count == 0)
                     {
-                        
+
                         await vm.RefreshVms();
                     }
                     break;
@@ -577,7 +579,7 @@ namespace Azure.Costs.Ui.Wpf
         {
 
             GetVmMetrics();
-            
+
         }
 
         private void RefreshVmStatsButton_Click(object sender, RoutedEventArgs e)
@@ -655,7 +657,7 @@ namespace Azure.Costs.Ui.Wpf
             await vm.VmTabVm.AnalyseVmSpend();
         }
 
-        
+
         private void DBTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -697,10 +699,10 @@ namespace Azure.Costs.Ui.Wpf
         private void ViewPortalDbButton_Click(object sender, RoutedEventArgs e)
         {
             PortalResource pr = (PortalResource)((Button)sender).DataContext;
-            
+
             // dotnet core
             Process.Start(new ProcessStartInfo { FileName = pr.PortalResourceUrl, UseShellExecute = true });
-            
+
             // dotnet framework
             //Process.Start(db.PortalResourceUrl);
         }
@@ -718,22 +720,22 @@ namespace Azure.Costs.Ui.Wpf
         private void ColumnFilterButton_Click(object sender, RoutedEventArgs e)
         {
             Button but = (Button)sender;
-            if(!(but.DataContext is List<SelectableString>))
+            if (!(but.DataContext is List<SelectableString>))
             {
                 _logger.Error("Filter button has not had data context set correctly to list");
                 return;
             }
             DataGrid dg = FindParent<DataGrid>(but);
-            if (dg==null)
+            if (dg == null)
             {
                 Debug.WriteLine("how no dg parent");
                 return;
             }
             var tagsWin = new FilterWindow((List<SelectableString>)but.DataContext);
-           
+
             tagsWin.Owner = this;
 
-            tagsWin.ShowDialog();            
+            tagsWin.ShowDialog();
 
             CollectionViewSource.GetDefaultView(dg.ItemsSource).Refresh();
             Focus(); // filter button looks weirdly bold/focus unless you remove focus
@@ -762,7 +764,7 @@ namespace Azure.Costs.Ui.Wpf
         private void DBRecomendationsButton_Click(object sender, RoutedEventArgs e)
         {
             var recWindow = new RecommendationsWindow(vm.DBTabVm);
-            recWindow.Owner = this; 
+            recWindow.Owner = this;
             recWindow.ShowDialog();
         }
 

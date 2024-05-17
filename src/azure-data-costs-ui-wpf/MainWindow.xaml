@@ -287,7 +287,7 @@
                                     <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
                                 </StackPanel>
                             </Button>
-                            
+
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4,6,4,6">
@@ -385,7 +385,7 @@
                                   
                             >
 
-                      
+
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
                                     <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
@@ -447,7 +447,7 @@
                                         </DataTemplate>
                                     </DataGridTextColumn.HeaderTemplate>
                                 </DataGridTextColumn>
-                                
+
                                 <DataGridTextColumn  Binding="{Binding Subscription.displayName}" >
                                     <DataGridTextColumn.HeaderTemplate>
                                         <DataTemplate>
@@ -510,7 +510,7 @@
                                     </DataGridTextColumn.HeaderTemplate>
 
                                 </DataGridTextColumn>
-                                
+
                                 <DataGridTextColumn Header="Cost (Bill CCY)"  Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);'?'}}" >
 
                                     <DataGridTextColumn.CellStyle>
@@ -565,7 +565,7 @@
                                 </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Elastic Pool"  Binding="{Binding properties.elasticPoolName}" ></DataGridTextColumn>
-                                
+
                                 <DataGridTextColumn  Binding="{Binding location}" >
                                     <DataGridTextColumn.HeaderTemplate>
                                         <DataTemplate>
@@ -596,7 +596,7 @@
                                         </DataTemplate>
                                     </DataGridTextColumn.HeaderTemplate>
                                 </DataGridTextColumn>
-                                
+
                                 <DataGridTextColumn Header="Secondary Location"  Binding="{Binding properties.defaultSecondaryLocation}" ></DataGridTextColumn>
 
                                 <DataGridTextColumn Header="Tags" Width="220" Binding="{Binding TagsString}">
@@ -621,14 +621,14 @@
                                                         <StackPanel Orientation="Horizontal">
                                                             <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
                                                         </StackPanel>
-                                                    </Button>   
+                                                    </Button>
                                                 </StackPanel>
-                                              
+
                                             </Grid>
-                                            
+
                                         </DataTemplate>
                                     </DataGridTextColumn.HeaderTemplate>
-                                    
+
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" >
                                             <Setter Property="ToolTip" Value="{Binding TagsStringMultiLine}"/>
@@ -677,10 +677,10 @@
 
                                     <DataGridTextColumn.CellStyle>
                                         <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
-                                            
+
                                             <Style.Setters>
                                                 <EventSetter Event="GotFocus" Handler="RecoCellClick"/>
-                                                
+
                                                 <Setter Property="ToolTip" Value="{Binding advisorRecommendationDetails}"/>
                                                 <Setter Property="Cursor" Value="Hand"/>
                                             </Style.Setters>
@@ -754,7 +754,7 @@
                                                             <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
                                                         </StackPanel>
                                                     </Button>
-                                                    
+
                                                     <Button x:Name="ViewPortalDbButton" Margin="8,2,2,2" PreviewMouseLeftButtonDown="ViewPortalDbButton_PreviewMouseLeftButtonDown" >
                                                         <StackPanel Orientation="Horizontal" >
 
@@ -1236,7 +1236,7 @@
                         </Grid.RowDefinitions>
 
                         <StackPanel Orientation="Horizontal" Margin="4,4,4,4" Grid.ColumnSpan="3">
-                          
+
                             <Button x:Name="DataFactoriesRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesRefreshButton_Click">
                                 <StackPanel Orientation="Horizontal" >
 
@@ -1291,7 +1291,7 @@
                             <DataGrid.Columns>
 
                                 <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
-                                
+
                                 <DataGridTextColumn  Binding="{Binding resourceGroup}" CellStyle="{StaticResource DataGridParentCell}" >
                                     <DataGridTextColumn.HeaderTemplate>
                                         <DataTemplate>
@@ -1428,28 +1428,28 @@ Text="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.Locatio
                                         </StackPanel>
 
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
-                                        <DataGrid.Columns>
+                                            <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
                                                 <DataGridTextColumn Header="Meter Category" Binding="{Binding Path=MeterCategory}" IsReadOnly="True"/>
                                                 <DataGridTextColumn Header="Meter SubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>
 
                                                 <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
-                                                <DataGridTextColumn.CellStyle>
-                                                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                                <Setter Property="Foreground" Value="OrangeRed" />
-                                                                <Setter Property="FontWeight" Value="Bold" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </DataGridTextColumn.CellStyle>
-                                            </DataGridTextColumn>
+                                                    <DataGridTextColumn.CellStyle>
+                                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </DataGridTextColumn.CellStyle>
+                                                </DataGridTextColumn>
 
-                                            <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
-                                            <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                                <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                                <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
 
                                     </Grid>
 
@@ -1476,7 +1476,7 @@ Text="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.Locatio
                         </Grid.RowDefinitions>
 
                         <StackPanel Orientation="Horizontal" Margin="4">
-                           
+
                             <Button x:Name="StorageRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="StorageRefreshButton_Click">
                                 <StackPanel Orientation="Horizontal" >
 
@@ -1484,7 +1484,7 @@ Text="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.Locatio
                                     <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
                                 </StackPanel>
                             </Button>
-                            
+
                             <Button x:Name="StorageCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="StorageCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total Storage Costs:</TextBlock>
@@ -1623,7 +1623,7 @@ Text="{Binding ElementName=StorageDataGrid, Path=DataContext.StorageTabVm.Locati
                                         </DataTemplate>
                                     </DataGridTextColumn.HeaderTemplate>
                                 </DataGridTextColumn>
-                                
+
                                 <DataGridTextColumn  Binding="{Binding sku.name}" CellStyle="{StaticResource DataGridParentCell}" >
                                     <DataGridTextColumn.HeaderTemplate>
                                         <DataTemplate>
@@ -1725,7 +1725,7 @@ Text="{Binding ElementName=StorageDataGrid, Path=DataContext.StorageTabVm.TierFi
                                                     <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
                                                 </StackPanel>
                                             </Button>
-                                            
+
                                         </StackPanel>
 
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
@@ -1777,7 +1777,7 @@ Text="{Binding ElementName=StorageDataGrid, Path=DataContext.StorageTabVm.TierFi
                         </Grid.RowDefinitions>
 
                         <StackPanel Orientation="Horizontal" Margin="4">
-                           
+
                             <Button x:Name="VNetRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VNetsRefreshButton_Click">
                                 <StackPanel Orientation="Horizontal" >
 
@@ -1785,7 +1785,7 @@ Text="{Binding ElementName=StorageDataGrid, Path=DataContext.StorageTabVm.TierFi
                                     <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
                                 </StackPanel>
                             </Button>
-                            
+
                             <Button x:Name="VNetCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VNetCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VNet Costs:</TextBlock>
@@ -2021,7 +2021,7 @@ Text="{Binding ElementName=VNetDataGrid, Path=DataContext.VNetTabVm.LocationFilt
                     </Grid.RowDefinitions>
 
                     <StackPanel Orientation="Horizontal" Margin="4">
-                        
+
                         <Button x:Name="VMRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VMsRefreshButton_Click">
                             <StackPanel Orientation="Horizontal" >
 
@@ -2029,7 +2029,7 @@ Text="{Binding ElementName=VNetDataGrid, Path=DataContext.VNetTabVm.LocationFilt
                                 <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
                             </StackPanel>
                         </Button>
-                        
+
                         <Button x:Name="VMCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VMCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
                         <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VM Costs:</TextBlock>
@@ -2373,7 +2373,7 @@ Text="{Binding ElementName=VMDataGrid, Path=DataContext.VmTabVm.LocationFilter.S
                         </Grid.RowDefinitions>
 
                         <StackPanel Orientation="Horizontal" Margin="4,4,4,4" Grid.ColumnSpan="2">
-                           
+
                             <Button x:Name="PurviewRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="PurviewRefreshButton_Click">
                                 <StackPanel Orientation="Horizontal" >
 
@@ -2556,17 +2556,17 @@ Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.Locati
                                                     <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
                                                 </StackPanel>
                                             </Button>
-                                            
+
                                         </StackPanel>
-                                        
-                                        
+
+
 
                                         <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
                                                 <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
                                                 <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-                                                
+
 
                                                 <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
                                                     <DataGridTextColumn.CellStyle>
@@ -2624,7 +2624,7 @@ Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.Locati
                                 </StackPanel>
                             </Button>
 
-                           
+
                         </StackPanel>
 
                         <TextBlock Grid.Row="1" 
