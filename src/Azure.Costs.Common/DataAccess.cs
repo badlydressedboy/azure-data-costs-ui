@@ -118,6 +118,15 @@ namespace Azure.Costs.Common
             return await GetQueryResult<DBPrincipal>(sql, connString);
         }
 
+        public static async Task<DataResult> GetDbPermission(string connString)
+        {
+            string sql = @"SELECT permission_name FROM fn_my_permissions(NULL, 'DATABASE')
+                        order by permission_name
+                ;  
+             ";
+            return await GetQueryResult<string>(sql, connString);
+        }
+
         public static async Task<DataResult> GetDbReplication(string connString)
         {
             string sql = @"select is_local IsLocal, is_primary_replica IsPrimaryReplica

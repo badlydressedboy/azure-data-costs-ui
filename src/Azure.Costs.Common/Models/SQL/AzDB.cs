@@ -23,6 +23,16 @@ namespace Azure.Costs.Common.Models.SQL
                 SetProperty(ref isQueryingDatabase, value);
             }
         }
+        private bool userHasSelectPermission;
+
+        public bool UserHasSelectPermission
+        {
+            get => userHasSelectPermission;
+            set
+            {
+                SetProperty(ref userHasSelectPermission, value);
+            }
+        }
         public AzServer ParentAzServer { get; set; }
         public string ServerName { get; set; }
 
@@ -52,7 +62,7 @@ namespace Azure.Costs.Common.Models.SQL
         public List<DBSyncState> SyncStates { get; set; } = new List<DBSyncState>();
         public List<Session> Sessions { get; set; } = new List<Session>();
 
-
+        public List<string> DBUserPermissions { get; set; } = new List<string>();
         public async Task Refresh()
         {
             if (IsQueryingDatabase) return;
@@ -130,6 +140,21 @@ namespace Azure.Costs.Common.Models.SQL
             ConnString = parentServer.ConnString.Replace("master", DatabaseName);
 
             
+        }
+
+        public async void GetPermissions()
+        {
+
+            var result = await ProcessResult(await DataAccess.GetDbPermission(ConnString));
+            ConnectivityError = result.ExceptionMessage;
+            if (result.Result != null)
+            {
+                var permsList = (List<string>)result.Result;
+                DBUserPermissions.Clear();
+                DBUserPermissions.AddRange(permsList);
+
+                UserHasSelectPermission = permsList.Contains("SELECT");
+            }
         }
     }
 }

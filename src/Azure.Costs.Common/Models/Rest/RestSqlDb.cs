@@ -471,6 +471,6 @@ namespace Azure.Costs.Common.Models.Rest
         public string elasticPoolName { get; set; }
         public bool zoneRedundant { get; set; }
         public string currentBackupStorageRedundancy { get; set; }
-
+        public string userHasSqlReadAccess { get; set; }
     }
 }

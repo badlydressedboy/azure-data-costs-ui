@@ -354,6 +354,7 @@ namespace Azure.Costs.Common
 
                     db.AzDB.DatabaseName = db.name;
                     db.AzDB.SetParent(sqlServer.AzServer);
+                    db.AzDB.GetPermissions(); // dont await this async so it run in background after this db has been created and added to Dbs list
 
                     db.PortalResourceUrl = $@"{BasePortalUrl}{db.Subscription.subscriptionId}/resourceGroups/{db.resourceGroup}/providers/Microsoft.Sql/servers/{db.serverName}/databases/{db.name}/overview";// ends subscriptions/
 
