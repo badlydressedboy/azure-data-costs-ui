@@ -645,6 +645,10 @@ namespace Azure.Costs.Common
 
                 if (ltr?.properties != null)
                 {
+                    // PT0S means NULL/Nothing so lets show empty cell
+                    if (ltr.properties.weeklyRetention == "PT0S") ltr.properties.weeklyRetention = "";
+                    if (ltr.properties.monthlyRetention == "PT0S") ltr.properties.monthlyRetention = "";
+                    if (ltr.properties.yearlyRetention == "PT0S") ltr.properties.yearlyRetention = "";
                     sqlDb.lTRPolicyProperties = ltr?.properties;
                 }
                 else
