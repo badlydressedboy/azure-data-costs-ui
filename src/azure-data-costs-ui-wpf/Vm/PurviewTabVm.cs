@@ -92,6 +92,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
                 _logger.Error(ex);
             }
             IsPurviewQueryBusy = false;
+
            // UpdateHttpAccessCountMessage();
         }
 

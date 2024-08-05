@@ -166,7 +166,17 @@
                         <TextBlock Margin="2,8,2,8" FontSize="14" Padding="6" Background="LightGray">Test you are logged into Azure via CLI or Visual Studio</TextBlock>
 
                         <StackPanel Orientation="Horizontal" Grid.Row="1">
-                            <Button Margin="2" VerticalAlignment="Center" Name="TestLoginButton" Click="TestLoginButton_Click">Test Security</Button>
+
+                            <TextBlock Margin="6,2,2,2" VerticalAlignment="Center">Access Method:</TextBlock>
+                            
+                            <ComboBox Margin="2" Name="AccessmethodCombo" Width="110" SelectionChanged="AccessmethodCombo_SelectionChanged">
+
+                                <ComboBoxItem IsSelected="True">Azure CLI</ComboBoxItem>
+                                <ComboBoxItem >Visual Studio</ComboBoxItem>
+                                
+                            </ComboBox>
+                            
+                            <Button Margin="2" VerticalAlignment="Center" Name="TestLoginButton" Click="TestLoginButton_Click">Login</Button>
                         </StackPanel>
 
                         <TextBlock Margin="2" Padding="6" Grid.Row="2" Background="GhostWhite" Opacity=".8"
@@ -1253,7 +1263,7 @@
                             <Button x:Name="DataFactoriesCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="DataFactoriesCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total ADF Costs:</TextBlock>
-                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalADFCostsText}"></TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding DFTabVm.TotalCostsText}"></TextBlock>
                         </StackPanel>
 
                         <TextBlock Grid.Row="1" Padding="6" Margin="2,2,2,2" Text="{Binding DataFactoryErrorMessage}" MaxHeight="150" ToolTip="{Binding DataFactoryErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsDataFactoryErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange" Grid.ColumnSpan="3"></TextBlock>
@@ -1492,7 +1502,7 @@ Text="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.Locatio
                             <Button x:Name="StorageCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="StorageCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total Storage Costs:</TextBlock>
-                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalStorageCostsText}"></TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding StorageTabVm.TotalCostsText}"></TextBlock>
                         </StackPanel>
 
                         <TextBlock Grid.Row="1" Padding="6" Margin="2" Text="{Binding StorageErrorMessage}" MaxHeight="150" ToolTip="{Binding StorageErrorMessage}" ToolTipService.InitialShowDelay="0" Visibility="{Binding IsStorageErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" Background="Orange"></TextBlock>
@@ -1793,7 +1803,7 @@ Text="{Binding ElementName=StorageDataGrid, Path=DataContext.StorageTabVm.TierFi
                             <Button x:Name="VNetCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VNetCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VNet Costs:</TextBlock>
-                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalVNetCostsText}"></TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding VNetTabVm.TotalCostsText}"></TextBlock>
                         </StackPanel>
 
                         <TextBlock Grid.Row="1" Margin="2" 
@@ -2037,7 +2047,7 @@ Text="{Binding ElementName=VNetDataGrid, Path=DataContext.VNetTabVm.LocationFilt
                         <Button x:Name="VMCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="VMCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
                         <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total VM Costs:</TextBlock>
-                        <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalVMCostsText}"></TextBlock>
+                        <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding VmTabVm.TotalCostsText}"></TextBlock>
 
 
                     </StackPanel>
@@ -2049,14 +2059,14 @@ Text="{Binding ElementName=VNetDataGrid, Path=DataContext.VNetTabVm.LocationFilt
                         <Image gif:ImageBehavior.AnimatedSource="/Images/loading.gif" 
                                Margin="8,0,0,0" 
                                Style="{StaticResource LoadingGifStyle}"
-                               Visibility="{Binding IsVmSpendAnalysisBusy,Converter={StaticResource BooleanToVisibilityConverter}}">
+                               Visibility="{Binding VmTabVm.IsVmSpendAnalysisBusy,Converter={StaticResource BooleanToVisibilityConverter}}">
                             <Image.LayoutTransform>
                                 <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
                             </Image.LayoutTransform>
                         </Image>
 
-                        <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center" Visibility="{Binding HasVmSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}">Total Potential Saving:</TextBlock>
-                        <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPotentialVmSavingAmount, StringFormat=N0}" Visibility="{Binding HasVmSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}"></TextBlock>
+                        <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center" Visibility="{Binding VmTabVm.HasVmSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}">Total Potential Saving:</TextBlock>
+                        <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding VmTabVm.TotalPotentialVmSavingAmount, StringFormat=N0}" Visibility="{Binding VmTabVm.HasVmSpendAnalysisBeenPerformed, Converter={ StaticResource BooleanToVisibilityConverter}}"></TextBlock>
 
 
                     </StackPanel>
@@ -2389,7 +2399,7 @@ Text="{Binding ElementName=VMDataGrid, Path=DataContext.VmTabVm.LocationFilter.S
                             <Button x:Name="PurviewCollapseCostsButton" Margin="20,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="PurviewCollapseCostsButton_Click">Show/Collapse Costs</Button>
 
                             <TextBlock Margin="30,2,2,2" FontSize="14" VerticalAlignment="Center">Total Purview Costs:</TextBlock>
-                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding TotalPurviewCostsText}"></TextBlock>
+                            <TextBlock Margin="4,2,2,2" FontSize="14" VerticalAlignment="Center" Text="{Binding PurviewTabVm.TotalCostsText}"></TextBlock>
                         </StackPanel>
 
                         <TextBlock Grid.Row="1" 
@@ -2602,247 +2612,6 @@ Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.Locati
                 </busyIndicator:BusyMask>
 
             </mah:MetroTabItem>
-
-            <mah:MetroTabItem Header="Resources" Name="TabResources">
-
-                <busyIndicator:BusyMask IsBusy="{Binding IsResourcesQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="47*"/>
-                            <ColumnDefinition Width="1153*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <StackPanel Orientation="Horizontal" Margin="4,4,4,4" Grid.ColumnSpan="2">
-
-                            <Button x:Name="ResourcesRefreshButton" Margin="10,2,2,2" Padding="8,1,8,1" VerticalAlignment="Center" Click="ResourcesRefreshButton_Click">
-                                <StackPanel Orientation="Horizontal" >
-
-                                    <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
-                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
-                                </StackPanel>
-                            </Button>
-
-
-                        </StackPanel>
-
-                        <TextBlock Grid.Row="1" 
-                                   Margin="2,2,2,2" Grid.ColumnSpan="2" 
-                                   Style="{StaticResource WarningTextBlockStyle}"
-                                   Text="{Binding VMErrorMessage}" 
-                                   MaxHeight="150" 
-                                   ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" 
-                                   Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" 
-                                   ></TextBlock>
-
-                        <DataGrid Grid.Row="2" x:Name="ResourcesDataGrid"
-                              VirtualizingStackPanel.IsVirtualizing="true" 
-                                EnableRowVirtualization ="True"
-                              ItemsSource="{Binding Source={StaticResource PurviewDataGridViewSource}}" 
-                              AutoGenerateColumns="False"
-                              CanUserResizeRows="False"
-                              FrozenColumnCount ="1"
-                              RowHeight="20"
-                                MouseUp="VMDataGrid_MouseUp"
-                                KeyDown="VMDataGrid_KeyDown"  
-                              RowDetailsVisibilityMode="Collapsed"
-                                  IsReadOnly="True" Grid.ColumnSpan="2"
-                                local:DataGridExtensions.SortDesc="True"
-                    >
-                            <DataGrid.RowStyle>
-                                <Style TargetType="{x:Type DataGridRow}">
-                                    <EventSetter Event="MouseDoubleClick" Handler="RowDoubleClick"/>
-                                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SelectRowDetails"/>
-                                </Style>
-                            </DataGrid.RowStyle>
-
-                            <DataGrid.CellStyle>
-                                <Style TargetType="DataGridCell">
-                                    <Setter Property="BorderThickness" Value="0"/>
-                                </Style>
-                            </DataGrid.CellStyle>
-
-                            <DataGrid.RowHeaderTemplate>
-                                <DataTemplate>
-                                    <Expander VerticalAlignment="Top" Margin="0" Padding="0" Expanded="Expander_Process"  Collapsed="Expander_Process">
-                                    </Expander>
-                                </DataTemplate>
-                            </DataGrid.RowHeaderTemplate>
-
-                            <DataGrid.Columns>
-
-                                <DataGridTextColumn Header="Name" Binding="{Binding name}" CellStyle="{StaticResource DataGridParentCell}" />
-
-                                <DataGridTextColumn  Binding="{Binding resourceGroup}" CellStyle="{StaticResource DataGridParentCell}" >
-                                    <DataGridTextColumn.HeaderTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock Text="Resource Group" VerticalAlignment="Center" Margin="0,0,4,0"/>
-
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
-                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
-Foreground="DarkOrange"
-Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.ResourceGroupFilter.SummaryText}">
-                                                    </TextBlock>
-
-                                                    <Button DataContext="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.ResourceGroupFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
-                                                        </StackPanel>
-                                                    </Button>
-                                                </StackPanel>
-
-                                            </Grid>
-
-                                        </DataTemplate>
-                                    </DataGridTextColumn.HeaderTemplate>
-                                </DataGridTextColumn>
-
-                                <DataGridTextColumn  Binding="{Binding Subscription.displayName}" >
-                                    <DataGridTextColumn.HeaderTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock Text="Subscription" VerticalAlignment="Center" Margin="0,0,4,0"/>
-
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
-                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
-Foreground="DarkOrange"
-Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.SubscriptionFilter.SummaryText}">
-                                                    </TextBlock>
-
-                                                    <Button DataContext="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.SubscriptionFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
-                                                        </StackPanel>
-                                                    </Button>
-                                                </StackPanel>
-
-                                            </Grid>
-
-                                        </DataTemplate>
-                                    </DataGridTextColumn.HeaderTemplate>
-                                </DataGridTextColumn>
-
-                                <DataGridTextColumn Header="Capacity Size"  Binding="{Binding sku.capacity}"  CellStyle="{StaticResource DataGridParentCell}" />
-
-                                <DataGridTextColumn Header="Capacity Name"  Binding="{Binding sku.name}"  CellStyle="{StaticResource DataGridParentCell}" />
-
-
-                                <DataGridTextColumn  Binding="{Binding location}" CellStyle="{StaticResource DataGridParentCell}" >
-                                    <DataGridTextColumn.HeaderTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="*"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock Text="Location" VerticalAlignment="Center" Margin="0,0,4,0"/>
-
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                                    <!--Note Binding ElementName=RestDbDataGrid is used to get data context-->
-                                                    <TextBlock Margin="1" VerticalAlignment="Center" 
-Foreground="DarkOrange"
-Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.LocationFilter.SummaryText}">
-                                                    </TextBlock>
-
-                                                    <Button DataContext="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.LocationFilter.Items}" Click="ColumnFilterButton_Click" Height="10" Width="20" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,0,0,0">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Image Source="/AzureDataCosts;component/Images/filter.png" Height="11"/>
-                                                        </StackPanel>
-                                                    </Button>
-                                                </StackPanel>
-
-                                            </Grid>
-
-                                        </DataTemplate>
-                                    </DataGridTextColumn.HeaderTemplate>
-                                </DataGridTextColumn>
-
-
-                                <DataGridTextColumn Header="Public Net Access"  Binding="{Binding properties.publicNetworkAccess}"  CellStyle="{StaticResource DataGridParentCell}" />
-
-
-                            </DataGrid.Columns>
-
-                            <DataGrid.RowDetailsTemplate>
-                                <DataTemplate>
-
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
-
-                                        <StackPanel Orientation="Horizontal">
-
-                                            <Button x:Name="ViewPortalDbButton" Margin="8,4,2,4" Click="ViewPortalDbButton_Click" >
-                                                <StackPanel Orientation="Horizontal" >
-                                                    <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
-                                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
-                                                </StackPanel>
-                                            </Button>
-
-                                        </StackPanel>
-
-
-
-                                        <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-
-
-                                                <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
-                                                    <DataGridTextColumn.CellStyle>
-                                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                                    <Setter Property="Foreground" Value="OrangeRed" />
-                                                                    <Setter Property="FontWeight" Value="Bold" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </DataGridTextColumn.CellStyle>
-                                                </DataGridTextColumn>
-
-                                                <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-
-                                    </Grid>
-
-                                </DataTemplate>
-                            </DataGrid.RowDetailsTemplate>
-
-                        </DataGrid>
-
-                    </Grid>
-
-                </busyIndicator:BusyMask>
-
-            </mah:MetroTabItem>
-
-
 
         </mah:MetroAnimatedSingleRowTabControl>
 

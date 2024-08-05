@@ -37,11 +37,16 @@ namespace Azure.Costs.Common
     {
         public static MyHttpClient HttpClient;
         private static string _accessToken;
+
+        public static string AccessMethod = "AzureCli";
+
         public static int CostDays { get; set; } = 30;
         public static string DefaultDomain;
         public static string BasePortalUrl;
 
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
+
 
         public static HttpClient GetHttpClient(string baseAddress, int timeoutSecs)
         {
@@ -57,13 +62,13 @@ namespace Azure.Costs.Common
 
             return httpClient;
         }
-        private static async Task<HttpResponseMessage> GetHttpClientAsync(string url)
+        private static async Task<HttpResponseMessage> GetHttpClientAsync(string url, bool forceNewClient = false)
         {
             try
             {
-                if (HttpClient == null)
+                if (HttpClient == null || forceNewClient)
                 {
-                    AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider("RunAs=Developer;DeveloperTool=AzureCli");
+                    AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider($"RunAs=Developer;DeveloperTool={APIAccess.AccessMethod}");
                     _accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/");
                     HttpClient = new MyHttpClient("https://management.azure.com/", 15, _accessToken);
                 }
@@ -91,7 +96,7 @@ namespace Azure.Costs.Common
                 _logger.Info("Testing login...");
 
                 // get tenants as a test
-                HttpResponseMessage tenantResponse = await GetHttpClientAsync("https://management.azure.com/tenants?api-version=2022-12-01");
+                HttpResponseMessage tenantResponse = await GetHttpClientAsync("https://management.azure.com/tenants?api-version=2022-12-01", true);
                 if (tenantResponse == null)
                 {
                     return "Could not connect to tennant - do you need to 'AZ LOGIN'?";

@@ -84,36 +84,6 @@ namespace Azure.Costs.Ui.Wpf
             set => SetProperty(ref testLoginErrorMessage, value);
         }
         
-
-        
-        
-        private string totalADFCostsText;
-        public string TotalADFCostsText
-        {
-            get => totalADFCostsText;
-            set => SetProperty(ref totalADFCostsText, value);        
-        }
-        
-        
-        private string totalVNetCostsText;
-        public string TotalVNetCostsText
-        {
-            get => totalVNetCostsText;
-            set => SetProperty(ref totalVNetCostsText, value);
-        }
-        private string totalVMCostsText;
-        public string TotalVMCostsText
-        {
-            get => totalVMCostsText;
-            set => SetProperty(ref totalVMCostsText, value);
-        }
-        private string totalPurviewCostsText;
-        public string TotalPurviewCostsText
-        {
-            get => totalPurviewCostsText;
-            set => SetProperty(ref totalPurviewCostsText, value);
-        }
-
         private string dataFactoryErrorMessage;
         public string DataFactoryErrorMessage
         {
@@ -284,6 +254,9 @@ namespace Azure.Costs.Ui.Wpf
 
             IsTestLoginBusy = false;
             IsRestQueryBusy = false;
+
+            await GetSubscriptions();
+
             UpdateHttpAccessCountMessage();
 
             var o = await ResourceGraphAccess.GetPublicIps(" ", "61cc37c3-c8fd-463f-868b-49306e58fba6");

@@ -89,6 +89,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
                     sub.DataFactories.ForEach(df => DataFactoryList.Add(df));
                     
                 }
+                TotalCostsText = totalADFCosts.ToString("N2");
             }
             catch (Exception ex)
             {

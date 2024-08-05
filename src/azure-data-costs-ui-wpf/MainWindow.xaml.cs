@@ -55,6 +55,7 @@ namespace Azure.Costs.Ui.Wpf
 
             DataContext = vm;
             CostDaysText.Text = APIAccess.CostDays.ToString();
+
         }
 
         private async void SQLDBRefreshButton_Click(object sender, RoutedEventArgs e)
@@ -788,6 +789,21 @@ namespace Azure.Costs.Ui.Wpf
             // dotnet core
             Process.Start(new ProcessStartInfo { FileName = pr.PortalResourceUrl, UseShellExecute = true });
 
+        }
+
+        private void AccessmethodCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(e.AddedItems.Count == 0) return;
+
+            var cb = (ComboBoxItem)e.AddedItems[0];
+            if (cb.Content?.ToString() == "Azure CLI")
+            {
+                APIAccess.AccessMethod = "AzureCLI";
+            }
+            else if (cb.Content?.ToString() == "Visual Studio")
+            {
+                APIAccess.AccessMethod = "VisualStudio";
+            }
         }
     }
     public class ignoresubscriptionnames
