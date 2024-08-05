@@ -63,7 +63,7 @@ namespace Azure.Costs.Common
             {
                 if (HttpClient == null)
                 {
-                    AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
+                    AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider("RunAs=Developer;DeveloperTool=AzureCli");
                     _accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/");
                     HttpClient = new MyHttpClient("https://management.azure.com/", 15, _accessToken);
                 }
