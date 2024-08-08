@@ -1772,6 +1772,46 @@ namespace Azure.Costs.Common
                 _logger.Error(ex);
             }
         }
+
+        public static async Task GetCosmosDBs(Subscription subscription)
+        {
+            _logger.Info("Starting GetCosmosDBs()...");
+
+            try
+            {
+                string url = $"https://management.azure.com/subscriptions/{subscription.subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2024-05-15";
+
+                HttpResponseMessage response = await GetHttpClientAsync(url);
+                if (response == null)
+                {
+                    return;
+                }
+
+                var json = await response.Content.ReadAsStringAsync();
+
+                RootCosmos root = await response.Content.ReadFromJsonAsync<RootCosmos>();
+                if (root?.value == null) return;
+
+                foreach (var cosmos in root.value)
+                {
+                    Debug.WriteLine($"Got cosmos acc {cosmos.name}");
+                    cosmos.Subscription = subscription;
+
+                    string rg = cosmos.id.Substring(cosmos.id.IndexOf("resourceGroup") + 15);
+                    cosmos.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
+
+                    cosmos.PortalResourceUrl = $@"{BasePortalUrl}{cosmos.Subscription.subscriptionId}/resourceGroups/{cosmos.resourceGroup}/providers/Microsoft.DocumentDB/databaseAccounts/{cosmos.name}/overview";
+
+                }
+                subscription.Cosmos = root.value.ToList();
+
+                _logger.Info("Complete GetCosmosDBs().");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
     }
 
 

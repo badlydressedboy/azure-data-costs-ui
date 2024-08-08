@@ -511,6 +511,10 @@ namespace Azure.Costs.Ui.Wpf
         {
             await vm.RefreshPurview();
         }
+        private async void CosmosRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await vm.RefreshCosmos();
+        }
 
         private async void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -804,6 +808,17 @@ namespace Azure.Costs.Ui.Wpf
             {
                 APIAccess.AccessMethod = "VisualStudio";
             }
+        }
+
+
+        private void CosmosCollapseCostsButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CosmosDataGridViewSource_Filter(object sender, FilterEventArgs e)
+        {
+
         }
     }
     public class ignoresubscriptionnames

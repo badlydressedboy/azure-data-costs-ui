@@ -31,6 +31,8 @@ namespace Azure.Costs.Ui.Wpf
         public StorageTabVm StorageTabVm { get; set; } = new StorageTabVm();
         public VNetTabVm VNetTabVm { get; set; } = new VNetTabVm();
         public PurviewTabVm PurviewTabVm { get; set; } = new PurviewTabVm();
+
+        public CosmosTabVm CosmosTabVm { get; set; } = new CosmosTabVm();
         public DFTabVm DFTabVm { get; set; } = new DFTabVm();
         public VmTabVm VmTabVm { get; set; } = new VmTabVm();
         public ResourcesTabVm ResourcesTabVm { get; set; } = new ResourcesTabVm();
@@ -381,6 +383,11 @@ namespace Azure.Costs.Ui.Wpf
         public async Task RefreshPurview()
         {
             await PurviewTabVm.RefreshPurview(SelectedSubscriptions);
+        }
+
+        public async Task RefreshCosmos()
+        {
+            await CosmosTabVm.RefreshCosmos(SelectedSubscriptions);
         }
 
         public async Task RefreshDataFactories()

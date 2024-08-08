@@ -11,6 +11,7 @@
 	<StartupObject>DataEstateOverview.App</StartupObject>
 	<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
 	<AssemblyName>AzureDataCosts</AssemblyName>
+	<InterceptorsPreviewNamespaces>$(InterceptorsPreviewNamespaces);Microsoft.Extensions.Configuration.Binder.SourceGeneration</InterceptorsPreviewNamespaces>
   </PropertyGroup>
 
   <ItemGroup>
