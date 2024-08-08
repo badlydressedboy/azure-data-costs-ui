@@ -63,7 +63,10 @@ namespace Azure.Costs.Ui.Wpf.Vm
                         , async (sub, y) =>
                         {
                             await APIAccess.GetCosmosDBs(sub);
-                            //if (sub.Cosmoss.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Cosmos);
+                            if (sub.Cosmos.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts)
+                            {
+                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Cosmos);
+                            }
                         });
 
                 foreach (var sub in subsCopy)
@@ -71,7 +74,7 @@ namespace Azure.Costs.Ui.Wpf.Vm
                     if (!sub.ReadObjects) continue; // ignore this subscription
                     foreach (var purv in sub.Cosmos)
                     {
-                        //MapCostToCosmos(purv, sub.ResourceCosts);
+                        MapCostToCosmos(purv, sub.ResourceCosts);
 
                         foreach (var c in purv.Costs) totalCosmosCosts += c.Cost;
 
@@ -96,36 +99,37 @@ namespace Azure.Costs.Ui.Wpf.Vm
            // UpdateHttpAccessCountMessage();
         }
 
-        private static void MapCostToCosmos(Purview purv, List<ResourceCost> costs)
+        private static void MapCostToCosmos(Cosmos cosmos, List<ResourceCost> costs)
         {
             bool found = false;
-            purv.Costs.Clear();
-            purv.TotalCostBilling = 0;
+            cosmos.Costs.Clear();
+            cosmos.TotalCostBilling = 0;
 
             foreach (ResourceCost cost in costs)
             {
                 // either its a Cosmos acc object or it is something in the managed resource group (which doesnt have 'Cosmos/accounts' in its ResourceId)
-                if ((!cost.ResourceId.Contains(purv.properties.managedResourceGroupName))
-                    && (!cost.ResourceId.Contains(@"Cosmos/accounts/"))
-                    && (!cost.ServiceName.Contains("Cosmos")))
+                if (
+                    //(!cost.ResourceId.Contains(cosmos.properties))
+                    // (!cost.ResourceId.Contains(@"Cosmos/accounts/"))
+                     (!cost.ServiceName.Contains("Cosmos")))
                 {
                     //_logger.Error(cost.ResourceId);
                     continue;
                 }
 
-                string costPurvName = cost.ResourceId.Substring(cost.ResourceId.IndexOf("Cosmos/accounts/") + 17);
+                string costResourceName = cost.ResourceId.Substring(cost.ResourceId.IndexOf("databaseaccounts/") + 17);
 
-                if (costPurvName == purv.name || cost.ResourceId.Contains(purv.properties.managedResourceGroupName.ToLower()))
+                if (costResourceName == cosmos.name || cost.ResourceId.Contains(cosmos.resourceGroup.ToLower()))
                 {
-                    purv.TotalCostBilling += cost.Cost;
+                    cosmos.TotalCostBilling += cost.Cost;
 
-                    purv.Costs.Add(cost);
+                    cosmos.Costs.Add(cost);
                     found = true;
                 }
             }
             if (!found)
             {
-                _logger.Info($"why no cost for Cosmos {purv.name}?");
+                _logger.Info($"why no cost for Cosmos {cosmos.name}?");
             }
         }
 

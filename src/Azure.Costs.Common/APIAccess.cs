@@ -1127,6 +1127,7 @@ namespace Azure.Costs.Common
                 , Storage
                 , VNet
                 , VM
+                , Cosmos
         }
         public static async Task GetSubscriptionCosts(Subscription subscription, CostRequestType costType, bool forceRead = false)
         {
@@ -1191,6 +1192,9 @@ namespace Azure.Costs.Common
                     case CostRequestType.VM:
                         typeClause = @"""Virtual machines"", ""Virtual Network"", ""Bandwidth"",""Storage""";
                         break;
+                    case CostRequestType.Cosmos:
+                        typeClause = @"""Virtual machines"", ""Virtual Network"", ""Bandwidth"",""Storage""";
+                        break;
                 }
                 //" + typeClause + @"
 
@@ -1217,6 +1221,7 @@ namespace Azure.Costs.Common
                                             ,""Power BI Embedded""
                                             ,""Azure Synapse Analytics""
                                             ,""Synapse SQL Pool""
+                                            ,""Azure Cosmos DB""
                                         ]
                                     }
                                 }
