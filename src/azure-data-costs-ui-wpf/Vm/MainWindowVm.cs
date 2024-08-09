@@ -2,6 +2,7 @@
 using Azure.Costs.Common.Models.Rest;
 using Azure.Costs.Common.Models.SQL;
 using Azure.Costs.Ui.Wpf.Vm;
+using BusyIndicator;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DataEstateOverview;
 using System;
@@ -18,6 +19,7 @@ using System.Windows.Input;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 
+
 namespace Azure.Costs.Ui.Wpf
 {
     public class MainWindowVm : ObservableObject
@@ -26,6 +28,8 @@ namespace Azure.Costs.Ui.Wpf
         #region vars
 
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
+        public IndicatorType BusyIndicatorType { get; set; } = IndicatorType.Grid;
 
         public DBTabVm DBTabVm { get; set; } = new DBTabVm();
         public StorageTabVm StorageTabVm { get; set; } = new StorageTabVm();
