@@ -43,7 +43,7 @@ namespace Azure.Costs.Common
         public static int CostDays { get; set; } = 30;
         public static string DefaultDomain;
         public static string BasePortalUrl;
-
+        public static string TenantName;
         private static NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
 
 
@@ -111,6 +111,7 @@ namespace Azure.Costs.Common
                 RootTenant tenants = await tenantResponse?.Content?.ReadFromJsonAsync<RootTenant>();
                 if (tenants.value.Count > 0)
                 {
+                    TenantName = tenants.value[0].displayName;
                     DefaultDomain = tenants.value[0].defaultDomain;
                     BasePortalUrl = $@"https://portal.azure.com/#@{DefaultDomain}/resource/subscriptions/";
                 }

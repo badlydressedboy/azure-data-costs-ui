@@ -44,9 +44,10 @@ namespace Azure.Costs.Ui.Wpf
         public List<Subscription> SelectedSubscriptions { get; set; } = new List<Subscription>();
         public ObservableCollection<Subscription> DetectedSubscriptions { get; set; } = new ObservableCollection<Subscription>();                        
         
-                
-
+            
         public static string PortalUrl;
+
+        public static string TenantName { get; set; }
 
         public bool _readAllObjectsCheck { get; set; }
         public bool ReadAllObjectsCheck
@@ -257,6 +258,7 @@ namespace Azure.Costs.Ui.Wpf
 
             TestLoginErrorMessage = await APIAccess.TestLogin();
             PortalUrl = $@"https://portal.azure.com/#@{APIAccess.DefaultDomain}/resource/subscriptions/";
+            TenantName = APIAccess.TenantName;
 
             IsTestLoginBusy = false;
             IsRestQueryBusy = false;
@@ -265,7 +267,6 @@ namespace Azure.Costs.Ui.Wpf
 
             UpdateHttpAccessCountMessage();
 
-            var o = await ResourceGraphAccess.GetPublicIps(" ", "61cc37c3-c8fd-463f-868b-49306e58fba6");
         }
         public async Task GetSubscriptions()
         {

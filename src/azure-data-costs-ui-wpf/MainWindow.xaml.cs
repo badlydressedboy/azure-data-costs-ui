@@ -156,11 +156,17 @@ namespace Azure.Costs.Ui.Wpf
 
         private async void MetroWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // testing api access            
-            await vm.TestLogin();
+            await TestLogin();
             await vm.GetSubscriptions();
         }
-
+        private async Task TestLogin()
+        {
+            // testing api access            
+            await vm.TestLogin();
+            if (!string.IsNullOrEmpty(APIAccess.TenantName)) {
+                LoggedInOkMessageText.Text = "Logged in to tenant: " + APIAccess.TenantName;
+            }
+        }
         private async Task RefreshDBs()
         {
             try
@@ -317,7 +323,7 @@ namespace Azure.Costs.Ui.Wpf
 
         private async void TestLoginButton_Click(object sender, RoutedEventArgs e)
         {
-            await vm.TestLogin();
+            await TestLogin(); 
         }
 
         void IgnoreOnChecked(object sender, RoutedEventArgs e)
@@ -793,10 +799,7 @@ namespace Azure.Costs.Ui.Wpf
 
             if (vm.SelectedSubscriptions.Any(x => !x.HasEverGotSqlServers))
             {
-                // shouldnt need this BUT the db summary busyindicator wont fire on first activation
-                Cursor = Cursors.Wait;
                 await vm.DBTabVm.RefreshDatabases(vm.SelectedSubscriptions);
-                Cursor = Cursors.Arrow;
             }
         }
 
@@ -806,7 +809,6 @@ namespace Azure.Costs.Ui.Wpf
 
             if (vm.VmTabVm.VMList.Count == 0)
             {
-
                 await vm.RefreshVms();
             }
         }

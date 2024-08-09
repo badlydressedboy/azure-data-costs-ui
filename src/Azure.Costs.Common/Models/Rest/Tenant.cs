@@ -15,5 +15,6 @@ namespace Azure.Costs.Common.Models.Rest
     {
 
         public string defaultDomain { get; set; }
+        public string displayName { get; set; }
     }
 }

@@ -187,9 +187,9 @@
                             <Button Margin="2" VerticalAlignment="Center" Name="TestLoginButton" Click="TestLoginButton_Click">Login</Button>
                         </StackPanel>
 
-                        <TextBlock Margin="2" Padding="6" Grid.Row="2" Background="GhostWhite" Opacity=".8"
+                        <TextBlock Name="LoggedInOkMessageText" Margin="2" Padding="6" Grid.Row="2" Background="GhostWhite" Opacity=".8"
                     Visibility="{Binding TestLoginErrorMessage, Converter={converters:InverseStringNullOrEmptyToVisibilityConverter}}"
-                    >You are logged in OK</TextBlock>
+                    >You are logged in</TextBlock>
 
                         <StackPanel Grid.Row="2" Visibility="{Binding TestLoginErrorMessage, Converter={converters:StringNullOrEmptyToVisibilityConverter}}" >
                             <TextBlock Margin="2,2,2,0" 
