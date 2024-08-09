@@ -518,68 +518,7 @@ namespace Azure.Costs.Ui.Wpf
 
         private async void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            switch (MainTabControl.SelectedIndex)
-            {
-                case (0):
-                    // db summary
-                    break;
-                case (1):
-                    // db details
-                    // have any subscriptions never had sql servers queried?
-                    if (vm.SelectedSubscriptions.Any(x => !x.HasEverGotSqlServers))
-                    {
-                        // shouldnt need this BUT the db summary busyindicator wont fire on first activation
-                        Cursor = Cursors.Wait;
-                        await vm.DBTabVm.RefreshDatabases(vm.SelectedSubscriptions);
-                        Cursor = Cursors.Arrow;
-                    }
-                    break;
-                case (2):
-                    // adf
-                    if (vm.CosmosTabVm.CosmosList.Count == 0)
-                    {
-                        await vm.RefreshCosmos();
-                    }
-                    break;
-                    ;
-                case (3):
-                    // adf
-                    if (vm.DFTabVm.DataFactoryList.Count == 0)
-                    {
-                        await vm.RefreshDataFactories();
-                    }
-                    break;
-                    ;
-                case (4):
-                    // storage
-                    if (vm.StorageTabVm.StorageList.Count == 0)
-                    {
-                        await vm.RefreshStorage();
-                    }
-                    break;
-                case (5):
-                    // vnets
-                    if (vm.VNetTabVm.VNetList.Count == 0)
-                    {
-                        await vm.RefreshVNets();
-                    }
-                    break;
-                case (6):
-                    // vms
-                    if (vm.VmTabVm.VMList.Count == 0)
-                    {
-
-                        await vm.RefreshVms();
-                    }
-                    break;
-                case (7):
-                    // purview
-                    if (vm.PurviewTabVm.PurviewList.Count == 0)
-                    {
-                        await vm.RefreshPurview();
-                    }
-                    break;
-            }
+            // each tabs main grid's isvisibilitychanged event used instead
         }
 
         private async void DBAnalyseSpendButton_Click(object sender, RoutedEventArgs e)
@@ -827,7 +766,84 @@ namespace Azure.Costs.Ui.Wpf
         {
 
         }
+
+        private async void CosmosLayoutGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue == false) return;
+            
+            if (vm.CosmosTabVm.CosmosList.Count == 0)
+            {
+                await vm.RefreshCosmos();
+            }
+        }
+
+        private async void ADFLayoutGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue == false) return;
+
+            if (vm.DFTabVm.DataFactoryList.Count == 0)
+            {
+                await vm.RefreshDataFactories();
+            }
+        }
+
+        private async void AzureSqlLayoutGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue == false) return;
+
+            if (vm.SelectedSubscriptions.Any(x => !x.HasEverGotSqlServers))
+            {
+                // shouldnt need this BUT the db summary busyindicator wont fire on first activation
+                Cursor = Cursors.Wait;
+                await vm.DBTabVm.RefreshDatabases(vm.SelectedSubscriptions);
+                Cursor = Cursors.Arrow;
+            }
+        }
+
+        private async void VMLayoutGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue == false) return;
+
+            if (vm.VmTabVm.VMList.Count == 0)
+            {
+
+                await vm.RefreshVms();
+            }
+        }
+
+        private async void VNetLayoutGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue == false) return;
+
+            if (vm.VNetTabVm.VNetList.Count == 0)
+            {
+                await vm.RefreshVNets();
+            }
+        }
+
+        private async void PurviewLayoutGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue == false) return;
+
+            if (vm.PurviewTabVm.PurviewList.Count == 0)
+            {
+                await vm.RefreshPurview();
+            }
+        }
+
+        private async void StorageLayoutGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if ((bool)e.NewValue == false) return;
+
+            if (vm.StorageTabVm.StorageList.Count == 0)
+            {
+                await vm.RefreshStorage();
+            }
+        }
     }
+
+
+
     public class ignoresubscriptionnames
     {
         public List<string> FromPhone { get; set; }

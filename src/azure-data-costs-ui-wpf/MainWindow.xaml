@@ -277,7 +277,7 @@
             <mah:MetroTabItem Header="SQL Databases" Name="TabRest">
 
                 <busyIndicator:BusyMask TargetUpdated="BusyIndicatorSql_TargetUpdated" SourceUpdated="BusyIndicatorSql_SourceUpdated" x:Name="BusyIndicatorSql" IsBusy="{Binding DBTabVm.IsGetSqlServersBusy}" IndicatorType="Cogs"  BusyContent="Please wait..." >
-                    <Grid>
+                    <Grid Name="AzureSqlLayoutGrid" IsVisibleChanged="AzureSqlLayoutGrid_IsVisibleChanged" >
 
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -1243,9 +1243,9 @@
 
             <mah:MetroTabItem Header="Cosmos" Name="TabCosmos">
 
-                <busyIndicator:BusyMask IsBusy="{Binding IsCosmosQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                <busyIndicator:BusyMask IsBusy="{Binding CosmosTabVm.IsCosmosQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
-                    <Grid>
+                    <Grid Name="CosmosLayoutGrid" IsVisibleChanged="CosmosLayoutGrid_IsVisibleChanged">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="47*"/>
                             <ColumnDefinition Width="1153*"/>
@@ -1275,10 +1275,10 @@
                         <TextBlock Grid.Row="1" 
                                    Margin="2,2,2,2" Grid.ColumnSpan="2" 
                                    Style="{StaticResource WarningTextBlockStyle}"
-                                   Text="{Binding VMErrorMessage}" 
+                                   Text="{Binding CosmosTabVm.RestErrorMessage}" 
                                    MaxHeight="150" 
-                                   ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" 
-                                   Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" 
+                                   ToolTip="{Binding CosmosTabVm.RestErrorMessage}" ToolTipService.InitialShowDelay="0" 
+                                   Visibility="{Binding CosmosTabVm.IsRestErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}" 
                                    ></TextBlock>
 
                         <DataGrid Grid.Row="2" x:Name="CosmosDataGrid"
@@ -1496,9 +1496,9 @@ Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.Locati
 
             <mah:MetroTabItem Header="Data Factories" Name="TabDataFactories">
 
-                <busyIndicator:BusyMask IsBusy="{Binding IsADFQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                <busyIndicator:BusyMask IsBusy="{Binding DFTabVm.IsADFQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
-                    <Grid>
+                    <Grid Name="ADFLayoutGrid" IsVisibleChanged="ADFLayoutGrid_IsVisibleChanged" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="41*"/>
                             <ColumnDefinition Width="42*"/>
@@ -1741,9 +1741,9 @@ Text="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.Locatio
 
             <mah:MetroTabItem Header="Storage" Name="TabStorage" Height="39" VerticalAlignment="Bottom">
 
-                <busyIndicator:BusyMask IsBusy="{Binding IsStorageQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                <busyIndicator:BusyMask IsBusy="{Binding StorageTabVm.IsStorageQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
-                    <Grid>
+                    <Grid Name="StorageLayoutGrid" IsVisibleChanged="StorageLayoutGrid_IsVisibleChanged" >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -2042,9 +2042,9 @@ Text="{Binding ElementName=StorageDataGrid, Path=DataContext.StorageTabVm.TierFi
 
             <mah:MetroTabItem Header="VNets" Name="TabVNets">
 
-                <busyIndicator:BusyMask IsBusy="{Binding IsVNetQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                <busyIndicator:BusyMask IsBusy="{Binding VNetTabVm.IsVNetQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
-                    <Grid>
+                    <Grid Name="VNetLayoutGrid" IsVisibleChanged="VNetLayoutGrid_IsVisibleChanged">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
@@ -2288,7 +2288,7 @@ Text="{Binding ElementName=VNetDataGrid, Path=DataContext.VNetTabVm.LocationFilt
 
             <mah:MetroTabItem Header="VMs" Name="TabVMs">
 
-                <Grid>
+                <Grid Name="VMLayoutGrid" IsVisibleChanged="VMLayoutGrid_IsVisibleChanged" >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -2339,7 +2339,7 @@ Text="{Binding ElementName=VNetDataGrid, Path=DataContext.VNetTabVm.LocationFilt
                                ToolTip="{Binding VMErrorMessage}" ToolTipService.InitialShowDelay="0" 
                                Visibility="{Binding IsVMErrorMessageVisible, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"></TextBlock>
 
-                    <busyIndicator:BusyMask Grid.Row="3" Name="VmBusyMask" IsBusy="{Binding IsVMQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                    <busyIndicator:BusyMask Grid.Row="3" Name="VmBusyMask" IsBusy="{Binding VmTabVm.IsVMQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
                         <DataGrid x:Name="VMDataGrid"                              
                               ItemsSource="{Binding Source={StaticResource VMDataGridViewSource}}"                               
@@ -2634,9 +2634,9 @@ Text="{Binding ElementName=VMDataGrid, Path=DataContext.VmTabVm.LocationFilter.S
 
             <mah:MetroTabItem Header="Purview" Name="TabPurview">
 
-                <busyIndicator:BusyMask IsBusy="{Binding IsPurviewQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
+                <busyIndicator:BusyMask IsBusy="{Binding PurviewTabVm.IsPurviewQueryBusy, FallbackValue=False}" IndicatorType="Grid"  BusyContent="Please wait..." >
 
-                    <Grid>
+                    <Grid Name="PurviewLayoutGrid" IsVisibleChanged="PurviewLayoutGrid_IsVisibleChanged">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="47*"/>
                             <ColumnDefinition Width="1153*"/>
