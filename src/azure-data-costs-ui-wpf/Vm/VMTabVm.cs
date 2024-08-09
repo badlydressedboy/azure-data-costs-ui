@@ -114,9 +114,9 @@ namespace Azure.Costs.Ui.Wpf.Vm
                                 });
                             });
 
-                            if (sub.VMs.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts)
+                            if (sub.VMs.Count > 0)
                             {
-                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.VM);
+                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.VM, forceRead:true);
                             }
 
                             App.Current.Dispatcher.Invoke(() =>

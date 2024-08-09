@@ -63,7 +63,10 @@ namespace Azure.Costs.Ui.Wpf.Vm
                         , async (sub, y) =>
                         {
                             await APIAccess.GetPurviews(sub);
-                            if (sub.Purviews.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Purview);
+                            if (sub.Purviews.Count > 0)
+                            {
+                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Purview, forceRead:true);
+                            }
                         });
 
                 foreach (var sub in subsCopy)

@@ -63,9 +63,9 @@ namespace Azure.Costs.Ui.Wpf.Vm
                         , async (sub, y) =>
                         {
                             await APIAccess.GetCosmosDBs(sub);
-                            if (sub.Cosmos.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts)
+                            if (sub.Cosmos.Count > 0)
                             {
-                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Cosmos);
+                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Cosmos, forceRead: true);
                             }
                         });
 

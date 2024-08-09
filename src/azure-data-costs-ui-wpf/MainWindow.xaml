@@ -225,14 +225,14 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Subscription Name"  Binding="{Binding displayName}" ></DataGridTextColumn>
                                     <DataGridTextColumn Header="Id"  Binding="{Binding subscriptionId}" ></DataGridTextColumn>
-                                    <DataGridTextColumn Header="TenantId"  Binding="{Binding tenantId}" ></DataGridTextColumn>
+                                    <DataGridTextColumn Header="TenantId" Visibility="Collapsed" Binding="{Binding tenantId}" ></DataGridTextColumn>
 
-                                    <DataGridTemplateColumn Header="Read Objects">
+                                    <DataGridTemplateColumn Header="Select">
 
                                         <DataGridTemplateColumn.HeaderTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Margin="1,1,4,1">Read Objects</TextBlock>
+                                                    <TextBlock Margin="1,1,4,1">Select</TextBlock>
                                                     <CheckBox IsChecked="{Binding DataContext.ReadAllObjectsCheck, RelativeSource={RelativeSource AncestorType=DataGrid}}" ></CheckBox>
                                                 </StackPanel>
                                             </DataTemplate>
@@ -245,7 +245,7 @@
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
 
-                                    <DataGridTemplateColumn Header="Read Costs">
+                                    <DataGridTemplateColumn Visibility="Collapsed" Header="Read Costs">
 
                                         <DataGridTemplateColumn.HeaderTemplate>
                                             <DataTemplate>
@@ -1385,6 +1385,23 @@ Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.Subscr
 
                                         </DataTemplate>
                                     </DataGridTextColumn.HeaderTemplate>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Cost (Bill CCY)" Binding="{Binding TotalCostBilling, StringFormat={}{0:0.#0;(0);}}"  >
+                                    <DataGridTextColumn.CellStyle>
+                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}" >
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TotalCostBilling, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                    <Setter Property="Foreground" Value="OrangeRed" />
+                                                    <Setter Property="FontWeight" Value="Bold" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+
+                                            <Setter Property="Background" Value="LightGray"></Setter>
+                                            <Setter Property="FontSize" Value="13"></Setter>
+
+                                        </Style>
+                                    </DataGridTextColumn.CellStyle>
                                 </DataGridTextColumn>
 
                                 <DataGridTextColumn Header="EnabledApiTypes"  Binding="{Binding properties.EnabledApiTypes}"  CellStyle="{StaticResource DataGridParentCell}" />

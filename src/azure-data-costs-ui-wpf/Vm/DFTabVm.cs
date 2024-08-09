@@ -66,7 +66,10 @@ namespace Azure.Costs.Ui.Wpf.Vm
                         , async (sub, y) =>
                         {
                             await APIAccess.GetDataFactories(sub);
-                            if (sub.DataFactories.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.DataFactory);
+                            if (sub.DataFactories.Count > 0)
+                            {
+                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.DataFactory, forceRead:true);
+                            }
                         });
 
                 foreach (var sub in selectedSubscriptions)

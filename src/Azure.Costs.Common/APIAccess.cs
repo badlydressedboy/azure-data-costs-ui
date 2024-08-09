@@ -1131,6 +1131,9 @@ namespace Azure.Costs.Common
         }
         public static async Task GetSubscriptionCosts(Subscription subscription, CostRequestType costType, bool forceRead = false)
         {
+            // TOO MANY REQUESTS - error caused not by number of things you ask for
+            // but just number of requests, so we want to call each subscription once an hour for their requests
+            // for ALL service types. We DONT want to call for each type individually. Tried that.
 
             // Resource Explorer: https://portal.azure.com/#view/HubsExtension/ArgQueryBlade
 
@@ -1208,9 +1211,20 @@ namespace Azure.Costs.Common
                                         ""name"": ""serviceName""
                                         ,""operator"": ""In""
                                         ,""values"": [  
-                                         " 
-                                            + typeClause +  
-                                        @"
+                                         ""Azure Data Factory v2""
+,""SQL Database""
+,""SQL Server""
+,""Storage""
+,""Virtual machines""
+,""Bandwidth""
+,""Virtual Network""
+,""Advanced Threat Protection""
+,""Purview""
+,""Azure Purview""
+,""Power BI Embedded""
+,""Azure Synapse Analytics""
+,""Synapse SQL Pool""
+,""Azure Cosmos DB""
                                         ]
                                     }
                                 }
@@ -1492,7 +1506,7 @@ namespace Azure.Costs.Common
                 {
                     // can return zero costs but response.IsSuccessStatusCode == true
                     // weird but maybe something to do with too many requests as it happened after 30 mins of too many requests
-                    subscription.CostsErrorMessage = $"No costs found but REST request reports successful for {subscription.displayName}";
+                    subscription.CostsErrorMessage = $"No costs found for service: {costType.ToString()} but REST request reports successful for {subscription.displayName}";
                 }
                 _logger.Info($"Complete GetSubscriptionCosts() for {subscription.displayName}; {costsFount} costs found.");
             }
@@ -1501,6 +1515,7 @@ namespace Azure.Costs.Common
                 _logger.Error(ex);
                 subscription.CostsErrorMessage = ex.Message;
             }
+            subscription.LastCostGetDate = DateTime.Now;
             _logger.Info($"** GOT COSTS OK for {subscription.displayName}");
         }
         private static string GetHeaderValue(HttpResponseMessage response, string headerName)

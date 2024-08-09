@@ -84,9 +84,9 @@ namespace Azure.Costs.Ui.Wpf.Vm
                                 sub.StorageAccounts.ForEach(sa => StorageList.Add(sa));
                             });
 
-                            if (sub.StorageAccounts.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts)
+                            if (sub.StorageAccounts.Count > 0)
                             {
-                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Storage);
+                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.Storage, forceRead:true);
                             }
 
                             App.Current.Dispatcher.Invoke(() =>

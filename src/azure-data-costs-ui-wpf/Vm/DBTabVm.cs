@@ -168,7 +168,10 @@ namespace Azure.Costs.Ui.Wpf.Vm
                             });
                         });
 
-                        if (sub.SqlServers.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.SqlDatabase);
+                        if (sub.SqlServers.Count > 0)
+                        {
+                            await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.SqlDatabase, forceRead:true);
+                        }
 
                         // on ui thread
                         App.Current.Dispatcher.Invoke(() =>

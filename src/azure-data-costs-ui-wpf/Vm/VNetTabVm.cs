@@ -78,7 +78,10 @@ namespace Azure.Costs.Ui.Wpf.Vm
                                 sub.VNets.ForEach(vnet => { VNetList.Add(vnet); });
                             });
 
-                            if (sub.VNets.Count > 0 && sub.ResourceCosts.Count == 0 && sub.ReadCosts) await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.VNet);
+                            if (sub.VNets.Count > 0)
+                            {
+                                await APIAccess.GetSubscriptionCosts(sub, APIAccess.CostRequestType.VNet, forceRead: true);
+                            }
 
                             App.Current.Dispatcher.Invoke(() =>
                             {
