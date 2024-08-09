@@ -41,21 +41,27 @@ namespace Azure.Costs.Ui.Wpf.Vm
 
         public void AddSelectableItem(string potentialString)
         {
-            var existing = Items.FirstOrDefault(x => x.StringValue == potentialString);
-            if (existing == null)
+            lock (Items)
             {
-                Items.Add(new SelectableString() { StringValue = potentialString, IsSelected = true });
+                var existing = Items.FirstOrDefault(x => x.StringValue == potentialString);
+                if (existing == null)
+                {
+                    Items.Add(new SelectableString() { StringValue = potentialString, IsSelected = true });
+                }
             }
         }
 
         public bool IsValueSelected(string stringValue)
         {
-            if(Items.Count == 0) // no items, so nothing to filter on
+            lock (Items)
             {
-                return true;
+                if (Items.Count == 0) // no items, so nothing to filter on
+                {
+                    return true;
+                }
+                stringValue = stringValue.ToUpper();
+                return Items.Any(x => x.IsSelected == true && x.StringValue.ToUpper() == stringValue);
             }
-            stringValue = stringValue.ToUpper();    
-            return Items.Any(x => x.IsSelected == true && x.StringValue.ToUpper() == stringValue);
         }   
 
     }

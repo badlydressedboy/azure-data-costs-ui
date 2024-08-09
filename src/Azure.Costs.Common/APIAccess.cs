@@ -1193,7 +1193,7 @@ namespace Azure.Costs.Common
                         typeClause = @"""Virtual machines"", ""Virtual Network"", ""Bandwidth"",""Storage""";
                         break;
                     case CostRequestType.Cosmos:
-                        typeClause = @"""Virtual machines"", ""Virtual Network"", ""Bandwidth"",""Storage""";
+                        typeClause = @"""Azure Cosmos DB""";
                         break;
                 }
                 //" + typeClause + @"
@@ -1208,20 +1208,9 @@ namespace Azure.Costs.Common
                                         ""name"": ""serviceName""
                                         ,""operator"": ""In""
                                         ,""values"": [  
-                                            ""Azure Data Factory v2""
-                                            ,""SQL Database""
-                                            ,""SQL Server""
-                                            ,""Storage""
-                                            ,""Virtual machines""
-                                            ,""Bandwidth""
-                                            ,""Virtual Network""
-                                            ,""Advanced Threat Protection""
-                                            ,""Purview""
-                                            ,""Azure Purview""
-                                            ,""Power BI Embedded""
-                                            ,""Azure Synapse Analytics""
-                                            ,""Synapse SQL Pool""
-                                            ,""Azure Cosmos DB""
+                                         " 
+                                            + typeClause +  
+                                        @"
                                         ]
                                     }
                                 }

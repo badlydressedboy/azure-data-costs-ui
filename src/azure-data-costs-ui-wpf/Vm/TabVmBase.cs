@@ -62,11 +62,17 @@ namespace Azure.Costs.Ui.Wpf.Vm
         {
             foreach (var filter in _filterList)
             {
-                filter.Items.Clear();
+                lock (filter.Items)
+                {
+                    filter.Items.Clear();
+                }
             }
             lock (TagsFilter)
             {
-                TagsFilter.Items.Add(new SelectableString() { StringValue = "", IsSelected = true }); // need option for NO tags
+                lock (TagsFilter)
+                {
+                    TagsFilter.Items.Add(new SelectableString() { StringValue = "", IsSelected = true }); // need option for NO tags
+                }
             }
 
         }

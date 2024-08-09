@@ -534,8 +534,15 @@ namespace Azure.Costs.Ui.Wpf
                         Cursor = Cursors.Arrow;
                     }
                     break;
-
                 case (2):
+                    // adf
+                    if (vm.CosmosTabVm.CosmosList.Count == 0)
+                    {
+                        await vm.RefreshCosmos();
+                    }
+                    break;
+                    ;
+                case (3):
                     // adf
                     if (vm.DFTabVm.DataFactoryList.Count == 0)
                     {
@@ -543,21 +550,21 @@ namespace Azure.Costs.Ui.Wpf
                     }
                     break;
                     ;
-                case (3):
+                case (4):
                     // storage
                     if (vm.StorageTabVm.StorageList.Count == 0)
                     {
                         await vm.RefreshStorage();
                     }
                     break;
-                case (4):
+                case (5):
                     // vnets
                     if (vm.VNetTabVm.VNetList.Count == 0)
                     {
                         await vm.RefreshVNets();
                     }
                     break;
-                case (5):
+                case (6):
                     // vms
                     if (vm.VmTabVm.VMList.Count == 0)
                     {
@@ -565,7 +572,7 @@ namespace Azure.Costs.Ui.Wpf
                         await vm.RefreshVms();
                     }
                     break;
-                case (6):
+                case (7):
                     // purview
                     if (vm.PurviewTabVm.PurviewList.Count == 0)
                     {
@@ -813,7 +820,7 @@ namespace Azure.Costs.Ui.Wpf
 
         private void CosmosCollapseCostsButton_Click(object sender, RoutedEventArgs e)
         {
-
+            ExpandCollapseDataGrid(CosmosDataGrid);
         }
 
         private void CosmosDataGridViewSource_Filter(object sender, FilterEventArgs e)
