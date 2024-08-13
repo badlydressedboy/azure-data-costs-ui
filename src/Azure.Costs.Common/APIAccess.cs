@@ -1807,12 +1807,19 @@ namespace Azure.Costs.Common
                     // should be only 1 of these
                     purv.DataSources = await APIAccess.GetPurviewDataSources(purv.name);
 
-                    foreach (var ds in purv.DataSources)
-                    {
-                        ds.Scans = await APIAccess.GetPurviewDataSourceScans(ds.name);
-                        Debug.WriteLine("purv");
-                    }
-                        
+                    await Parallel.ForEachAsync(purv.DataSources
+                        , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                        , async (ds, y) =>
+                        {
+                            ds.Scans = await APIAccess.GetPurviewDataSourceScans(ds.name);
+                        });
+
+                    //foreach (var ds in purv.DataSources)
+                    //{
+                    //    ds.Scans = await APIAccess.GetPurviewDataSourceScans(ds.name);
+                    //    Debug.WriteLine("purv");
+                    //}
+
                 }
                 subscription.Purviews = root.value.ToList();
 

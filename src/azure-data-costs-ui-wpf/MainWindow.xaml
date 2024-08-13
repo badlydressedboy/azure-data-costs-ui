@@ -2904,19 +2904,20 @@ Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.Locati
                                                     <RowDefinition Height="*"/>
                                                 </Grid.RowDefinitions>
 
-                                                <DataGrid Grid.Row="0" ItemsSource="{Binding Path=DataSourceGridRows}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
+                                                <ScrollViewer>
+                                                <DataGrid Grid.Row="0" MaxHeight="500" VerticalScrollBarVisibility="Visible" ItemsSource="{Binding Path=DataSourceGridRows}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="DsName" Binding="{Binding Path=DsName}" IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="DsKind" Binding="{Binding Path=DsKind}" IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="DsEndPoint" Binding="{Binding Path=DsEndPoint}" IsReadOnly="True"/>
-
-                                                        <DataGridTextColumn Header="DsResourceName" Binding="{Binding Path=DsResourceName}" IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="ScanName" Binding="{Binding Path=ScanName}" IsReadOnly="True"/>
-                                                        <!--<DataGridTextColumn Header="ScanEndpoint" Binding="{Binding Path=ScanEndpoint}" IsReadOnly="True"/>-->
-                                                        <DataGridTextColumn Header="ScanDatabaseName" Binding="{Binding Path=ScanDatabaseName}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn Header="Data Source" Binding="{Binding Path=DsName}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn Header="Kind" Binding="{Binding Path=DsKind}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn Header="ScanName" Binding="{Binding Path=ScanName}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn Header="End Point" Binding="{Binding Path=DsEndPoint}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn Header="Database" Binding="{Binding Path=ScanDatabaseName}" IsReadOnly="True"/>
+                                                        
+                                                            <!--<DataGridTextColumn Header="DsResourceName" Binding="{Binding Path=DsResourceName}" IsReadOnly="True"/>-->
+                                                            <!--<DataGridTextColumn Header="ScanEndpoint" Binding="{Binding Path=ScanEndpoint}" IsReadOnly="True"/>-->                                                            
                                                     </DataGrid.Columns>
                                                 </DataGrid>
-
+                                                </ScrollViewer>
                                             </Grid>
 
                                         </mah:MetroTabItem>
