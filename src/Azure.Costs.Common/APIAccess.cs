@@ -30,6 +30,7 @@ using Azure;
 using Azure.Costs.Common.Models.SQL;
 using Polly;
 using NLog;
+using System.Data.Common;
 
 namespace Azure.Costs.Common
 {
@@ -37,6 +38,9 @@ namespace Azure.Costs.Common
     {
         public static MyHttpClient HttpClient;
         private static string _accessToken;
+
+        public static MyHttpClient PurviewHttpClient;
+        private static string _purviewAccessToken;
 
         public static string AccessMethod = "AzureCli";
 
@@ -123,6 +127,33 @@ namespace Azure.Costs.Common
             return null;
         }
 
+        private static async Task<HttpResponseMessage> GetPurviewHttpClientAsync(string url, bool forceNewClient = false)
+        {
+            try
+            {
+                if (PurviewHttpClient == null || forceNewClient)
+                {
+                    AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider($"RunAs=Developer;DeveloperTool={APIAccess.AccessMethod}");
+                    _purviewAccessToken = await azureServiceTokenProvider.GetAccessTokenAsync("https://purview.azure.net/");
+                    PurviewHttpClient = new MyHttpClient("https://purview.azure.net/", 15, _purviewAccessToken);
+                }
+                HttpResponseMessage r = await PurviewHttpClient.GetAsync(url);
+                return r;
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    _logger.Error(ex.InnerException);
+                }
+                else
+                {
+                    _logger.Error(ex);
+                }
+
+            }
+            return null;
+        }
         public static async Task<List<Subscription>> GetSubscriptions()
         {
             _logger.Info("Getting subscriptions...");
@@ -1772,6 +1803,10 @@ namespace Azure.Costs.Common
 
                     purv.PortalResourceUrl = $@"{BasePortalUrl}{purv.Subscription.subscriptionId}/resourceGroups/{purv.resourceGroup}/providers/Microsoft.Purview/accounts/{purv.name}/overview";
 
+                    // should be only 1 of these
+                    purv.DataSources = await APIAccess.GetPurviewDataSources();
+
+                    Debug.WriteLine("purv");
                 }
                 subscription.Purviews = root.value.ToList();
 
@@ -1781,6 +1816,87 @@ namespace Azure.Costs.Common
             {
                 _logger.Error(ex);
             }
+        }
+
+        public static async Task<List<PvDataSource>> GetPurviewDataSources()
+        {
+            Debug.WriteLine("Getting GetPurviewDataSources...");
+
+            try
+            {
+                HttpResponseMessage response = await GetPurviewHttpClientAsync("https://oct-purview.purview.azure.com/scan/datasources?api-version=2023-09-01");
+                if (response == null)
+                {
+                    return null;
+                }
+                var json = await response.Content.ReadAsStringAsync();
+                RootPvDataSource dataSources = await response?.Content?.ReadFromJsonAsync<RootPvDataSource>();
+
+                Debug.WriteLine("Got ds OK.");
+
+                return dataSources.value;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            return null;
+        }
+
+        public static async Task<List<PvScan>> GetPurviewDataSourceScans(string dataSourceName)
+        {
+
+            // scans
+            // GET {endpoint}/scan/datasources/{dataSourceName}/scans?api-version=2023-09-01
+            Debug.WriteLine("GetPurviewDataSourceScans...");
+
+            try
+            {
+                HttpResponseMessage response = await GetPurviewHttpClientAsync($"https://oct-purview.purview.azure.com/scan/datasources/{dataSourceName}/scans?api-version=2023-09-01");
+                if (response == null)
+                {
+                    return null;
+                }
+                var json = await response.Content.ReadAsStringAsync();
+                RootPvScan scans = await response?.Content?.ReadFromJsonAsync<RootPvScan>();
+
+                Debug.WriteLine("Got scans OK.");
+
+                return scans.value;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            return null;
+        }
+
+        public static async Task<PvTrigger> GetPurviewScanTrigger(string dataSourceName, string scanName)
+        {
+            // triggers
+            // GET {endpoint}/scan/datasources/{dataSourceName}/scans/{scanName}/triggers/default?api-version=2023-09-01
+
+            Debug.WriteLine("GetPurviewScanTrigger...");
+
+            try
+            {
+                HttpResponseMessage response = await GetPurviewHttpClientAsync($"https://oct-purview.purview.azure.com/scan/datasources/{dataSourceName}/scans/{scanName}/triggers/default?api-version=2023-09-01");
+                if (response == null)
+                {
+                    return null;
+                }
+                var json = await response.Content.ReadAsStringAsync();
+                PvTrigger trigger = await response?.Content?.ReadFromJsonAsync<PvTrigger>();
+
+                Debug.WriteLine("Got trigger OK.");
+
+                return trigger;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+            return null;
         }
 
         public static async Task GetCosmosDBs(Subscription subscription)

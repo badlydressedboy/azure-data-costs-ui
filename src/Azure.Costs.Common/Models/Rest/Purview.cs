@@ -43,6 +43,8 @@ namespace Azure.Costs.Common.Models.Rest
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+
+        public List<PvDataSource> DataSources { get; set; }
     }
 
     public class PurviewProperties

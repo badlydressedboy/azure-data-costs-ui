@@ -2919,7 +2919,7 @@ Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.Locati
 
             <StatusBarItem>
 
-                <TextBlock Margin="2" Text="{Binding SelectSubscriptionsCountMessage}"></TextBlock>
+                <TextBlock Foreground="DarkBlue" Cursor="Hand" MouseLeftButtonUp="StatusSelectionText_MouseLeftButtonUp" Margin="2" Text="{Binding SelectSubscriptionsCountMessage}"></TextBlock>
             </StatusBarItem>
 
         </StatusBar>

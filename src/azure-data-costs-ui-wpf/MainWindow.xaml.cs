@@ -459,7 +459,7 @@ namespace Azure.Costs.Ui.Wpf
 
         private void PurviewCollapseCostsButton_Click(object sender, RoutedEventArgs e)
         {
-
+            ExpandCollapseDataGrid(PurviewDataGrid);
         }
 
         private void PurviewDataGridViewSource_Filter(object sender, FilterEventArgs e)
@@ -841,6 +841,11 @@ namespace Azure.Costs.Ui.Wpf
             {
                 await vm.RefreshStorage();
             }
+        }
+
+        private void StatusSelectionText_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            MainTabControl.SelectedIndex = 0;
         }
     }
 
