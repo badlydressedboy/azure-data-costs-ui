@@ -847,6 +847,11 @@ namespace Azure.Costs.Ui.Wpf
         {
             MainTabControl.SelectedIndex = 0;
         }
+
+        private void PurviewTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 
 

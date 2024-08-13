@@ -2844,51 +2844,85 @@ Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.Locati
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
 
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
+                                    <mah:MetroAnimatedSingleRowTabControl Name="PurviewTabControl" SelectionChanged="PurviewTabControl_SelectionChanged" >
 
-                                        <StackPanel Orientation="Horizontal">
+                                        <mah:MetroTabItem Header="Costs" Name="TabPurviewCosts">
 
-                                            <Button x:Name="ViewPortalDbButton" Margin="8,4,2,4" Click="ViewPortalDbButton_Click" >
-                                                <StackPanel Orientation="Horizontal" >
-                                                    <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
-                                                    <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
+                                            <Grid Name="PurviewCostsGrid">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+
+                                                <StackPanel Orientation="Horizontal">
+
+                                                    <Button x:Name="ViewPortalDbButton" Margin="8,4,2,4" Click="ViewPortalDbButton_Click" >
+                                                        <StackPanel Orientation="Horizontal" >
+                                                            <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                            <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
+                                                        </StackPanel>
+                                                    </Button>
+
                                                 </StackPanel>
-                                            </Button>
-
-                                        </StackPanel>
 
 
 
-                                        <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
+                                                <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="Service" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
 
 
-                                                <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
-                                                    <DataGridTextColumn.CellStyle>
-                                                        <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                                    <Setter Property="Foreground" Value="OrangeRed" />
-                                                                    <Setter Property="FontWeight" Value="Bold" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </DataGridTextColumn.CellStyle>
-                                                </DataGridTextColumn>
+                                                        <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
+                                                            <DataGridTextColumn.CellStyle>
+                                                                <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                                            <Setter Property="Foreground" Value="OrangeRed" />
+                                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </DataGridTextColumn.CellStyle>
+                                                        </DataGridTextColumn>
 
-                                                <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
-                                                <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
-                                            </DataGrid.Columns>
-                                        </DataGrid>
+                                                        <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
 
-                                    </Grid>
+                                            </Grid>
+
+                                        </mah:MetroTabItem>
+
+                                        <mah:MetroTabItem Header="Data Sources" Name="TabPurviewDataSources">
+
+                                            <Grid Name="PurviewDataSourcesGrid">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+
+                                                <DataGrid Grid.Row="0" ItemsSource="{Binding Path=DataSourceGridRows}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="DsName" Binding="{Binding Path=DsName}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="DsKind" Binding="{Binding Path=DsKind}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="DsEndPoint" Binding="{Binding Path=DsEndPoint}" IsReadOnly="True"/>
+
+                                                        <DataGridTextColumn Header="DsResourceName" Binding="{Binding Path=DsResourceName}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="ScanName" Binding="{Binding Path=ScanName}" IsReadOnly="True"/>
+                                                        <!--<DataGridTextColumn Header="ScanEndpoint" Binding="{Binding Path=ScanEndpoint}" IsReadOnly="True"/>-->
+                                                        <DataGridTextColumn Header="ScanDatabaseName" Binding="{Binding Path=ScanDatabaseName}" IsReadOnly="True"/>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+
+                                            </Grid>
+
+                                        </mah:MetroTabItem>
+
+
+                                    </mah:MetroAnimatedSingleRowTabControl>
 
                                 </DataTemplate>
                             </DataGrid.RowDetailsTemplate>

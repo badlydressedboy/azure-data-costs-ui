@@ -83,6 +83,24 @@ namespace Azure.Costs.Ui.Wpf.Vm
                         ResourceGroupFilter.AddSelectableItem(purv.resourceGroup);
                         SubscriptionFilter.AddSelectableItem(purv.Subscription.displayName);
                         LocationFilter.AddSelectableItem(purv.location);
+
+                        // make a grid friendly list of datasources and scans
+                        foreach(var ds in purv.DataSources)
+                        {
+                            foreach(var scan in ds.Scans)
+                            {
+                                purv.DataSourceGridRows.Add(new PurviewDataSourceRow()
+                                {
+                                    DsName = ds.name,
+                                    DsKind = ds.kind,
+                                    DsEndPoint = ds.properties.serverEndpoint,
+                                    DsResourceName = ds.properties.resourceName,
+                                    ScanName = scan.name,
+                                    ScanEndpoint = scan.Properties.serverEndpoint,
+                                    ScanDatabaseName = scan.Properties.databaseName
+                                });
+                            }
+                        }
                     }
 
                     // only add to grid after all filters have been added

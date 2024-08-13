@@ -31,6 +31,7 @@ using Azure.Costs.Common.Models.SQL;
 using Polly;
 using NLog;
 using System.Data.Common;
+using System.Collections;
 
 namespace Azure.Costs.Common
 {
@@ -1804,9 +1805,14 @@ namespace Azure.Costs.Common
                     purv.PortalResourceUrl = $@"{BasePortalUrl}{purv.Subscription.subscriptionId}/resourceGroups/{purv.resourceGroup}/providers/Microsoft.Purview/accounts/{purv.name}/overview";
 
                     // should be only 1 of these
-                    purv.DataSources = await APIAccess.GetPurviewDataSources();
+                    purv.DataSources = await APIAccess.GetPurviewDataSources(purv.name);
 
-                    Debug.WriteLine("purv");
+                    foreach (var ds in purv.DataSources)
+                    {
+                        ds.Scans = await APIAccess.GetPurviewDataSourceScans(ds.name);
+                        Debug.WriteLine("purv");
+                    }
+                        
                 }
                 subscription.Purviews = root.value.ToList();
 
@@ -1818,13 +1824,13 @@ namespace Azure.Costs.Common
             }
         }
 
-        public static async Task<List<PvDataSource>> GetPurviewDataSources()
+        public static async Task<List<PvDataSource>> GetPurviewDataSources(string purvInstanceName)
         {
             Debug.WriteLine("Getting GetPurviewDataSources...");
 
             try
             {
-                HttpResponseMessage response = await GetPurviewHttpClientAsync("https://oct-purview.purview.azure.com/scan/datasources?api-version=2023-09-01");
+                HttpResponseMessage response = await GetPurviewHttpClientAsync($"https://{purvInstanceName}.purview.azure.com/scan/datasources?api-version=2023-09-01");
                 if (response == null)
                 {
                     return null;

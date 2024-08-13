@@ -15,6 +15,7 @@ namespace Azure.Costs.Common.Models.Rest
         public string name { get; set; }
         public string kind { get; set; }
         public PvDataSourceProperties properties { get; set; }
+        public List<PvScan> Scans { get; set; }
 
     }
 

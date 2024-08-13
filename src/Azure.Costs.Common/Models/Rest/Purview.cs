@@ -44,9 +44,20 @@ namespace Azure.Costs.Common.Models.Rest
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        public List<PvDataSource> DataSources { get; set; }
-    }
+        public List<PvDataSource> DataSources { get; set; } = new List<PvDataSource> { };
 
+        public List<PurviewDataSourceRow> DataSourceGridRows { get; set; } = new List<PurviewDataSourceRow> { };    
+    }
+    public class PurviewDataSourceRow
+    {
+        public string DsName { get; set; }
+        public string DsKind { get; set; }
+        public string DsEndPoint { get; set; }
+        public string DsResourceName { get; set; }
+        public string ScanName { get; set; }
+        public string ScanEndpoint { get; set; }
+        public string ScanDatabaseName { get; set; }
+    }
     public class PurviewProperties
     {
         public string friendlyName { get; set; }
