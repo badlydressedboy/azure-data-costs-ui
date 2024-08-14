@@ -38,11 +38,27 @@ namespace Azure.Costs.Common.Models.Rest
         public List<ResourceCost> Costs { get; set; } = new List<ResourceCost>();
 
         public CosmosSku sku { get; set; }
+        
+        protected string _isScannedByPurview;
+        public string IsScannedByPurview
+        {
+            get { return _isScannedByPurview; }
+            set
+            {
+                _isScannedByPurview = value;
+                OnPropertyChanged("IsScannedByPurview");
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        public Cosmos()
+        {
+            IsScannedByPurview = "N/A";
         }
     }
 
@@ -67,6 +83,8 @@ namespace Azure.Costs.Common.Models.Rest
         public List<CosmosLocation> readLocations { get; set; }
         public List<CosmosLocation> locations { get; set; }
         public List<CosmosFailoverPolicy> failoverPolicies { get; set; }
+        public string sqlEndpoint { get; set; }
+        
         //public Dictionary<string, string> capabilities { get; set; }
     }
     public class CosmosSku

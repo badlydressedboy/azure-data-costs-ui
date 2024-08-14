@@ -1811,14 +1811,8 @@ namespace Azure.Costs.Common
                         , new ParallelOptions() { MaxDegreeOfParallelism = 20 }
                         , async (ds, y) =>
                         {
-                            ds.Scans = await APIAccess.GetPurviewDataSourceScans(ds.name);
+                            ds.Scans = await APIAccess.GetPurviewDataSourceScans(ds.name, purv.name);
                         });
-
-                    //foreach (var ds in purv.DataSources)
-                    //{
-                    //    ds.Scans = await APIAccess.GetPurviewDataSourceScans(ds.name);
-                    //    Debug.WriteLine("purv");
-                    //}
 
                 }
                 subscription.Purviews = root.value.ToList();
@@ -1856,7 +1850,7 @@ namespace Azure.Costs.Common
             return null;
         }
 
-        public static async Task<List<PvScan>> GetPurviewDataSourceScans(string dataSourceName)
+        public static async Task<List<PvScan>> GetPurviewDataSourceScans(string dataSourceName, string purvInstanceName)
         {
 
             // scans
@@ -1865,7 +1859,7 @@ namespace Azure.Costs.Common
 
             try
             {
-                HttpResponseMessage response = await GetPurviewHttpClientAsync($"https://oct-purview.purview.azure.com/scan/datasources/{dataSourceName}/scans?api-version=2023-09-01");
+                HttpResponseMessage response = await GetPurviewHttpClientAsync($"https://{purvInstanceName}.purview.azure.com/scan/datasources/{dataSourceName}/scans?api-version=2023-09-01");
                 if (response == null)
                 {
                     return null;
@@ -1884,7 +1878,7 @@ namespace Azure.Costs.Common
             return null;
         }
 
-        public static async Task<PvTrigger> GetPurviewScanTrigger(string dataSourceName, string scanName)
+        public static async Task<PvTrigger> GetPurviewScanTrigger(string dataSourceName, string scanName, string purvInstanceName)
         {
             // triggers
             // GET {endpoint}/scan/datasources/{dataSourceName}/scans/{scanName}/triggers/default?api-version=2023-09-01
@@ -1893,7 +1887,7 @@ namespace Azure.Costs.Common
 
             try
             {
-                HttpResponseMessage response = await GetPurviewHttpClientAsync($"https://oct-purview.purview.azure.com/scan/datasources/{dataSourceName}/scans/{scanName}/triggers/default?api-version=2023-09-01");
+                HttpResponseMessage response = await GetPurviewHttpClientAsync($"https://{purvInstanceName}.purview.azure.com/scan/datasources/{dataSourceName}/scans/{scanName}/triggers/default?api-version=2023-09-01");
                 if (response == null)
                 {
                     return null;

@@ -345,19 +345,36 @@ namespace Azure.Costs.Ui.Wpf
             {
                 db.IsScannedByPurview = "No";
             }
+            foreach (var db in CosmosTabVm.CosmosList)
+            {
+                db.IsScannedByPurview = "No";
+            }
 
             foreach (var purv in PurviewTabVm.PurviewList)
             {
                 // first should be only one
                 foreach(var source in purv.DataSourceGridRows)
                 {
+                    if (source.DsEndPoint == null) continue;
+
                     // have server and database name, go through and update 
                     foreach (var db in DBTabVm.RestSqlDbList)
                     {
-                        if ((source.DsEndPoint != null) && source.DsEndPoint.Contains(db.serverName)  && db.name == source.ScanDatabaseName)
+                        if (source.DsEndPoint.Contains(db.serverName)  && db.name == source.ScanDatabaseName)
                         {
                             db.IsScannedByPurview = "Yes";
                         }
+                    }
+                    foreach (var db in CosmosTabVm.CosmosList)
+                    {
+                        if (source.DsEndPoint.Contains(db.name))//&& db.name == source.ScanDatabaseName)
+                        {
+                            db.IsScannedByPurview = "Yes";
+                        }
+                    }
+                    if (source.DsEndPoint.Contains("cos"))
+                    {
+                        Debug.WriteLine("dd");
                     }
                 }
             }
@@ -423,6 +440,7 @@ namespace Azure.Costs.Ui.Wpf
         public async Task RefreshCosmos()
         {
             await CosmosTabVm.RefreshCosmos(SelectedSubscriptions);
+            UpdateDbsScannedByPurview();
         }
 
         public async Task RefreshDataFactories()

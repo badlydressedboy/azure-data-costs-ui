@@ -728,7 +728,7 @@
 
                                 <DataGridTextColumn Header="UserHasSelectPermission"  Binding="{Binding AzDB.UserHasSelectPermission}"  local:DataGridExtensions.SortDesc="True" />
 
-                                <DataGridTextColumn Header="IsScannedByPurview"  Binding="{Binding IsScannedByPurview}"  local:DataGridExtensions.SortDesc="True" />
+                                <DataGridTextColumn Header="Scanned By Purview"  Binding="{Binding IsScannedByPurview}"  local:DataGridExtensions.SortDesc="True" />
 
                                 
 
@@ -1454,6 +1454,9 @@ Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.Locati
                                 <DataGridTextColumn Header="Burst Capacity"  Binding="{Binding properties.enableBurstCapacity}"  CellStyle="{StaticResource DataGridParentCell}" />
 
                                 <DataGridTextColumn Header="Default Identity"  Binding="{Binding properties.defaultIdentity}"  CellStyle="{StaticResource DataGridParentCell}" />
+
+                                <DataGridTextColumn Header="Scanned By Purview"  Binding="{Binding IsScannedByPurview}"  local:DataGridExtensions.SortDesc="True" />
+
 
                             </DataGrid.Columns>
 
