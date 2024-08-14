@@ -1808,7 +1808,7 @@ namespace Azure.Costs.Common
                     purv.DataSources = await APIAccess.GetPurviewDataSources(purv.name);
 
                     await Parallel.ForEachAsync(purv.DataSources
-                        , new ParallelOptions() { MaxDegreeOfParallelism = 10 }
+                        , new ParallelOptions() { MaxDegreeOfParallelism = 20 }
                         , async (ds, y) =>
                         {
                             ds.Scans = await APIAccess.GetPurviewDataSourceScans(ds.name);

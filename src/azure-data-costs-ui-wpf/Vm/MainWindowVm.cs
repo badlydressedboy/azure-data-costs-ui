@@ -336,9 +336,38 @@ namespace Azure.Costs.Ui.Wpf
 
         // db/sql server data plus costs
         
+        public void UpdateDbsScannedByPurview()
+        {
+            if (PurviewTabVm.PurviewList.Count == 0) return;
 
-       
-     
+            // defo have a purview so can safely say dbs are not scanned by something that realy does exist
+            foreach (var db in DBTabVm.RestSqlDbList)
+            {
+                db.IsScannedByPurview = "No";
+            }
+
+            foreach (var purv in PurviewTabVm.PurviewList)
+            {
+                // first should be only one
+                foreach(var source in purv.DataSourceGridRows)
+                {
+                    // have server and database name, go through and update 
+                    foreach (var db in DBTabVm.RestSqlDbList)
+                    {
+                        if ((source.DsEndPoint != null) && source.DsEndPoint.Contains(db.serverName)  && db.name == source.ScanDatabaseName)
+                        {
+                            db.IsScannedByPurview = "Yes";
+                        }
+                    }
+                }
+            }
+        }
+        public async Task RefreshDatabases()
+        {
+            await DBTabVm.RefreshDatabases(SelectedSubscriptions);
+            UpdateDbsScannedByPurview();
+        }
+
         public async Task RefreshSqlDb()
         {
             if(SelectedAzDB == null) return;
@@ -388,6 +417,7 @@ namespace Azure.Costs.Ui.Wpf
         public async Task RefreshPurview()
         {
             await PurviewTabVm.RefreshPurview(SelectedSubscriptions);
+            UpdateDbsScannedByPurview();
         }
 
         public async Task RefreshCosmos()

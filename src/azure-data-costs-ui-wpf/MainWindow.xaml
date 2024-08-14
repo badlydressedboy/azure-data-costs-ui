@@ -695,8 +695,6 @@
                                 </DataGridTextColumn>
                                 <DataGridTextColumn Header="Vuln Scan Error" Width="90" Foreground="OrangeRed"  Binding="{Binding VulnerabilityScanError}" ></DataGridTextColumn>
 
-
-
                                 <DataGridTextColumn Header="Advisor Recommendations" Binding="{Binding AdvisorRecommendationCount, StringFormat=N0}" >
 
                                     <DataGridTextColumn.CellStyle>
@@ -730,8 +728,10 @@
 
                                 <DataGridTextColumn Header="UserHasSelectPermission"  Binding="{Binding AzDB.UserHasSelectPermission}"  local:DataGridExtensions.SortDesc="True" />
 
+                                <DataGridTextColumn Header="IsScannedByPurview"  Binding="{Binding IsScannedByPurview}"  local:DataGridExtensions.SortDesc="True" />
 
                                 
+
                                 <!--<DataGridTextColumn Header="Storage"  Binding="{Binding storage}" CellStyle="{StaticResource NumericGridCellStyle}"  />
                             <DataGridTextColumn Header="DTU Limit"  Binding="{Binding dtu_limit}" CellStyle="{StaticResource NumericGridCellStyle}"  />
                             <DataGridTextColumn Header="DTU Used"  Binding="{Binding dtu_used}" CellStyle="{StaticResource NumericGridCellStyle}"  />-->

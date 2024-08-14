@@ -334,9 +334,18 @@ namespace Azure.Costs.Common.Models.Rest
                 OnPropertyChanged("SpendAnalysisStatus");
             }
         }
+        protected string _isScannedByPurview;
 
+        public string IsScannedByPurview
+        {
+            get { return _isScannedByPurview; }
+            set
+            {
+                _isScannedByPurview = value;
+                OnPropertyChanged("IsScannedByPurview");
+            }
+        } 
         //protected bool _spendAnalysisStatus;
-
         public bool HasAdvisorRecommendations
         {
             get {
@@ -344,8 +353,6 @@ namespace Azure.Costs.Common.Models.Rest
                 return false; 
             }            
         }
-
-
         public bool IsElaticPoolMember
         {
             get { 
@@ -357,7 +364,6 @@ namespace Azure.Costs.Common.Models.Rest
             }
           
         }
-
         public bool IsSynapse
         {
             get
@@ -369,7 +375,6 @@ namespace Azure.Costs.Common.Models.Rest
                 return false;
             }
         }
-
         public bool IsVCore
         {
             get
@@ -381,7 +386,6 @@ namespace Azure.Costs.Common.Models.Rest
                 return false;
             }
         }
-
         public string MetricsHistoryTimeString { 
             get
             {
@@ -389,6 +393,7 @@ namespace Azure.Costs.Common.Models.Rest
                 return string.Format($"{ts.Days}days {ts.Hours}hrs {ts.Minutes}mins");
             }
         }
+
 
         public ObservableCollection<MetricTimeSeriesData> PerformanceMetricSeries { get; set; } = new ObservableCollection<MetricTimeSeriesData>(); 
 
@@ -402,6 +407,7 @@ namespace Azure.Costs.Common.Models.Rest
         {
             OverSpendFromMaxPcString = "?";
             PotentialSavingAmountString = "?";
+            IsScannedByPurview = "N/A";
         }
 
         public void CalcPotentialSaving()

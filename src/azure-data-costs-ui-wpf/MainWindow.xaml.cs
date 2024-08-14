@@ -171,7 +171,7 @@ namespace Azure.Costs.Ui.Wpf
         {
             try
             {
-                await vm.DBTabVm.RefreshDatabases(vm.SelectedSubscriptions);
+                await vm.RefreshDatabases();
             }
             catch (Exception ex)
             {
@@ -799,7 +799,7 @@ namespace Azure.Costs.Ui.Wpf
 
             if (vm.SelectedSubscriptions.Any(x => !x.HasEverGotSqlServers))
             {
-                await vm.DBTabVm.RefreshDatabases(vm.SelectedSubscriptions);
+                await vm.RefreshDatabases();
             }
         }
 
