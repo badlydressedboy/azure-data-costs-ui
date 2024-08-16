@@ -415,8 +415,8 @@
                                   ClipboardCopyMode="IncludeHeader"   
                                   SelectionChanged="RestDbDataGrid_SelectionChanged"
                                   LoadingRowDetails="RestDbDataGrid_LoadingRowDetails"
-                                    local:DataGridExtensions.SortDesc="True"
-                                  
+                                  local:DataGridExtensions.SortDesc="True"
+                                  ScrollViewer.CanContentScroll="False"
                             >
 
 
@@ -762,8 +762,6 @@
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
 
-                                    
-                                    
                                     <mah:MetroAnimatedSingleRowTabControl Name="DBTabControl" SelectionChanged="DBTabControl_SelectionChanged" Margin="0,0,0,30" >
 
                                         <mah:MetroTabItem Header="Useage" Name="TabDbUseage">
@@ -1332,6 +1330,7 @@
                               RowDetailsVisibilityMode="Collapsed"
                                   IsReadOnly="True" Grid.ColumnSpan="2"
                                 local:DataGridExtensions.SortDesc="True"
+                                  ScrollViewer.CanContentScroll="False"
                     >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
@@ -1600,6 +1599,7 @@ Text="{Binding ElementName=PurviewDataGrid, Path=DataContext.PurviewTabVm.Locati
                               RowDetailsVisibilityMode="Collapsed"
                                  local:DataGridExtensions.SortDesc="True"
                                   IsReadOnly="True" Grid.ColumnSpan="3"
+                                  ScrollViewer.CanContentScroll="False"
                     >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
@@ -1839,6 +1839,7 @@ Text="{Binding ElementName=DataFactoryDataGrid, Path=DataContext.DFTabVm.Locatio
                               RowDetailsVisibilityMode="Collapsed"
                                   IsReadOnly="True"
                                 local:DataGridExtensions.SortDesc="True"
+                                  ScrollViewer.CanContentScroll="False"
                     >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
@@ -2146,6 +2147,7 @@ Text="{Binding ElementName=StorageDataGrid, Path=DataContext.StorageTabVm.TierFi
                               RowDetailsVisibilityMode="Collapsed"
                                local:DataGridExtensions.SortDesc="True"
                                   IsReadOnly="True"
+                                  ScrollViewer.CanContentScroll="False"
                                 
                     >
                             <DataGrid.RowStyle>
@@ -2406,6 +2408,7 @@ Text="{Binding ElementName=VNetDataGrid, Path=DataContext.VNetTabVm.LocationFilt
                                 KeyDown="VMDataGrid_KeyDown"                                
                                   LoadingRowDetails="VMDataGrid_LoadingRowDetails"
                                local:DataGridExtensions.SortDesc="True" 
+                                  ScrollViewer.CanContentScroll="False"
                     >
                             <DataGrid.RowStyle>
                                 <Style TargetType="{x:Type DataGridRow}">
@@ -2554,138 +2557,158 @@ Text="{Binding ElementName=VMDataGrid, Path=DataContext.VmTabVm.LocationFilter.S
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
 
-                                    <Grid >
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
+                                    <mah:MetroAnimatedSingleRowTabControl Name="VMTabControl" SelectionChanged="VMTabControl_SelectionChanged" Margin="0,0,0,30" >
 
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="*"/>
-                                            </Grid.RowDefinitions>
+                                        <mah:MetroTabItem Header="Useage" Name="TabVMUseage">
 
-                                            <Border BorderThickness="0,0,0,1" BorderBrush="Gray">
-                                                <StackPanel Orientation="Horizontal" Margin="2">
-                                                    <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">VM Usage</TextBlock>
+                                            <Grid Style="{StaticResource SubSectionGrid}">
 
-                                                </StackPanel>
-                                            </Border>
 
-                                            <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="1">
-                                                <TextBox Height="22" Width="30" VerticalContentAlignment="Center" Padding="0" VerticalAlignment="Center" Margin="10,2,2,2" 
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+
+                                                    <!--<Border BorderThickness="0,0,0,1" BorderBrush="Gray">
+                                                        <StackPanel Orientation="Horizontal" Margin="2">
+                                                            <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">VM Usage</TextBlock>
+
+                                                        </StackPanel>
+                                                    </Border>-->
+
+                                                    <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="1">
+                                                        <TextBox Height="22" Width="30" VerticalContentAlignment="Center" Padding="0" VerticalAlignment="Center" Margin="10,2,2,2" 
                                                          Text="{Binding MetricsHistoryDays, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                          MouseDoubleClick="NonGridExpandingTextBox_MouseDoubleClick"
                                                          PreviewMouseDoubleClick="NonGridExpandingTextBox_MouseDoubleClick"
                                                          ></TextBox>
-                                                <TextBlock Margin="4,2,2,2" Text="Days" VerticalAlignment="Center"></TextBlock>
+                                                        <TextBlock Margin="4,2,2,2" Text="Days" VerticalAlignment="Center"></TextBlock>
 
-                                                <Button x:Name="RefreshVmStatsButton" Margin="8,2,2,2" Click="RefreshVmStatsButton_Click">
-                                                    <StackPanel Orientation="Horizontal" >
+                                                        <Button x:Name="RefreshVmStatsButton" Margin="8,2,2,2" Click="RefreshVmStatsButton_Click">
+                                                            <StackPanel Orientation="Horizontal" >
 
-                                                        <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
-                                                        <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                                                                <Image Source="/AzureDataCosts;component/Images/refresh.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                                <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">REFRESH</TextBlock>
+                                                            </StackPanel>
+                                                        </Button>
+
+                                                        <Button x:Name="ViewPortalDbButton" Margin="8,4,2,4" Click="ViewPortalDbButton_Click" >
+                                                            <StackPanel Orientation="Horizontal" >
+                                                                <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
+                                                                <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
+                                                            </StackPanel>
+                                                        </Button>
+
                                                     </StackPanel>
-                                                </Button>
 
-                                                <Button x:Name="ViewPortalDbButton" Margin="8,4,2,4" Click="ViewPortalDbButton_Click" >
-                                                    <StackPanel Orientation="Horizontal" >
-                                                        <Image Source="/AzureDataCosts;component/Images/azure.png" Style="{StaticResource ButtonImageStyle}"/>
-                                                        <TextBlock Margin="3,0,0,0" VerticalAlignment="Center">Azure Portal</TextBlock>
+
+                                                    <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="2">
+                                                        <TextBlock Margin="2">Max CPU % found:</TextBlock>
+                                                        <TextBlock Margin="2" Text="{Binding MaxCpuUsed}"></TextBlock>
+
+                                                        <TextBlock Margin="30,2,2,2" Text="{Binding MetricsErrorMessage}"></TextBlock>
                                                     </StackPanel>
-                                                </Button>
 
-                                            </StackPanel>
-
-
-                                            <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="2">
-                                                <TextBlock Margin="2">Max CPU % found:</TextBlock>
-                                                <TextBlock Margin="2" Text="{Binding MaxCpuUsed}"></TextBlock>
-
-                                                <TextBlock Margin="30,2,2,2" Text="{Binding MetricsErrorMessage}"></TextBlock>
-                                            </StackPanel>
-
-                                            <busyIndicator:BusyMask Grid.Row="3"
+                                                    <busyIndicator:BusyMask Grid.Row="3"
                                             IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" 
                                             IndicatorType="{Binding BusyIndicatorType}"
                                             BusyContent="Please wait..." >
 
 
-                                                <oxycontrols:Plot Height="150" Width="300" VerticalAlignment="Top" >
-                                                    <oxycontrols:Plot.Series>
+                                                        <oxycontrols:Plot Height="150" Width="300" VerticalAlignment="Top" >
 
-                                                        <oxycontrols:LineSeries DisplayMemberPath="maximum" 
-             Style="{StaticResource MaxLineSeriesStyle}"
-             DataFieldX="timeStamp" 
-             DataFieldY="maximum"
-             ItemsSource="{Binding PerformanceMetricSeries}"/>
+                                                            <oxycontrols:Plot.Legends>
+                                                                <oxycontrols:Legend LegendPosition="RightMiddle" LegendPlacement="Outside" />
+                                                            </oxycontrols:Plot.Legends>
 
-                                                        <oxycontrols:LineSeries DisplayMemberPath="average" 
-             DataFieldX="timeStamp" 
-             DataFieldY="average"
-             Style="{StaticResource AvgLineSeriesStyle}"
-             ItemsSource="{Binding PerformanceMetricSeries}"/>
+                                                            <oxycontrols:Plot.Series>
 
+                                                                <oxycontrols:LineSeries DisplayMemberPath="maximum" 
+                                                             Style="{StaticResource MaxLineSeriesStyle}"
+                                                             DataFieldX="timeStamp" 
+                                                             DataFieldY="maximum"
+                                                             ItemsSource="{Binding PerformanceMetricSeries}"/>
 
-                                                    </oxycontrols:Plot.Series>
-
-                                                    <oxycontrols:Plot.Axes>
-                                                        <oxycontrols:LinearAxis Position="Left" Minimum="0" Maximum="100" />
-                                                        <oxycontrols:DateTimeAxis Position="Bottom"/>
-                                                    </oxycontrols:Plot.Axes>
-                                                </oxycontrols:Plot>
-
-                                            </busyIndicator:BusyMask>
-                                        </Grid>
+                                                                <oxycontrols:LineSeries DisplayMemberPath="average" 
+                                                             DataFieldX="timeStamp" 
+                                                             DataFieldY="average"
+                                                             Style="{StaticResource AvgLineSeriesStyle}"
+                                                             ItemsSource="{Binding PerformanceMetricSeries}"/>
 
 
-                                        <Grid Grid.Column="1" >
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="*"/>
-                                            </Grid.RowDefinitions>
+                                                            </oxycontrols:Plot.Series>
 
-                                            <Border BorderThickness="0,0,0,1" BorderBrush="Gray">
-                                                <StackPanel Orientation="Horizontal" Margin="2,2,2,2">
-                                                    <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">Costs</TextBlock>
+                                                            <oxycontrols:Plot.Axes>
+                                                                <oxycontrols:LinearAxis Position="Left" Minimum="0" Maximum="100" />
+                                                                <oxycontrols:DateTimeAxis Position="Bottom"/>
+                                                            </oxycontrols:Plot.Axes>
+                                                        </oxycontrols:Plot>
 
-                                                </StackPanel>
-                                            </Border>
-
-                                            <DataGrid ItemsSource="{Binding Path=Costs}" Grid.Row="1" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
-                                                <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-                                                    <DataGridTextColumn Header="Meter Category" Binding="{Binding Path=MeterCategory}" IsReadOnly="True"/>
-                                                    <DataGridTextColumn Header="Meter SubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>
+                                                    </busyIndicator:BusyMask>
+                                                </Grid>
 
 
-                                                    <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
-                                                        <DataGridTextColumn.CellStyle>
-                                                            <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                                        <Setter Property="Foreground" Value="OrangeRed" />
-                                                                        <Setter Property="FontWeight" Value="Bold" />
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                            </Style>
-                                                        </DataGridTextColumn.CellStyle>
-                                                    </DataGridTextColumn>
+                                               
 
-                                                    <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
-                                                    <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
-                                                </DataGrid.Columns>
-                                            </DataGrid>
+                                            </Grid>
+                                        </mah:MetroTabItem>
 
-                                        </Grid>
+                                        <mah:MetroTabItem Header="Costs" Name="TabVMCosts">
 
-                                    </Grid>
+                                            <Grid Style="{StaticResource SubSectionGrid}">
+                                                <Grid Grid.Column="1" >
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
 
+                                                    <!--<Border BorderThickness="0,0,0,1" BorderBrush="Gray">
+                                                        <StackPanel Orientation="Horizontal" Margin="2,2,2,2">
+                                                            <TextBlock Margin="2" FontSize="16" VerticalAlignment="Center">Costs</TextBlock>
+
+                                                        </StackPanel>
+                                                    </Border>-->
+
+                                                    <DataGrid ItemsSource="{Binding Path=Costs}" Grid.Row="1" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
+                                                        <DataGrid.Columns>
+                                                            <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn Header="Meter Category" Binding="{Binding Path=MeterCategory}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn Header="Meter SubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>
+
+
+                                                            <DataGridTextColumn Header="Cost" Binding="{Binding Path=Cost, StringFormat={}{0:0.#0;(0);}}">
+                                                                <DataGridTextColumn.CellStyle>
+                                                                    <Style TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource NumericGridCellStyle}">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding Cost, Converter={StaticResource NonZeroNumberToBooleanConverter}, ConverterParameter=1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                                                <Setter Property="Foreground" Value="OrangeRed" />
+                                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </DataGridTextColumn.CellStyle>
+                                                            </DataGridTextColumn>
+
+                                                            <DataGridTextColumn Header="ChargeType" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
+                                                            <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                                        </DataGrid.Columns>
+                                                    </DataGrid>
+
+                                                </Grid>
+                                            </Grid>
+
+                                        </mah:MetroTabItem>
+
+                                    </mah:MetroAnimatedSingleRowTabControl>
+                                    
                                 </DataTemplate>
                             </DataGrid.RowDetailsTemplate>
 

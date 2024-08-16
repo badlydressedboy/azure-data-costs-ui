@@ -534,24 +534,26 @@ namespace Azure.Costs.Ui.Wpf
 
         private async void VMDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
         {
+            var vm = (VM)e.Row.DataContext;
 
-            GetVmMetrics();
+            if (!vm.GotMetricsHistory)
+            {
+                GetVmMetrics(vm);
+            }
 
         }
 
         private void RefreshVmStatsButton_Click(object sender, RoutedEventArgs e)
         {
-            GetVmMetrics();
-        }
-        private async void GetVmMetrics()
-        {
             if (VMDataGrid.CurrentItem == null) return;
             var vm = (VM)VMDataGrid.CurrentItem;
-
-            if (vm != null && (!vm.GotMetricsHistory))
-            {
-                await APIAccess.GetVmMetrics(vm);
-            } // no minutes param passed so sqlDb.MetricsHistoryDays is used            
+            GetVmMetrics(vm);
+        }
+        private async void GetVmMetrics(VM vm)
+        {
+            if (vm == null) return;
+           
+            await APIAccess.GetVmMetrics(vm);    
         }
 
         private void Expander_Process(object sender, RoutedEventArgs e)
@@ -849,6 +851,11 @@ namespace Azure.Costs.Ui.Wpf
         }
 
         private void PurviewTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void VMTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
