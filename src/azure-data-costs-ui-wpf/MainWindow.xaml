@@ -11,6 +11,8 @@
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
                  xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
                  xmlns:dgx="clr-namespace:DataGridExtensions;assembly=DataGridExtensions"   
+                 xmlns:oxy="http://oxyplot.org/wpf"
+                 xmlns:oxycontrols="http://oxyplot.org/wpf/contrib"
         Title="Azure Data Costs" 
         Height="850" Width="1200"
         WindowStartupLocation="CenterScreen"
@@ -826,8 +828,14 @@
                                                         IndicatorType="{Binding BusyIndicatorType}"
                                                         BusyContent="Please wait..." >
 
-
-                                                            <DataGrid MaxHeight="400" 
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                    <ColumnDefinition Width="300"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                
+                                                                <DataGrid Visibility="Collapsed"
+                                                                    MaxHeight="400" 
                                                     MaxWidth="320" 
                                                     HorizontalAlignment="Left" 
                                                     ItemsSource="{Binding Path=PerformanceMetricSeries}"                                                   
@@ -843,6 +851,32 @@
 
                                                                 </DataGrid.Columns>
                                                             </DataGrid>
+
+                                                              
+                                                                <oxycontrols:Plot Grid.Column="1" Height="150" VerticalAlignment="Top">
+                                                                    <oxycontrols:Plot.Series>
+                                                                        
+                                                                        <oxycontrols:LineSeries DisplayMemberPath="maximum" 
+                                                                                                Color="Orange"
+                                                                                                DataFieldX="timeStamp" 
+                                                                                                DataFieldY="maximum"
+                                                                                                ItemsSource="{Binding PerformanceMetricSeries}"/>
+
+                                                                        <oxycontrols:LineSeries DisplayMemberPath="maximum" 
+                                                                            DataFieldX="timeStamp" 
+                                                                            DataFieldY="average"
+                                                                            Color="Green"
+                                                                            ItemsSource="{Binding PerformanceMetricSeries}"/>
+
+                                                                    </oxycontrols:Plot.Series>
+
+                                                                    <oxycontrols:Plot.Axes>
+                                                                        <oxycontrols:LinearAxis Position="Left" Minimum="0" Maximum="100" />
+                                                                        <oxycontrols:DateTimeAxis Position="Bottom"/>
+                                                                    </oxycontrols:Plot.Axes>
+                                                                </oxycontrols:Plot>
+                                                            </Grid>
+                                                            
 
                                                         </busyIndicator:BusyMask>
                                                     </Grid>
@@ -874,8 +908,32 @@
                                             IndicatorType="{Binding BusyIndicatorType}"
                                             BusyContent="Please wait..." >
 
+                                                            <Grid>
+                                                            
+                                                                <oxycontrols:Plot Grid.Column="1" Height="150" VerticalAlignment="Top" >
+                                                                    <oxycontrols:Plot.Series>
 
-                                                            <DataGrid MaxHeight="400" 
+                                                                        <oxycontrols:LineSeries DisplayMemberPath="maximum" 
+                                    Color="Orange"
+                                    DataFieldX="timeStamp" 
+                                    DataFieldY="maximum"
+                                    ItemsSource="{Binding ElasticPool.PerformanceMetricSeries}"/>
+
+                                                                        <oxycontrols:LineSeries DisplayMemberPath="maximum" 
+                DataFieldX="timeStamp" 
+                DataFieldY="average"
+                Color="Green"
+                ItemsSource="{Binding ElasticPool.PerformanceMetricSeries}"/>
+
+                                                                    </oxycontrols:Plot.Series>
+
+                                                                    <oxycontrols:Plot.Axes>
+                                                                        <oxycontrols:LinearAxis Position="Left" Minimum="0" Maximum="100" />
+                                                                        <oxycontrols:DateTimeAxis Position="Bottom"/>
+                                                                    </oxycontrols:Plot.Axes>
+                                                                </oxycontrols:Plot>
+                                                            
+                                                                <DataGrid Visibility="Collapsed" MaxHeight="400" 
                                                           MaxWidth="320" 
                                                           HorizontalAlignment="Left" 
                                                           ItemsSource="{Binding Path=ElasticPool.PerformanceMetricSeries}"                                                   
@@ -892,6 +950,8 @@
                                                                 </DataGrid.Columns>
                                                             </DataGrid>
 
+                                                            </Grid>
+                                                            
                                                         </busyIndicator:BusyMask>
 
                                                     </Grid>
