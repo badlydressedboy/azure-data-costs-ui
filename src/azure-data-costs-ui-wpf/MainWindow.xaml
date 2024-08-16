@@ -24,6 +24,14 @@
 
     <mah:MetroWindow.Resources>
 
+        <Style TargetType="{x:Type oxycontrols:LineSeries}" x:Key="MaxLineSeriesStyle">
+            <Setter Property="Color" Value="Orange"/>
+        </Style>
+
+        <Style TargetType="{x:Type oxycontrols:LineSeries}" x:Key="AvgLineSeriesStyle">
+            <Setter Property="Color" Value="Green"/>
+        </Style>
+
         <Style TargetType="{x:Type ToolTip}" >
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Padding" Value="4"/>
@@ -754,7 +762,9 @@
                             <DataGrid.RowDetailsTemplate>
                                 <DataTemplate>
 
-                                    <mah:MetroAnimatedSingleRowTabControl Name="DBTabControl" SelectionChanged="DBTabControl_SelectionChanged" >
+                                    
+                                    
+                                    <mah:MetroAnimatedSingleRowTabControl Name="DBTabControl" SelectionChanged="DBTabControl_SelectionChanged" Margin="0,0,0,30" >
 
                                         <mah:MetroTabItem Header="Useage" Name="TabDbUseage">
 
@@ -798,7 +808,7 @@
                                                 <Grid Grid.Row="1">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
 
                                                     <Grid>
@@ -806,7 +816,6 @@
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
-                                                            <RowDefinition Height="*"/>
                                                         </Grid.RowDefinitions>
 
                                                         <Border BorderThickness="0,0,0,1" BorderBrush="Gray">
@@ -816,56 +825,38 @@
                                                             </StackPanel>
                                                         </Border>
 
-                                                        <StackPanel Orientation="Horizontal" Margin="8" Grid.Row="2">
+                                                        <StackPanel Orientation="Horizontal" Margin="8" Grid.Row="1">
                                                             <TextBlock Margin="2">Max DTU/CPU % found:</TextBlock>
                                                             <TextBlock Margin="2" Text="{Binding MaxDtuUsed}"></TextBlock>
 
                                                             <TextBlock Margin="30,2,2,2" Text="{Binding MetricsErrorMessage}"></TextBlock>
                                                         </StackPanel>
 
-                                                        <busyIndicator:BusyMask Grid.Row="3"
-                                                        IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" 
-                                                        IndicatorType="{Binding BusyIndicatorType}"
-                                                        BusyContent="Please wait..." >
+                                                        <busyIndicator:BusyMask Grid.Row="2"
+                                                            IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" 
+                                                            IndicatorType="{Binding BusyIndicatorType}"
+                                                            BusyContent="Please wait..." >
 
                                                             <Grid>
-                                                                <Grid.ColumnDefinitions>
-                                                                    <ColumnDefinition Width="Auto"/>
-                                                                    <ColumnDefinition Width="300"/>
-                                                                </Grid.ColumnDefinitions>
-                                                                
-                                                                <DataGrid Visibility="Collapsed"
-                                                                    MaxHeight="400" 
-                                                    MaxWidth="320" 
-                                                    HorizontalAlignment="Left" 
-                                                    ItemsSource="{Binding Path=PerformanceMetricSeries}"                                                   
-                                                    AutoGenerateColumns="False" 
-                                                    CanUserAddRows="False"
-                                                    local:DataGridExtensions.SortDesc="True"
-                                                >
-                                                                <DataGrid.Columns>
+                                                             
+                                                                <oxycontrols:Plot Grid.Column="1" Height="150" Width="360" VerticalAlignment="Top">
 
-                                                                    <DataGridTextColumn Header="Time" Binding="{Binding Path=timeStamp}" IsReadOnly="True"/>
-                                                                    <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
-                                                                    <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
-
-                                                                </DataGrid.Columns>
-                                                            </DataGrid>
-
-                                                              
-                                                                <oxycontrols:Plot Grid.Column="1" Height="150" VerticalAlignment="Top">
+                                                                    <oxycontrols:Plot.Legends>
+                                                                        <oxycontrols:Legend LegendPosition="RightMiddle" LegendPlacement="Outside" />
+                                                                    </oxycontrols:Plot.Legends>
+                                                                    
                                                                     <oxycontrols:Plot.Series>
-                                                                        
-                                                                        <oxycontrols:LineSeries DisplayMemberPath="maximum" 
-                                                                                                Color="Orange"
+
+                                                                        <oxycontrols:LineSeries DisplayMemberPath="maximum" Title="Max"
+                                                                                                Style="{StaticResource MaxLineSeriesStyle}"
                                                                                                 DataFieldX="timeStamp" 
                                                                                                 DataFieldY="maximum"
                                                                                                 ItemsSource="{Binding PerformanceMetricSeries}"/>
 
-                                                                        <oxycontrols:LineSeries DisplayMemberPath="maximum" 
+                                                                        <oxycontrols:LineSeries DisplayMemberPath="average" Title="Avg"
                                                                             DataFieldX="timeStamp" 
                                                                             DataFieldY="average"
-                                                                            Color="Green"
+                                                                            Style="{StaticResource AvgLineSeriesStyle}"
                                                                             ItemsSource="{Binding PerformanceMetricSeries}"/>
 
                                                                     </oxycontrols:Plot.Series>
@@ -875,6 +866,7 @@
                                                                         <oxycontrols:DateTimeAxis Position="Bottom"/>
                                                                     </oxycontrols:Plot.Axes>
                                                                 </oxycontrols:Plot>
+                                                                
                                                             </Grid>
                                                             
 
@@ -886,15 +878,12 @@
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
                                                             <RowDefinition Height="Auto"/>
-                                                            <RowDefinition Height="*"/>
+                                                         
                                                         </Grid.RowDefinitions>
 
                                                         <Border BorderThickness="0,0,0,1" BorderBrush="Gray">
                                                             <TextBlock Margin="2,4,2,4" FontSize="16" VerticalAlignment="Center">Elastic Pool Usage</TextBlock>
                                                         </Border>
-
-                                                        <!--<TextBlock Margin="2" Grid.Row="1" FontSize="16" VerticalAlignment="Center"></TextBlock>-->
-
 
                                                         <StackPanel Orientation="Horizontal" Margin="2" Grid.Row="1">
                                                             <TextBlock Margin="8">Max DTU/CPU % found:</TextBlock>
@@ -903,27 +892,28 @@
                                                             <TextBlock Margin="30,2,2,2" Text="{Binding ElasticPool.MetricsErrorMessage}"></TextBlock>
                                                         </StackPanel>
 
-                                                        <busyIndicator:BusyMask Grid.Row="3"
-                                            IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" 
-                                            IndicatorType="{Binding BusyIndicatorType}"
-                                            BusyContent="Please wait..." >
+                                                        <busyIndicator:BusyMask Grid.Row="2"
+                                                            IsBusy="{Binding IsRestQueryBusy, FallbackValue=False}" 
+                                                            IndicatorType="{Binding BusyIndicatorType}"
+                                                            BusyContent="Please wait..." >
 
                                                             <Grid>
-                                                            
-                                                                <oxycontrols:Plot Grid.Column="1" Height="150" VerticalAlignment="Top" >
+
+                                                                <oxycontrols:Plot Height="150" Width="300" VerticalAlignment="Top" >
                                                                     <oxycontrols:Plot.Series>
 
                                                                         <oxycontrols:LineSeries DisplayMemberPath="maximum" 
-                                    Color="Orange"
-                                    DataFieldX="timeStamp" 
-                                    DataFieldY="maximum"
-                                    ItemsSource="{Binding ElasticPool.PerformanceMetricSeries}"/>
+                                                                            Style="{StaticResource MaxLineSeriesStyle}"
+                                                                            DataFieldX="timeStamp" 
+                                                                            DataFieldY="maximum"
+                                                                            ItemsSource="{Binding ElasticPool.PerformanceMetricSeries}"/>
 
-                                                                        <oxycontrols:LineSeries DisplayMemberPath="maximum" 
-                DataFieldX="timeStamp" 
-                DataFieldY="average"
-                Color="Green"
-                ItemsSource="{Binding ElasticPool.PerformanceMetricSeries}"/>
+                                                                        <oxycontrols:LineSeries DisplayMemberPath="average" 
+                                                                            DataFieldX="timeStamp" 
+                                                                            DataFieldY="average"
+                                                                            Style="{StaticResource AvgLineSeriesStyle}"
+                                                                            ItemsSource="{Binding ElasticPool.PerformanceMetricSeries}"/>
+
 
                                                                     </oxycontrols:Plot.Series>
 
@@ -932,30 +922,12 @@
                                                                         <oxycontrols:DateTimeAxis Position="Bottom"/>
                                                                     </oxycontrols:Plot.Axes>
                                                                 </oxycontrols:Plot>
-                                                            
-                                                                <DataGrid Visibility="Collapsed" MaxHeight="400" 
-                                                          MaxWidth="320" 
-                                                          HorizontalAlignment="Left" 
-                                                          ItemsSource="{Binding Path=ElasticPool.PerformanceMetricSeries}"                                                   
-                                                          AutoGenerateColumns="False" 
-                                                          CanUserAddRows="False"
-                                                          local:DataGridExtensions.SortDesc="True"
-                                                 >
-                                                                <DataGrid.Columns>
-
-                                                                    <DataGridTextColumn Header="Time" Binding="{Binding Path=timeStamp}" IsReadOnly="True"/>
-                                                                    <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
-                                                                    <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
-
-                                                                </DataGrid.Columns>
-                                                            </DataGrid>
-
+                                               
                                                             </Grid>
                                                             
                                                         </busyIndicator:BusyMask>
 
                                                     </Grid>
-
 
                                                 </Grid>
 
@@ -2644,22 +2616,29 @@ Text="{Binding ElementName=VMDataGrid, Path=DataContext.VmTabVm.LocationFilter.S
                                             BusyContent="Please wait..." >
 
 
-                                                <DataGrid MaxHeight="300" 
-                                                          MaxWidth="320" 
-                                                          HorizontalAlignment="Left" 
-                                                          ItemsSource="{Binding Path=PerformanceMetricSeries}"                                                   
-                                                          AutoGenerateColumns="False" 
-                                                          CanUserAddRows="False"
-                                                          local:DataGridExtensions.SortDesc="True"
-                                                 >
-                                                    <DataGrid.Columns>
+                                                <oxycontrols:Plot Height="150" Width="300" VerticalAlignment="Top" >
+                                                    <oxycontrols:Plot.Series>
 
-                                                        <DataGridTextColumn Header="Time" Binding="{Binding Path=timeStamp}" IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="Average" Binding="{Binding Path=average, StringFormat=N0}"  IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
-                                                        <DataGridTextColumn Header="Maximum" Binding="{Binding Path=maximum}" IsReadOnly="True" local:DataGridExtensions.SortDesc="True"/>
+                                                        <oxycontrols:LineSeries DisplayMemberPath="maximum" 
+             Style="{StaticResource MaxLineSeriesStyle}"
+             DataFieldX="timeStamp" 
+             DataFieldY="maximum"
+             ItemsSource="{Binding PerformanceMetricSeries}"/>
 
-                                                    </DataGrid.Columns>
-                                                </DataGrid>
+                                                        <oxycontrols:LineSeries DisplayMemberPath="average" 
+             DataFieldX="timeStamp" 
+             DataFieldY="average"
+             Style="{StaticResource AvgLineSeriesStyle}"
+             ItemsSource="{Binding PerformanceMetricSeries}"/>
+
+
+                                                    </oxycontrols:Plot.Series>
+
+                                                    <oxycontrols:Plot.Axes>
+                                                        <oxycontrols:LinearAxis Position="Left" Minimum="0" Maximum="100" />
+                                                        <oxycontrols:DateTimeAxis Position="Bottom"/>
+                                                    </oxycontrols:Plot.Axes>
+                                                </oxycontrols:Plot>
 
                                             </busyIndicator:BusyMask>
                                         </Grid>

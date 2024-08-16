@@ -120,6 +120,7 @@ namespace Azure.Costs.Ui.Wpf
                 SetProperty(ref isDataFactoryErrorMessageVisible, value);
             }
         }
+        
         private bool isRestQueryBusy;
         public bool IsRestQueryBusy
         {
