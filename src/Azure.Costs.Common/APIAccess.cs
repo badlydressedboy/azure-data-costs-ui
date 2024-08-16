@@ -1865,6 +1865,7 @@ namespace Azure.Costs.Common
                     return null;
                 }
                 var json = await response.Content.ReadAsStringAsync();
+
                 RootPvScan scans = await response?.Content?.ReadFromJsonAsync<RootPvScan>();
 
                 Debug.WriteLine("Got scans OK.");

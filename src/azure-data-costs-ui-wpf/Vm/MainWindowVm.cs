@@ -355,26 +355,28 @@ namespace Azure.Costs.Ui.Wpf
                 // first should be only one
                 foreach(var source in purv.DataSourceGridRows)
                 {
-                    if (source.DsEndPoint == null) continue;
+                    // process based on source DsKind - careful as some types have NULL fields where appropriate
 
-                    // have server and database name, go through and update 
-                    foreach (var db in DBTabVm.RestSqlDbList)
+                    if (source.DsKind.Contains("AzureSql"))
                     {
-                        if (source.DsEndPoint.Contains(db.serverName)  && db.name == source.ScanDatabaseName)
+                        foreach (var db in DBTabVm.RestSqlDbList)
                         {
-                            db.IsScannedByPurview = "Yes";
+                            if (source.DsEndPoint.Contains(db.serverName) && db.name == source.ScanDatabaseName)
+                            {
+                                db.IsScannedByPurview = "Yes";
+                            }
                         }
                     }
-                    foreach (var db in CosmosTabVm.CosmosList)
+
+                    if (source.DsKind == "AzureCosmosDb")
                     {
-                        if (source.DsEndPoint.Contains(db.name))//&& db.name == source.ScanDatabaseName)
+                        foreach (var db in CosmosTabVm.CosmosList)
                         {
-                            db.IsScannedByPurview = "Yes";
+                            if (source.DsResourceName.Contains(db.name))//&& db.name == source.ScanDatabaseName)
+                            {
+                                db.IsScannedByPurview = "Yes";
+                            }
                         }
-                    }
-                    if (source.DsEndPoint.Contains("cos"))
-                    {
-                        Debug.WriteLine("dd");
                     }
                 }
             }
