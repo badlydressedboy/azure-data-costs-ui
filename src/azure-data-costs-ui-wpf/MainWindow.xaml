@@ -950,11 +950,11 @@
 
                                                 <DataGrid Grid.Row="1" ItemsSource="{Binding Path=Costs}" AutoGenerateColumns="false" CanUserAddRows="False" local:DataGridExtensions.SortDesc="True">
                                                     <DataGrid.Columns>
+                                                        
+                                                        <!--<DataGridTextColumn Header="Meter Category" Binding="{Binding Path=MeterCategory}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="Meter SubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>-->
+                                                        <DataGridTextColumn Header="Product" Binding="{Binding Path=Product}" IsReadOnly="True"/>
                                                         <DataGridTextColumn Header="Meter" Binding="{Binding Path=Meter}" IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="Meter Category" Binding="{Binding Path=MeterCategory}" IsReadOnly="True"/>
-                                                        <DataGridTextColumn Header="Meter SubCategory" Binding="{Binding Path=MeterSubCategory}" IsReadOnly="True"/>
-
-
                                                         <!--<DataGridTextColumn Header="Service Name" Binding="{Binding Path=ServiceName}" IsReadOnly="True"/>
                                                         <DataGridTextColumn Header="Resource Type" Binding="{Binding Path=ResourceType}" IsReadOnly="True"/>-->
 
@@ -973,6 +973,9 @@
 
                                                         <DataGridTextColumn Header="Charge Type" Binding="{Binding Path=ChargeType}" IsReadOnly="True"/>
                                                         <DataGridTextColumn Header="Currency" Binding="{Binding Path=Currency}" IsReadOnly="True"/>
+                                                        <DataGridTextColumn Header="ResourceId" Binding="{Binding Path=ResourceId}" IsReadOnly="True"/>
+
+                                                        
                                                     </DataGrid.Columns>
                                                 </DataGrid>
                                             </Grid>

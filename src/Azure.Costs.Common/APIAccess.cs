@@ -32,6 +32,7 @@ using Polly;
 using NLog;
 using System.Data.Common;
 using System.Collections;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Azure.Costs.Common
 {
@@ -1307,6 +1308,10 @@ namespace Azure.Costs.Common
                                 {
                                     ""type"":""Dimension"", 
                                     ""name"":""ChargeType""
+                                },
+                                {
+                                    ""type"":""Dimension"", 
+                                    ""name"":""Product""
                                 }
                             ]
                         }
@@ -1512,10 +1517,15 @@ namespace Azure.Costs.Common
                         rc.MeterSubCategory = obj[8].ToString();
                         rc.ChargeType = obj[9].ToString();
                         
-                        rc.Currency = obj[10].ToString();
-                        
                         // arent always available
-                        //rc.Product = obj[5].ToString();
+                        if (obj[10] != null)
+                        {
+                            rc.Product = obj[10].ToString();
+                        }
+
+                        rc.Currency = obj[11].ToString();
+
+                       
                         //rc.Provider = obj[11].ToString();
 
                         subscription.ResourceCosts.Add(rc);
@@ -1524,10 +1534,10 @@ namespace Azure.Costs.Common
                         //{
                         //    Debug.WriteLine("factory");
                         //}
-                        //if (rc.ServiceName!= "SQL Database")
-                        //{
-                        //    Debug.WriteLine("factory");
-                        //}
+                        if (rc.Meter.Contains("Backup"))
+                        {
+                            Debug.WriteLine("factory");
+                        }
                     }
                     catch (Exception ex)
                     {

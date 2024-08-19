@@ -269,11 +269,17 @@ namespace Azure.Costs.Ui.Wpf.Vm
             List<ResourceCost> elasticCosts = new List<ResourceCost>();
             foreach (ResourceCost cost in db.Subscription.ResourceCosts)
             {
-                if (cost.ResourceId.EndsWith(db.name.ToLower()) && cost.ResourceId.Contains(db.resourceGroup.ToLower()))
+                
+                if (cost.ResourceId.Contains(db.name.ToLower()) && cost.ResourceId.Contains(db.resourceGroup.ToLower()))
                 {
                     db.Costs.Add(cost);
                     db.TotalCostBilling += cost.Cost;
                     found = true;
+                    
+                    if (cost.ResourceType.Contains("longtermretentionservers"))
+                    {
+                        Debug.WriteLine("Add me!");
+                    }
                 }
                 if (db.ElasticPool != null && cost.ResourceId.Contains(db.ElasticPool.name.ToLower()))
                 {
