@@ -259,6 +259,8 @@ namespace Azure.Costs.Common.Models.Rest
 
         public List<ResourceCost> Costs { get; set; } = new List<ResourceCost>();
 
+        //public List<ElasticPoolCost> ElasticPoolCosts { get; set; } = new List<ElasticPoolCost>();
+        
         private decimal _totalCostBilling;
         public decimal TotalCostBilling { 
             get { return _totalCostBilling; }
@@ -269,6 +271,19 @@ namespace Azure.Costs.Common.Models.Rest
             }
         }
 
+        private bool _hasElasticPool;
+        public bool HasElasticPool
+        {
+            get
+            {
+                if (ElasticPool == null)
+                {
+                    return false;
+                }
+                return true;
+            }
+            
+        }
         public DateTime MetricsFromTime { get; set; }
         public DateTime MetricsToTime { get; set; }
 

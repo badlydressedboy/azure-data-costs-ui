@@ -36,6 +36,8 @@ namespace Azure.Costs.Common.Models.Rest
 
             }
         }
+        public List<ElasticPoolCost> Costs { get; set; } = new List<ElasticPoolCost>();
+
         public ObservableCollection<MetricTimeSeriesData> PerformanceMetricSeries { get; set; } = new ObservableCollection<MetricTimeSeriesData>();
 
         public event PropertyChangedEventHandler? PropertyChanged;

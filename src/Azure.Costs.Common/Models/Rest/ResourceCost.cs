@@ -8,7 +8,7 @@ namespace Azure.Costs.Common.Models.Rest
 {
     public class ResourceCostQuery
     {
-        public ResourceCostProperties properties {get;set;} 
+        public ResourceCostProperties properties { get; set; }
     }
 
     public class ResourceCostProperties
@@ -32,5 +32,29 @@ namespace Azure.Costs.Common.Models.Rest
         public string Currency { get; set; }
         public string ResourceType { get; set; }
         public string ResourceName { get; set; }
+    }
+
+    public class ElasticPoolCost : ResourceCost
+    {
+        public decimal PerDbCost { get; set; }
+        public int DbCount { get; set; }
+
+        public ElasticPoolCost(ResourceCost cost)
+        {
+            Cost = cost.Cost;
+            CostUSD = cost.CostUSD;
+            SubscriptionId = cost.SubscriptionId;
+            ResourceId = cost.ResourceId;
+            ServiceName = cost.ServiceName;
+            MeterCategory = cost.MeterCategory;
+            MeterSubCategory = cost.MeterSubCategory;
+            Product = cost.Product;
+            Meter = cost.Meter;
+            ChargeType = cost.ChargeType;
+            PublisherType = cost.PublisherType;
+            Currency = cost.Currency;
+            ResourceType = cost.ResourceType;
+            ResourceName = cost.ResourceName;
+        }
     }
 }

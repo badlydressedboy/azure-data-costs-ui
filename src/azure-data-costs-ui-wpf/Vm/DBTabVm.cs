@@ -266,7 +266,8 @@ namespace Azure.Costs.Ui.Wpf.Vm
             {
                 _logger.Error("elastic db!");
             }
-            List<ResourceCost> elasticCosts = new List<ResourceCost>();
+            db.ElasticPool?.Costs.Clear();
+
             foreach (ResourceCost cost in db.Subscription.ResourceCosts)
             {
                 
@@ -283,22 +284,33 @@ namespace Azure.Costs.Ui.Wpf.Vm
                 }
                 if (db.ElasticPool != null && cost.ResourceId.Contains(db.ElasticPool.name.ToLower()))
                 {
-                    db.Costs.Add(cost);
+                    //db.Costs.Add(cost);
                     db.TotalCostBilling += cost.Cost / db.ElasticPool.dbList.Count;
                     found = true;
+
+                    // each db will have identical copy of pools costs
+                    // these need to be divided by db count
+                    var dbCost = new ElasticPoolCost(cost);
+                    db.ElasticPool.Costs.Add(dbCost);  
                 }
-                if (cost.Meter.Contains("Elastic")
-                    || cost.MeterSubCategory.Contains("Elastic")
-                    //|| cost.Product.Contains("Elastic") 
-                    || cost.ServiceName.Contains("Elastic"))
+                //if (cost.Meter.Contains("Elastic")
+                //    || cost.MeterSubCategory.Contains("Elastic")
+                //    //|| cost.Product.Contains("Elastic") 
+                //    || cost.ServiceName.Contains("Elastic"))
+                //{
+                //    elasticCosts.Add(cost);
+                //}
+            }
+
+            if (db.ElasticPool != null)
+            {
+                foreach (var cost in db.ElasticPool?.Costs)
                 {
-                    elasticCosts.Add(cost);
+                    cost.PerDbCost = cost.Cost / db.ElasticPool.dbList.Count;
                 }
             }
-            //if(elasticCosts.Count > 0)
-            //{
-            //    //_logger.Error($"elastic costs");
-            //}
+            //_logger.Error($"elastic costs");
+            
             if (!found)
             {
                 if (db.Subscription.ReadCosts)
