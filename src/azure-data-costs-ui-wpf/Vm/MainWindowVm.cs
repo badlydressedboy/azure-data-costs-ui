@@ -37,6 +37,8 @@ namespace Azure.Costs.Ui.Wpf
         public PurviewTabVm PurviewTabVm { get; set; } = new PurviewTabVm();
 
         public CosmosTabVm CosmosTabVm { get; set; } = new CosmosTabVm();
+
+        public FabricTabVm FabricTabVm { get; set; } = new FabricTabVm();
         public DFTabVm DFTabVm { get; set; } = new DFTabVm();
         public VmTabVm VmTabVm { get; set; } = new VmTabVm();
         public ResourcesTabVm ResourcesTabVm { get; set; } = new ResourcesTabVm();
@@ -445,7 +447,10 @@ namespace Azure.Costs.Ui.Wpf
             await CosmosTabVm.RefreshCosmos(SelectedSubscriptions);
             UpdateDbsScannedByPurview();
         }
-
+        public async Task RefreshFabric()
+        {
+            await FabricTabVm.RefreshFabric(SelectedSubscriptions);
+        }
         public async Task RefreshDataFactories()
         {
             await DFTabVm.RefreshDataFactories(SelectedSubscriptions);

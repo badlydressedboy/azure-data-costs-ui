@@ -859,6 +859,26 @@ namespace Azure.Costs.Ui.Wpf
         {
 
         }
+
+        private async void FabricRefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await vm.RefreshFabric();
+        }
+
+        private void FabricCollapseCostsButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void FabricDataGridViewSource_Filter(object sender, FilterEventArgs e)
+        {
+
+        }
+
+        private void FabricLayoutGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+
+        }
     }
 
 

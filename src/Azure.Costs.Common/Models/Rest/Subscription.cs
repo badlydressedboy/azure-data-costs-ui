@@ -59,6 +59,7 @@ namespace Azure.Costs.Common.Models.Rest
         public List<VM> VMs { get; set; } = new List<VM>();
         public List<Purview> Purviews { get; set; } = new List<Purview>();
         public List<Cosmos> Cosmos { get; set; } = new List<Cosmos>();
+        public List<Fabric> FabricCapacities { get; set; } = new List<Fabric>();
 
         public DateTime LastCostGetDate { get; set; }
        
