@@ -20,7 +20,7 @@
         ResizeMode="CanResizeWithGrip"
         ShowIconOnTitleBar="True"
         Loaded="MetroWindow_Loaded"
-        Icon="azure.ico">
+        Icon="icon.ico">
 
     <mah:MetroWindow.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>

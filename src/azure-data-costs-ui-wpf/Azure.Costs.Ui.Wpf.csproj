@@ -5,7 +5,7 @@
     <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>azure.ico</ApplicationIcon>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
 	<PublishSingleFile>true</PublishSingleFile>
 	<DebugType>embedded</DebugType>
 	<StartupObject>DataEstateOverview.App</StartupObject>
@@ -17,6 +17,7 @@
   <ItemGroup>
     <None Remove="Azure.Costs.Ui.Wpf.csproj~RF62a67e46.TMP" />
     <None Remove="CostData\Detail_Subscription_a5be5e3e-da5c-45f5-abe9-9591a51fccfa_202211_en.csv" />
+    <None Remove="icon.ico" />
     <None Remove="Images\azure.png" />
     <None Remove="Images\filter.png" />
     <None Remove="Images\info.png" />
@@ -28,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="azure.ico">
+    <Content Include="icon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -74,6 +75,9 @@
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="icon1.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
