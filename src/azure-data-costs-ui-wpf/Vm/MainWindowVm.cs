@@ -122,7 +122,7 @@ namespace Azure.Costs.Ui.Wpf
                 SetProperty(ref isDataFactoryErrorMessageVisible, value);
             }
         }
-        
+
         private bool isRestQueryBusy;
         public bool IsRestQueryBusy
         {
@@ -383,11 +383,13 @@ namespace Azure.Costs.Ui.Wpf
                     }
                 }
             }
+            UpdateHttpAccessCountMessage();
         }
         public async Task RefreshDatabases()
         {
             await DBTabVm.RefreshDatabases(SelectedSubscriptions);
             UpdateDbsScannedByPurview();
+            UpdateHttpAccessCountMessage();
         }
 
         public async Task RefreshSqlDb()
@@ -423,42 +425,50 @@ namespace Azure.Costs.Ui.Wpf
         public async Task RefreshStorage()
         {
             await StorageTabVm.RefreshStorage(SelectedSubscriptions);
+            UpdateHttpAccessCountMessage();
         }
 
 
         public async Task RefreshVNets()
         {
             await VNetTabVm.RefreshVNets(SelectedSubscriptions);
+            UpdateHttpAccessCountMessage();
         }
 
         public async Task RefreshVms()
         {
             await VmTabVm.RefreshVMs(SelectedSubscriptions);
+            UpdateHttpAccessCountMessage();
         }
 
         public async Task RefreshPurview()
         {
             await PurviewTabVm.RefreshPurview(SelectedSubscriptions);
             UpdateDbsScannedByPurview();
+            UpdateHttpAccessCountMessage();
         }
 
         public async Task RefreshCosmos()
         {
             await CosmosTabVm.RefreshCosmos(SelectedSubscriptions);
             UpdateDbsScannedByPurview();
+            UpdateHttpAccessCountMessage();
         }
         public async Task RefreshFabric()
         {
             await FabricTabVm.RefreshFabric(SelectedSubscriptions);
+            UpdateHttpAccessCountMessage();
         }
         public async Task RefreshDataFactories()
         {
             await DFTabVm.RefreshDataFactories(SelectedSubscriptions);
+            UpdateHttpAccessCountMessage();
         }
 
         public async Task RefreshResources()
         {
             await ResourcesTabVm.RefreshResources(SelectedSubscriptions);
+            UpdateHttpAccessCountMessage();
         }
 
         public void SaveSubscriptionOptions()

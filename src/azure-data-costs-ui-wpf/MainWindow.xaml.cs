@@ -496,6 +496,7 @@ namespace Azure.Costs.Ui.Wpf
             }
 
             await APIAccess.GetDbMetrics(db); // no minutes param passed so sqlDb.MetricsHistoryDays is used            
+            vm.UpdateHttpAccessCountMessage();
         }
 
         private async void StorageRefreshButton_Click(object sender, RoutedEventArgs e)
@@ -549,15 +550,17 @@ namespace Azure.Costs.Ui.Wpf
             var vm = (VM)VMDataGrid.CurrentItem;
             GetVmMetrics(vm);
         }
-        private async void GetVmMetrics(VM vm)
+        private async void GetVmMetrics(VM vmModel)
         {
-            if (vm == null) return;
+            if (vmModel == null) return;
            
-            await APIAccess.GetVmMetrics(vm);    
+            await APIAccess.GetVmMetrics(vmModel);
+            vm.UpdateHttpAccessCountMessage();
         }
 
         private void Expander_Process(object sender, RoutedEventArgs e)
         {
+            
             if (sender is Expander expander)
             {
                 var row = DataGridRow.GetRowContainingElement(expander);
@@ -875,9 +878,14 @@ namespace Azure.Costs.Ui.Wpf
 
         }
 
-        private void FabricLayoutGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private async void FabricLayoutGrid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+            if ((bool)e.NewValue == false) return;
 
+            if (vm.FabricTabVm.FabricList.Count == 0)
+            {
+                await vm.RefreshFabric();
+            }
         }
     }
 
