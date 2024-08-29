@@ -62,15 +62,22 @@ namespace Azure.Costs.Common.Models.Rest
         public List<Fabric> FabricCapacities { get; set; } = new List<Fabric>();
 
         public DateTime LastCostGetDate { get; set; }
-       
+        public DateTime LastCostSelectedStartDate { get; set; }
+        public DateTime LastCostSelectedEndDate { get; set; }
+
         private string costsErrorMessage;
         public string CostsErrorMessage
         {
             get => costsErrorMessage;
             set => SetProperty(ref costsErrorMessage, value);
         }
-        public bool NeedsNewCosts()
+        public bool NeedsNewCosts(DateTime startDate, DateTime endDate )
         {
+            if(startDate != LastCostSelectedStartDate || endDate != LastCostSelectedEndDate)
+            {
+                return true;
+            }
+
             if (LastCostGetDate < DateTime.Now.AddHours(-1))
             {
                 return true;

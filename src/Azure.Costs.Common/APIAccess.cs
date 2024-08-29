@@ -1189,7 +1189,7 @@ namespace Azure.Costs.Common
              */
 
             if ((!subscription.ReadCosts) && (!forceRead)) return;
-            if (!subscription.NeedsNewCosts()) return;
+            if (!subscription.NeedsNewCosts(SelectedStartDate, SelectedEndDate)) return;
 
             _logger.Info($"Starting GetSubscriptionCosts() for {subscription.displayName}...");
 
@@ -1562,7 +1562,11 @@ namespace Azure.Costs.Common
                 _logger.Error(ex);
                 subscription.CostsErrorMessage = ex.Message;
             }
+
+            // save what date range and when we got it so we can later figure out if we need to get new costs
             subscription.LastCostGetDate = DateTime.Now;
+            subscription.LastCostSelectedStartDate = SelectedStartDate;
+            subscription.LastCostSelectedEndDate = SelectedEndDate; 
             _logger.Info($"** GOT COSTS OK for {subscription.displayName}");
         }
         private static string GetHeaderValue(HttpResponseMessage response, string headerName)
