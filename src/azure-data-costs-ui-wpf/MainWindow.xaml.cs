@@ -54,8 +54,7 @@ namespace Azure.Costs.Ui.Wpf
             connStrings.Add("");
 
             DataContext = vm;
-            CostDaysText.Text = APIAccess.CostDays.ToString();
-
+            vm.SyncSelectedDates();
         }
 
         private async void SQLDBRefreshButton_Click(object sender, RoutedEventArgs e)
@@ -302,25 +301,8 @@ namespace Azure.Costs.Ui.Wpf
             ExpandCollapseDataGrid(DataFactoryDataGrid);
         }
 
-        private void CostDaysText_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+");
-            if (regex.IsMatch(e.Text))
-            {
-                e.Handled = true;
-            }
-            else
-            {
-                int days = int.Parse(CostDaysText.Text + e.Text);
-                if (days < 1 || days > 90)
-                {
-                    e.Handled = true;
-                    return;
-                }
-                APIAccess.CostDays = days;
-            }
-        }
 
+       
         private async void TestLoginButton_Click(object sender, RoutedEventArgs e)
         {
             await TestLogin(); 
@@ -886,6 +868,13 @@ namespace Azure.Costs.Ui.Wpf
             {
                 await vm.RefreshFabric();
             }
+        }
+
+        private void DateSelectionText_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            // show filter window
+            DateFilterWindow dfw = new DateFilterWindow(vm);
+            dfw.Show();
         }
     }
 

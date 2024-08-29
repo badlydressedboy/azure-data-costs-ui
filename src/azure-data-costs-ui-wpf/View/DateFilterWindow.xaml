@@ -1,0 +1,71 @@
+﻿<mah:MetroWindow x:Class="Azure.Costs.Ui.Wpf.DateFilterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Azure.Costs.Ui.Wpf"
+        xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
+        mc:Ignorable="d"
+            
+            ShowMinButton="False" 
+            ShowMaxRestoreButton="False" 
+            ShowCloseButton="True"
+            WindowStartupLocation="CenterOwner"
+        Title="Date Filter" Height="298" Width="360">
+    <Grid>
+
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+        
+        <Grid.Resources>
+            <Style TargetType="DataGrid">
+                <Style.Setters>
+                    <Setter Property="CanUserAddRows" Value="False"/>
+                    <Setter Property="VerticalGridLinesBrush" Value="LightGray"/>
+                    <Setter Property="HorizontalGridLinesBrush" Value="LightGray"/>
+
+
+                    <Setter Property="AutoGenerateColumns" Value="False"/>
+                    <!--<Setter Property="IsReadOnly" Value="True"/>-->
+                    <Setter Property="RowHeight" Value="20"/>
+                    <Setter Property="SelectionMode" Value="Extended"/>
+                    <Setter Property="SelectionUnit" Value="Cell"/>
+                    <Setter Property="CanUserResizeRows" Value="False"/>
+                    <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="true" />
+                    <Setter Property="EnableRowVirtualization"  Value="True"/>
+                    <Setter Property="RowDetailsVisibilityMode"  Value="Collapsed"/>
+                </Style.Setters>
+            </Style>
+        </Grid.Resources>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Margin="2">Start Date</TextBlock>
+
+            <mah:DateTimePicker Name="StartPicker" Grid.Row="1"
+                            
+                               SelectedDateTime="{Binding SelectedDateRangeStartDate}"
+                                IsClockVisible="False"
+                                ></mah:DateTimePicker>
+
+            <TextBlock Grid.Row="2" Margin="2">End Date</TextBlock>
+
+            <mah:DateTimePicker Name="EndPicker" Grid.Row="3"
+                
+                   SelectedDateTime="{Binding SelectedDateRangeEndDate}"
+                                IsClockVisible="False"
+                    ></mah:DateTimePicker>
+        </Grid>
+        
+        <Button Grid.Row="1" Content="OK" HorizontalAlignment="Center" Margin="0,4,10,6" Width="45" Click="ButtonOK_Click"/>  
+    </Grid>
+</mah:MetroWindow>

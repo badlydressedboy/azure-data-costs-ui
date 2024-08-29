@@ -242,15 +242,63 @@ namespace Azure.Costs.Ui.Wpf
             get => selectSubscriptionsCountMessage;
             set => SetProperty(ref selectSubscriptionsCountMessage, value);
         }
+
+        public string? SelectedDateRangeMessage
+        {
+            get {
+                return SelectedDateRangeDayCount + " Days Selected";
+            }
+            
+        }
+
+        private DateTime selectedDateRangeStartDate;
+        public DateTime SelectedDateRangeStartDate
+        {
+            get => selectedDateRangeStartDate;
+            set
+            {
+                SetProperty(ref selectedDateRangeStartDate, value);
+                OnPropertyChanged("SelectedDateRangeDayCount");
+                OnPropertyChanged("SelectedDateRangeMessage");
+                SyncSelectedDates();
+            }
+        }
+        private DateTime selectedDateRangeEndDate;
+        public DateTime SelectedDateRangeEndDate
+        {
+            get => selectedDateRangeEndDate;
+            set
+            {
+                SetProperty(ref selectedDateRangeEndDate, value);
+                OnPropertyChanged("SelectedDateRangeDayCount");
+                OnPropertyChanged("SelectedDateRangeMessage");
+                SyncSelectedDates();
+            }
+        }
+ 
+        public int SelectedDateRangeDayCount
+        {
+            get { 
+                return (SelectedDateRangeEndDate- SelectedDateRangeStartDate).Days;
+            }
+        
+//            set => SetProperty(ref selectedDateRangeEndDate, value);
+        }
         #endregion
 
         public MainWindowVm(){
 
             //Subscriptions.Add(new Subscription("a5be5e3e-da5c-45f5-abe9-9591a51fccfa"));//, this
             //Subscriptions.Add(new Subscription("151b40b6-6164-4053-9884-58a8d3151fe6"));//, this
-            IsRestErrorMessageVisible = false;    
-            
+            IsRestErrorMessageVisible = false;
 
+            SelectedDateRangeStartDate = DateTime.Now.AddDays(-30);
+            SelectedDateRangeEndDate = DateTime.Now;
+        }
+        public void SyncSelectedDates()
+        {
+            APIAccess.SelectedStartDate = SelectedDateRangeStartDate;
+            APIAccess.SelectedEndDate = SelectedDateRangeEndDate;
         }
         public async Task TestLogin()
         {

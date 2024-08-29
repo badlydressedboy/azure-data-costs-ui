@@ -46,7 +46,9 @@ namespace Azure.Costs.Common
 
         public static string AccessMethod = "AzureCli";
 
-        public static int CostDays { get; set; } = 30;
+        public static DateTime  SelectedStartDate { get; set; }
+        public static DateTime SelectedEndDate { get; set; }
+
         public static string DefaultDomain;
         public static string BasePortalUrl;
         public static string TenantName;
@@ -1196,8 +1198,8 @@ namespace Azure.Costs.Common
 
             try
             {
-                string timeFrom = DateTime.UtcNow.AddDays(-CostDays).ToString("s") + "Z";
-                string timeTo = DateTime.UtcNow.ToString("s") + "Z";
+                string timeFrom = SelectedStartDate.ToString("s") + "Z";
+                string timeTo = SelectedEndDate.ToString("s") + "Z";
 
                 string payload = @"{'type':'ActualCost','dataSet':{'granularity':'None','aggregation':{'totalCost':{'name':'Cost','function':'Sum'},'totalCostUSD':{'name':'CostUSD','function':'Sum'},'sorting':[{'direction':'descending','name':'Cost'}],'grouping':[{'type':'Dimension','name':'ServiceName'},{'type':'Dimension','name':'MeterSubCategory'},{'type':'Dimension','name':'Product'},{'type':'Dimension','name':'Meter'},{'type':'Dimension','name':'ChargeType'},{'type':'Dimension','name':'PublisherType'}]},'timeframe':'Custom','timePeriod':{'from':'2022-11-01T00:00:00.000Z','to':'2022-11-30T23:59:59.000Z'}";
                 payload = @"{""type"":""ActualCost"",""dataSet"":{""granularity"":""None"",""aggregation"":{""totalCost"":{""name"":""Cost"",""function"":""Sum""},""totalCostUSD"":{""name"":""CostUSD"",""function"":""Sum""}},""sorting"":[{""direction"":""descending"",""name"":""Cost""}],""grouping"":[{""type"":""Dimension"",""name"":""ResourceGroupName""},{""type"":""Dimension"",""name"":""SubscriptionId""}]},""timeframe"":""Custom"",""timePeriod"":{""from"":""2022-11-01T00:00:00.000Z"",""to"":""2022-11-30T23:59:59.000Z""}}";

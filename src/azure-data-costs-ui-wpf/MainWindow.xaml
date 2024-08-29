@@ -314,8 +314,7 @@
                             <TextBlock Margin="6,2,2,2" Text="Filter:" VerticalAlignment="Center"></TextBlock>
                             <TextBox Margin="4,2,2,2" Width="180" Name="RestDbFilterText" VerticalAlignment="Center" KeyUp="RestDbFilterText_KeyUp" TextChanged="RestDbFilterText_TextChanged"></TextBox>
 
-                            <TextBlock Margin="22,2,2,2" Text="Cost Days:" VerticalAlignment="Center"></TextBlock>
-                            <TextBox Margin="4,2,2,2" Width="40" Name="CostDaysText" VerticalAlignment="Center" PreviewTextInput="CostDaysText_PreviewTextInput" ></TextBox>
+                            <TextBlock Foreground="DarkBlue" Cursor="Hand" MouseLeftButtonUp="DateSelectionText_MouseLeftButtonUp" Margin="2" Text="{Binding SelectedDateRangeMessage}"></TextBlock>
 
                             <!--<Button Margin="22,2,2,2" VerticalAlignment="Center" Name="GroupButton" Click="GroupButton_Click" IsEnabled="{Binding IsGetSqlServersBusy, Converter={StaticResource InverseBooleanConverter}}">Group</Button>-->
 
@@ -3298,6 +3297,13 @@ Text="{Binding ElementName=FabricDataGrid, Path=DataContext.FabricTabVm.Subscrip
             <StatusBarItem>
 
                 <TextBlock Foreground="DarkBlue" Cursor="Hand" MouseLeftButtonUp="StatusSelectionText_MouseLeftButtonUp" Margin="2" Text="{Binding SelectSubscriptionsCountMessage}"></TextBlock>
+            </StatusBarItem>
+
+            <Separator Width="1" Background="Gray" Margin="10,3,10,3"></Separator>
+
+            <StatusBarItem>
+
+                <TextBlock Foreground="DarkBlue" Cursor="Hand" MouseLeftButtonUp="DateSelectionText_MouseLeftButtonUp" Margin="2" Text="{Binding SelectedDateRangeMessage}"></TextBlock>
             </StatusBarItem>
 
         </StatusBar>
