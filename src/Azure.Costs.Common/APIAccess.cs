@@ -1986,7 +1986,7 @@ namespace Azure.Costs.Common
                     string rg = fab.id.Substring(fab.id.IndexOf("resourceGroup") + 15);
                     fab.resourceGroup = rg.Substring(0, rg.IndexOf("/"));
 
-                    fab.PortalResourceUrl = $@"{BasePortalUrl}{fab.Subscription.subscriptionId}/resourceGroups/{fab.resourceGroup}/providers/Microsoft.DocumentDB/databaseAccounts/{fab.name}/overview";
+                    fab.PortalResourceUrl = $@"{BasePortalUrl}{fab.Subscription.subscriptionId}/resourceGroups/{fab.resourceGroup}/providers/Microsoft.Fabric/capacities/{fab.name}/overview";
 
                 }
                 subscription.FabricCapacities = root.value.ToList();
